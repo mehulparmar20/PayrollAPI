@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\API\CompanyAdminsController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -19,4 +19,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::post('company_register', 'API\CompanyController@company_register');
+Route::post('company_register', 'App\Http\Controllers\API\CompanyAdminsController@store');
