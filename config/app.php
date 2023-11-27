@@ -173,6 +173,7 @@ return [
     // MongoDB\Laravel\MongoDBServiceProvider::class,
     
 
+ 
     /*
     |--------------------------------------------------------------------------
     | Class Aliases
