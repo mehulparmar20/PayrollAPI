@@ -7,25 +7,29 @@
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="{{asset('plugins/fontawesome-free/css/all.min.css')}}">
   <!-- Ionicons -->
-  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <link rel="stylesheet" href="{{asset('https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css')}}">
   <!-- Tempusdominus Bbootstrap 4 -->
-  <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+  <link rel="stylesheet" href="{{asset('plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css')}}">
   <!-- iCheck -->
-  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <link rel="stylesheet" href="{{asset('plugins/icheck-bootstrap/icheck-bootstrap.min.css')}}">
   <!-- JQVMap -->
-  <link rel="stylesheet" href="plugins/jqvmap/jqvmap.min.css">
+  <link rel="stylesheet" href="{{asset('plugins/jqvmap/jqvmap.min.css')}}">
   <!-- Theme style -->
-  <link rel="stylesheet" href="dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="{{asset('dist/css/adminlte.min.css')}}">
   <!-- overlayScrollbars -->
-  <link rel="stylesheet" href="plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+  <link rel="stylesheet" href="{{asset('plugins/overlayScrollbars/css/OverlayScrollbars.min.css')}}">
   <!-- Daterange picker -->
-  <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
+  <link rel="stylesheet" href="{{asset('plugins/daterangepicker/daterangepicker.css')}}">
   <!-- summernote -->
-  <link rel="stylesheet" href="plugins/summernote/summernote-bs4.css">
+  <link rel="stylesheet" href="{{asset('plugins/summernote/summernote-bs4.css')}}">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+{{-- datable and export button --}}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+  {{-- end datable and export button --}}
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
@@ -156,10 +160,10 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="index3.html" class="brand-link">
-      <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+    <a href="{{url('index3.html')}}" class="brand-link">
+      <img src="{{asset('dist/img/AdminLTELogo.png')}}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
            style="opacity: .8">
-      <span class="brand-text font-weight-light">AdminLTE 3</span>
+      <span class="brand-text font-weight-light">HR ASTRA</span>
     </a>
 
     <!-- Sidebar -->
@@ -167,10 +171,10 @@
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
-          <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+          <img src="{{asset('dist/img/user2-160x160.jpg')}}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Alexander Pierce</a>
+          <a href="#" class="d-block">Admin</a>
         </div>
       </div>
 
@@ -180,17 +184,31 @@
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item has-treeview menu-open">
-            <a href="#" class="nav-link active">
+            <a href="{{url('/admin')}}" class="nav-link">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 Dashboard
                 {{-- <i class="right fas fa-angle-left"></i> --}}
               </p>
             </a>
-            <a href="#" class="nav-link active">
+            <a href="{{url('plan-index')}}" class="nav-link">
                 <i class="nav-icon fas fa-th"></i>
                 <p>
-                  Plan
+                  Plan Subscription
+                  {{-- <i class="right fas fa-angle-left"></i> --}}
+                </p>
+              </a>
+              <a href="{{url('tax-index')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>
+                  Tax Master
+                  {{-- <i class="right fas fa-angle-left"></i> --}}
+                </p>
+              </a>
+              <a href="{{url('masteradmin')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>
+                  Admin Master
                   {{-- <i class="right fas fa-angle-left"></i> --}}
                 </p>
               </a>
@@ -365,10 +383,10 @@
     </div>
 @yield('content')
 <footer class="main-footer">
-    <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong>
+    <strong>Copyright &copy; 2023-2024 <a href="http://adminlte.io">VeravalOnline.com</a>.</strong>
     All rights reserved.
     <div class="float-right d-none d-sm-inline-block">
-      <b>Version</b> 3.0.4
+      <b>Version</b> 1.0.4
     </div>
   </footer>
 
@@ -381,38 +399,179 @@
 <!-- ./wrapper -->
 
 <!-- jQuery -->
-<script src="plugins/jquery/jquery.min.js"></script>
+<script src="{{asset('plugins/jquery/jquery.min.js')}}"></script>
 <!-- jQuery UI 1.11.4 -->
-<script src="plugins/jquery-ui/jquery-ui.min.js"></script>
+<script src="{{asset('plugins/jquery-ui/jquery-ui.min.js')}}"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
   $.widget.bridge('uibutton', $.ui.button)
 </script>
 <!-- Bootstrap 4 -->
-<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="{{asset('plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
 <!-- ChartJS -->
-<script src="plugins/chart.js/Chart.min.js"></script>
+<script src="{{asset('plugins/chart.js/Chart.min.js')}}"></script>
 <!-- Sparkline -->
-<script src="plugins/sparklines/sparkline.js"></script>
+<script src="{{asset('plugins/sparklines/sparkline.js')}}"></script>
 <!-- JQVMap -->
-<script src="plugins/jqvmap/jquery.vmap.min.js"></script>
-<script src="plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+<script src="{{asset('plugins/jqvmap/jquery.vmap.min.js')}}"></script>
+<script src="{{asset('plugins/jqvmap/maps/jquery.vmap.usa.js')}}"></script>
 <!-- jQuery Knob Chart -->
-<script src="plugins/jquery-knob/jquery.knob.min.js"></script>
+<script src="{{asset('plugins/jquery-knob/jquery.knob.min.js')}}"></script>
 <!-- daterangepicker -->
-<script src="plugins/moment/moment.min.js"></script>
-<script src="plugins/daterangepicker/daterangepicker.js"></script>
+<script src="{{asset('plugins/moment/moment.min.js')}}"></script>
+<script src="{{asset('plugins/daterangepicker/daterangepicker.js')}}"></script>
 <!-- Tempusdominus Bootstrap 4 -->
-<script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<script src="{{asset('plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js')}}"></script>
 <!-- Summernote -->
-<script src="plugins/summernote/summernote-bs4.min.js"></script>
+<script src="{{asset('plugins/summernote/summernote-bs4.min.js')}}"></script>
 <!-- overlayScrollbars -->
-<script src="plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<script src="{{asset('plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js')}}"></script>
 <!-- AdminLTE App -->
-<script src="dist/js/adminlte.js"></script>
+<script src="{{asset('dist/js/adminlte.js')}}"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script src="dist/js/pages/dashboard.js"></script>
+<script src="{{asset('dist/js/pages/dashboard.js')}}"></script>
 <!-- AdminLTE for demo purposes -->
-<script src="dist/js/demo.js"></script>
+<script src="{{asset('dist/js/demo.js')}}"></script>
+
+{{-- sweetalert --}}
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+@if (session('success'))
+  <script>
+      swal("Done!", "{{ session('success') }}", "success");
+  </script>
+@endif
+{{-- end sweetalert --}}
+{{-- ckeditor --}}
+<script src="https://cdn.ckeditor.com/ckeditor5/40.0.0/classic/ckeditor.js"></script>
+   <script>
+      ClassicEditor
+          .create( document.querySelector('#create_description,#edit_description'))
+          .catch( error => {
+              // console.error( error );
+          } );
+  </script>
+{{-- end ckeditor --}}
+{{-- new datatable with export key --}}
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script>
+ $(document).ready(function() {
+  $('#Plantable').DataTable( {
+      dom: 'Bfrtip',
+      "order": [[0, "desc"]],
+      "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+      buttons: [
+          'copyHtml5',
+          'excelHtml5',
+          'csvHtml5',
+          'pdfHtml5'
+      ]
+     
+  } );
+} );</script>
+
+{{-- new datatable end --}}
+
+{{-- permanent delete plan  --}}
+<script>
+  $(document).ready(function () {
+    $.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+    $('.plandelete').click(function (e) { 
+      e.preventDefault();
+      var delete_id=$(this).closest("tr").find('.plandeleteid').val();
+      
+      swal({
+  title: "Are You Sure?",
+  text: "Once deleted, you will not be able to recover Data!",
+  icon: "warning",
+  buttons: true,
+  dangerMode: true,
+})
+.then((willDelete) => {
+  if (willDelete) {
+    var data={
+      "_token": $('input[name=_token]').val(),
+      "id":delete_id,
+    };
+    $.ajax({
+      type: "DELETE",
+      method:'get',
+      url: '/plan-delete/'+delete_id,
+      data: data,
+      success: function (response) {
+        swal( "Deleted Successfully", {
+      icon: "success",
+    })
+    .then((result)=>{
+location.reload();
+    });
+      }
+    });
+   
+  } 
+});
+    });
+  });
+  
+
+</script>
+{{-- end plan permanent delete --}}
+{{-- permanent delete tax  --}}
+<script>
+  $(document).ready(function () {
+    $.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+    $('.taxdeletebtn').click(function (e) { 
+      e.preventDefault();
+      var delete_id=$(this).closest("tr").find('.taxid').val();
+      
+      swal({
+  title: "Are You Sure?",
+  text: "Once deleted, you will not be able to recover Data!",
+  icon: "warning",
+  buttons: true,
+  dangerMode: true,
+})
+.then((willDelete) => {
+  if (willDelete) {
+    var data={
+      "_token": $('input[name=_token]').val(),
+      "id":delete_id,
+    };
+    $.ajax({
+      type: "DELETE",
+      method:'get',
+      url: '/tax-delete/'+delete_id,
+      data: data,
+      success: function (response) {
+        swal( "Deleted Successfully", {
+      icon: "success",
+    })
+    .then((result)=>{
+location.reload();
+    });
+      }
+    });
+   
+  } 
+});
+    });
+  });
+  
+
+</script>
+{{-- end tax permanent delete --}}
 </body>
 </html>

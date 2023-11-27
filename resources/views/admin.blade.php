@@ -9,7 +9,7 @@
 			<div class="info-box">
 			  <span class="info-box-icon bg-info elevation-1"><i class="fas fa-users"></i></span>
 			  <div class="info-box-content">
-				<span class="info-box-text">Applicant</span>
+				<span class="info-box-text">Plans</span>
 				<span class="info-box-number">
                       {{-- {{ $count['resume'] }} --}}
         </span>
@@ -34,7 +34,7 @@
 			  <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
 
 			  <div class="info-box-content">
-				<span class="info-box-text">Jobs</span>
+				<span class="info-box-text">Taxs</span>
 				<span class="info-box-number">
                     {{-- {{ $count['job'] }} --}}
         </span>

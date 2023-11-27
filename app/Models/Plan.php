@@ -7,10 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use MongoDB\Laravel\Eloquent\Model;//changes
 use Laravel\Sanctum\HasApiTokens;
-
-class MasterAdmin extends Model
+use MongoDB\Laravel\Eloquent\Model;//changes
+class Plan extends Model
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -20,13 +19,15 @@ class MasterAdmin extends Model
      * @var array<int, string>
      */
     protected $connection = 'mongodb';
-    protected $collection = 'master_admin';
-
+    protected $collection = 'table__plans';
     protected $fillable = [
         '_token', 
-        'name',
-        'email', 
-        'password',
-        
+        'plan_name',
+        'price', 
+        'product_id',
+        'employee_no',
+        'tax_id', 
+        'description'
     ];
+
 }

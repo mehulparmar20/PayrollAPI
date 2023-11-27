@@ -1,4 +1,4 @@
-
+{{-- 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,11 +27,11 @@
     <div class="row justify-content-center">
         <div class="col-md-6 custom-box">
             <form action="
-            {{-- {{ route('custom-login') }} --}}
+            {{ route('custom-login') }}
             " method="POST">
                 @csrf
                 <a href="
-                {{-- {{ route('welcome') }} --}}
+                {{ route('welcome') }}
                 "></a>
                 <div class="form-group text-center">
                     <h1>Login Form</h1>
@@ -56,7 +56,7 @@
                 <div class="text-center">
                     <p class="mb-0">Don't have an account yet? 
                          <a class="nav-link" href="
-                         {{-- {{ route('user.register') }} --}}
+                         {{ route('user.register') }}
                          ">Sign up here</a>
                     </p>
                 </div>
@@ -66,4 +66,4 @@
 </div>
 
 </body>
-</html>
+</html> --}}
