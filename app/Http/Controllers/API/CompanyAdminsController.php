@@ -4,42 +4,38 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use App\Models\API\Company_Admins;
-use Auth;
-use Mail; 
-use Hash;
-use Session;
-use App\Mail\Mails;
+use App\Models\API\TokenHandler;
 use Illuminate\Support\Str;
-// use Jenssegers\Mongodb\Facades\DB;
-// use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Illuminate\Database\Eloquent\Model;
-// use Illuminate\Foundation\Auth\User as Authenticatable;
-// use Illuminate\Notifications\Notifiable;
-
+use Auth;
+use Mail;
+use Session;
+use Validator;
 
 class CompanyAdminsController extends Controller
 {
     public function store(Request $request)
     {
-        // $request->validate([
-            // 'company_name' => 'required|unique:user',
-            // 'company_address' => 'required',
-            // 'admin_name' => 'required',
-            // 'admin_contact' => 'required',
-            // 'company_email' => 'required|unique:company_admin',
-            // 'admin_username' => 'required',
-            // 'admin_password' => 'required',
-            // 'total_employee' => 'required',
-        // ]);
+        $validator =  Validator::make($request->all(),[
+        // 'company_id' => 'required',
+        'company_name' => 'required',
+        'company_address' => 'required',
+        'company_email' => 'required',
+        'password' => 'required',
+        ]);
+    
+        if($validator->fails()){
+            return response()->json([
+                "error" => 'validation_error',
+                "message" => $validator->errors(),
+            ], 422);
+        }
+       
         if(Company_Admins::where('company_email', $request->company_email)->first() != null)
         {
             return response()->json(["result" => "Email already exits!"], 500);
         }
-        
-        // if($request->company_name == null){
-        //     $request->company_name = '';
-        // }
         $password = hash('sha1',$request->admin_password);
       
         $getCompany = Company_Admins::max('_id');
@@ -47,8 +43,6 @@ class CompanyAdminsController extends Controller
       
         $data=array(
             '_id' => $new_id,
-            // 'counter' => 0,
-            // 'companyID' => (int)$companyId,
             'company_name' => $request->input('company_name'),
             'company_address' => $request->input('company_address'),
             'admin_name' => $request->input('admin_name'),
@@ -89,7 +83,6 @@ class CompanyAdminsController extends Controller
             // 'deleteUser' => '',
         );
         $result=Company_Admins::raw()->insertOne($data);
-       
         if($result){
             $result=$data;
             $success = true;
@@ -109,6 +102,21 @@ class CompanyAdminsController extends Controller
                 $message->subject('email verify');
             });
         }
+
+        $token_handelrs = TokenHandler::max('_id');
+        $new_id_token=$token_handelrs+1;
+        $token = Str::lower(Str::random(22));
+            $data_token=array(    
+            '_id' => $new_id_token,
+            'company_id'=>$new_id,
+            'token' => $token,
+            'status'=>'delevered',
+             'company_verify'=>array(  
+                    'companyName' => $request->input('company_name'),
+                    'company_email' =>$request->input('company_email'),
+               )
+        );
+        TokenHandler::raw()->insertOne($data_token);
      
         return response()->json([
             'success' => $success,
@@ -126,9 +134,54 @@ class CompanyAdminsController extends Controller
         $comapny_admin->emailVerificationStatus="1";
         $comapny_admin->email_verified_at=now();
         $comapny_admin->save();
+
+        $token=TokenHandler::where('company_id',$comapny_admin->_id)->first();
+        $token->status="verified";
+        $token->save();
+        
         return response()->json(["result" => "ok"], 201);
     }
 
+        public function company_login(Request $request)
+        {
+            $request->validate([
+                'company_email' => 'required',
+                'company_password' => 'required',
+            ]);
+            $email = $request->company_email;
+            // $password = $request->company_password;
+            // $password = hash('sha1',$request->company_password);
+        //    dd($email,sha1($password));
+           $password = hash('sha1',$request->company_password);
+            $user = Company_Admins::where(['company_email'=>$email, 'password'=>'da39a3ee5e6b4b0d3255bfef95601890afd80709'])->first();
+            // dd($user);
+            // $collection=Company_Admins::raw();
+            // $user = $collection->aggregate([['$match' => ['company_email' => $email, 'password' => sha1($password)]]]);
+             // $user = $collection->aggregate([['$match' => ['company_email' => $email, 'password' => sha1($password)]]]);
+             if ($user) {
+                    $userModel = new Company_Admins(); // Create a new instance of the User model
+                    $userModel->companyID = $user->_id;
+                    $userModel->userEmail = $user->company_email;
+                    $userModel->userPass = $user->password;
+                    $token_data = TokenHandler::where(['company_id'=>$userModel->companyID])->first();
+                    $userModel->token = $token_data->token;
+            }
+            if($user){
+                $result=$userModel;
+                $success = true;
+                $message = "Login Succesfully";
+            } else {
+                $success = false;
+                $message = "Some error";
+                $result=$userModel;
+            }
+            return response()->json([
+                'success' => $success,
+                'message' => $message,
+                'data'=>$result,
+            ]);
+      
+        }
     // public function company_dashboard(Request $request)
     // {
     //     // $companyID=Auth::user()->companyID;

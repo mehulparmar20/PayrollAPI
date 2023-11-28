@@ -1,13 +1,9 @@
 <?php
 
 namespace App\Models\API;
-
 use MongoDB\Laravel\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
-
-
 
 class Company_Admins extends Model
 {
