@@ -20,7 +20,7 @@
                     <th scope="col">Plan Name</th>
                     <th scope="col">Price</th>
                     <th scope="col">Product ID</th>
-                    <th scope="col">Employee NO</th>
+                    <th scope="col">Employees</th>
                     <th scope="col">Tax</th>
                     <th scope="col">Description</th>
                     <th scope="col">Action</th>
@@ -29,13 +29,22 @@
             <tbody>
               @foreach ($data as $row) 
                     <tr>
+                        {{-- @dd($row) --}}
                         <input type="hidden"class="plandeleteid" value="{{ $row->_id }}">
-                        <td scope="row">{{ $row->_id }}</td>
+                        {{-- <td scope="row">{{ $row->_id }}</td> --}}
+                        {{-- <td scope="row">{{ ++$tempid }}</td> --}}
                         <td>{{ $row->plan_name }}</td>
                         <td>{{ $row->price}}</td>
-                        <td>{{ $row->product_id}}</td>
+                        <td>2</td>
                         <td>{{ $row->employee_no }}</td>
-                        <td>{{ $row->tax_id }}</td>
+                        {{-- @php
+                        $name = App\Models\Taxmaster::where('_id', $row->tax_name)->first();
+
+                    @endphp
+                    @dd($name) --}}
+                    {{-- <td>{{ $row->taxmaster->tax_id }}</td> --}}
+                    {{-- @dd($row->taxmaster->tax_name) --}}
+                        <td>{{ @$row->taxmaster->tax_name }}</td>
                         <td>{!! $row->description !!}</td>
                         
                         <td>

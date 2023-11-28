@@ -45,7 +45,7 @@
         <a href="index3.html" class="nav-link">Home</a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">Contact</a>
+        <a href="{{url('logout')}}" class="nav-link">Logout</a>
       </li>
     </ul>
 
@@ -73,7 +73,7 @@
           <a href="#" class="dropdown-item">
             <!-- Message Start -->
             <div class="media">
-              <img src="dist/img/user1-128x128.jpg" alt="User Avatar" class="img-size-50 mr-3 img-circle">
+              <img src="{{asset('dist/img/user1-128x128.jpg')}}" alt="User Avatar" class="img-size-50 mr-3 img-circle">
               <div class="media-body">
                 <h3 class="dropdown-item-title">
                   Brad Diesel
@@ -89,7 +89,7 @@
           <a href="#" class="dropdown-item">
             <!-- Message Start -->
             <div class="media">
-              <img src="dist/img/user8-128x128.jpg" alt="User Avatar" class="img-size-50 img-circle mr-3">
+              <img src="{{asset('dist/img/user8-128x128.jpg')}}" alt="User Avatar" class="img-size-50 img-circle mr-3">
               <div class="media-body">
                 <h3 class="dropdown-item-title">
                   John Pierce
@@ -105,7 +105,7 @@
           <a href="#" class="dropdown-item">
             <!-- Message Start -->
             <div class="media">
-              <img src="dist/img/user3-128x128.jpg" alt="User Avatar" class="img-size-50 img-circle mr-3">
+              <img src="{{asset('dist/img/user3-128x128.jpg')}}" alt="User Avatar" class="img-size-50 img-circle mr-3">
               <div class="media-body">
                 <h3 class="dropdown-item-title">
                   Nora Silvester
@@ -194,24 +194,31 @@
             <a href="{{url('plan-index')}}" class="nav-link">
                 <i class="nav-icon fas fa-th"></i>
                 <p>
-                  Plan Subscription
+                  Plans
+                  {{-- <i class="right fas fa-angle-left"></i> --}}
+                </p>
+              </a>
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-th"></i>
+                <p>
+                  Subscription
                   {{-- <i class="right fas fa-angle-left"></i> --}}
                 </p>
               </a>
               <a href="{{url('tax-index')}}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>
-                  Tax Master
+                  Taxs
                   {{-- <i class="right fas fa-angle-left"></i> --}}
                 </p>
               </a>
-              <a href="{{url('masteradmin')}}" class="nav-link">
+              {{-- <a href="{{url('masteradmin')}}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>
                   Admin Master
-                  {{-- <i class="right fas fa-angle-left"></i> --}}
+                  <i class="right fas fa-angle-left"></i> 
                 </p>
-              </a>
+              </a> --}}
             {{-- <ul class="nav nav-treeview">
               <li class="nav-item">
                 <a href="./index.html" class="nav-link active">
@@ -375,7 +382,7 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Dashboard v1</li>
+              <li class="breadcrumb-item active">Dashboard </li>
             </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->

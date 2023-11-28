@@ -11,8 +11,9 @@ class TaxMasterController extends Controller
 {
     public function index()
     {
+        $temp=1;
         $data=Taxmaster::all();
-        return view('admin.tax.index',compact('data'));
+        return view('admin.tax.index',compact('data','temp'));
     }
 
     

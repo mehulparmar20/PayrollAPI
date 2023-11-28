@@ -24,10 +24,17 @@ class Plan extends Model
         '_token', 
         'plan_name',
         'price', 
-        'product_id',
         'employee_no',
         'tax_id', 
         'description'
     ];
+    // public function taxmaster()
+    // {
+    //     return $this->belongsTo(Taxmaster::class,'_id','tax_name');
+    // }
+    public function taxmaster()
+    {
+        return $this->belongsTo(Taxmaster::class, 'tax_id', '_id');
+    }
 
 }

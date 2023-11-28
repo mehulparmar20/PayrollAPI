@@ -23,16 +23,13 @@
         }
 </style>
 <body>
+
     <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-6 custom-box">
-            <form action="
-            {{ route('custom-login') }}
-            " method="POST">
+            <form action="{{ route('custom-login') }}" method="POST">
                 @csrf
-                <a href="
-                {{ route('welcome') }}
-                "></a>
+                
                 <div class="form-group text-center">
                     <h1>Login Form</h1>
                 </div>
@@ -44,22 +41,11 @@
                     <label for="password">Password</label>
                     <input type="password" name="password" class="form-control" id="exampleInputPassword1">
                 </div>
-                <div class="form-group">
-                    <div class="form-check">
-                        <input type="checkbox" name="remember" class="form-check-input" id="rememberMe"required>
-                        <label class="form-check-label" for="rememberMe">Remember Me</label>
-                    </div>
-                </div>
+               
                 <div class="form-group text-center">
                     <button type="submit" class="btn btn-success">Login</button>
                 </div>
-                <div class="text-center">
-                    <p class="mb-0">Don't have an account yet? 
-                         <a class="nav-link" href="
-                         {{ route('user.register') }}
-                         ">Sign up here</a>
-                    </p>
-                </div>
+               
             </form>
         </div>
     </div>

@@ -42,15 +42,7 @@
 
                             <div class="row">
 
-                                <div class="col-6">
-
-                                    <br> <label for="product_id" class="form-label">Product ID</label>
-                                    <input type="text" class="form-control" id="create_product_id" name="product_id"
-                                        placeholder="Enter Product ID">
-                                    @error('product_id')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                              
                                 <div class="col-6">
 
                                     <br> <label for="employee_no" class="form-label">Employee NO</label>
@@ -61,23 +53,25 @@
                                     @enderror
 
                                 </div>
-
-
-                            </div>
-                            <div class="row">
                                 <div class="col-6">
                                     <br /> <label for="tax_id" class="form-label">Tax ID</label>
                                     <select type="text" class="form-control" name="tax_id" id="create_tax_id"
                                         placeholder="Enter Tax ID">
-                                        <option value="">Select Tax</option>
-                                        <option value="1">Temporary Tax</option>
-                                        <option value="2">Permanent Tax</option>
+                                        <option value=""select>Select a Tax</option>
+                                        @foreach ($tax as $d)
+                                            <option value="{{ $d->_id }}" >{{ $d->tax_name }}</option>
+                                        @endforeach
 
                                     </select>
                                     @error('tax_id')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
+
+
+                            </div>
+                            <div class="row">
+                           
                                 <div class="col-6">
                                     <br /> <label for="description" class="form-label">Description</label>
                                     <textarea class="form-control" name="description" id="create_description"rows="3"></textarea>
@@ -110,3 +104,13 @@
     </div>
     </div>
 @endsection
+{{-- extra code --}}
+{{-- <div class="col-6">
+
+    <br> <label for="product_id" class="form-label">Product ID</label>
+    <input type="text" class="form-control" id="create_product_id" name="product_id"
+        placeholder="Enter Product ID">
+    @error('product_id')
+        <div class="text-danger">{{ $message }}</div>
+    @enderror
+</div> --}}

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\MasterAdmin;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -15,11 +16,16 @@ class AdminSeeder extends Seeder
     {
         User::create([
             'name'=>'admin',
-            'email' => 'admin@gmail.com',
+            'email' => 'admin@admin.com',
             'password' => Hash::make('12345'),
             // 'isAdmin' => true,
         ]);
-
+        MasterAdmin::create([
+            'name'=>'admin',
+            'email' => 'admin@admin.com',
+            'password' => Hash::make('12345'),
+            // 'isAdmin' => true,
+        ]);
         $this->command->info('Admin user seeded successfully.');
     }
     }

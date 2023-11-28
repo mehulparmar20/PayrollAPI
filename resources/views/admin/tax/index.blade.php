@@ -26,7 +26,8 @@
                @foreach ($data as $row) 
                     <tr>
                         <input type="hidden"class="taxid" value="{{ $row->id }}">
-                        <td scope="row">{{ $row->id }}</td>
+                        {{-- <td scope="row">{{ $row->id }}</td> --}}
+                        <td scope="row">{{ ++$temp }}</td>
                         <td>{{ $row->tax_name }}</td>
                         <td>{{ $row->tax_percentage }}</td>
                        

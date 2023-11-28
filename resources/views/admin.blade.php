@@ -11,7 +11,7 @@
 			  <div class="info-box-content">
 				<span class="info-box-text">Plans</span>
 				<span class="info-box-number">
-                      {{-- {{ $count['resume'] }} --}}
+                      {{ $count['plan'] }}
         </span>
 			  </div>
 			</div>
@@ -22,7 +22,7 @@
 			  <div class="info-box-content">
 				<span class="info-box-text">Notifications</span>
 				<span class="info-box-number">
-                    {{-- {{ $count['sell'] }} --}}
+                    {{ $count['sell'] }}
         </span>
 			  </div>
 			</div>
@@ -36,7 +36,7 @@
 			  <div class="info-box-content">
 				<span class="info-box-text">Taxs</span>
 				<span class="info-box-number">
-                    {{-- {{ $count['job'] }} --}}
+                    {{ $count['tax'] }}
         </span>
 			  </div>
 			</div>

@@ -3,7 +3,7 @@
 use App\Http\Controllers\Admin\MasterAdminController;
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\TaxMasterController;
-use App\Http\Controllers\UserController;
+
 
 use Illuminate\Support\Facades\Route;
 
@@ -19,17 +19,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin', [MasterAdminController::class, 'admin'])->name('admin');
 });
-Route::get('/admin', function () {
-    return view('admin');
-});
-
-Route::get('login', [UserController::class, 'index'])->name('login');
-Route::post('custom-login', [UserController::class, 'customLogin'])->name('custom-login'); 
-
-Route::get('logout', [UserController::class, 'logout'])->name('log-out');
+Route::get('/', [MasterAdminController::class, 'welcome'])->name('welcome');
+// Route::get('login', [MasterAdminController::class, 'login'])->name('login');
+Route::post('custom-login', [MasterAdminController::class, 'customLogin'])->name('custom-login'); 
+Route::get('logout', [MasterAdminController::class, 'logout'])->name('log-out');
 
 //PlanController
 Route::get('plan-create', [PlanController::class,'create'])->name('admin.plan.create');

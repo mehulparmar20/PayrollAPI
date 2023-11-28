@@ -24,7 +24,6 @@ class PlanRequest extends FormRequest
         return [
             'plan_name' => 'required',
             'price' => 'required',
-            'product_id'=>'required',
             'employee_no' => 'required',
             'tax_id' => 'required',
             'description'=>'required',
