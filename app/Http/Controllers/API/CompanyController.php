@@ -5,7 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\API\Company_admin;
-
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class CompanyController extends Controller
 {
@@ -39,6 +40,10 @@ class CompanyController extends Controller
 
         return response()->json(['message' => 'User registered successfully'], 201);
     }
+    
+
+
+
     
     // public function login(Request $request)
     // {

@@ -38,10 +38,12 @@ class PlanController extends Controller
     
     public function store(PlanRequest $request)
     {
-       
+        $new_id = Plan::max('_id') + 1;
+// dd($new_id);
         // dd($request);
         $input= $request->all();
         // dd($input);
+        $input['_id']=$new_id;
         $input['plan_name']=($input['plan_name']);
         $input['price']=($input['price']);
         $input['employee_no']=($input['employee_no']);
