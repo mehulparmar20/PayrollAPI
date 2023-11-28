@@ -52,9 +52,9 @@
                                     <br /> <label for="tax_id" class="form-label">Tax ID</label>
                                         <select type="text" class="form-control" name="tax_id" id="edit_tax_id" placeholder="Enter Tax ID">
                                             @foreach ($tax as $d)
-                                            <option value="{{$d->_id}}">
-                                                {{-- @if(old('$d->_id', $data->tax_name) == $d->_id) selected @endif> --}}
-                                               {{ $d->tax_name }}</option>
+                                            <option value="{{$d->_id}}"
+                                                @if(old('$d->_id',$data->tax_id) == $d->_id) selected @endif>
+                                              {{ $d->tax_name }}</option>
                                         @endforeach
                                          </select>
                                     @error('tax_id')
@@ -79,7 +79,7 @@
                                 <div class="col-md-12">
                                     <br>
 
-                                    <button type="submit" class="btn btn-success" id="storeplan"
+                                    <button type="submit" class="btn " id="storeplan"
                                         style="color:white;margin-bottom: 15px !important; margin-left: 25px;">Update</button>
                                 </div>
                             </div>

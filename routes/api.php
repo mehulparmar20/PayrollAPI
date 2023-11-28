@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\AddUserController;
+use App\Http\Controllers\API\CompanyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +22,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::post('company_register', 'API\CompanyController@company_register');
+// Route::post('add_user','API\CompanyController@add_user');
+// Route::get("data",[AddUserController::class,'data']);
+Route::post('datastore',[AddUserController::class,'store']);

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('plan_name');
             $table->integer('price');
-            $table->integer('product_id');
+            // $table->integer('product_id');
             $table->integer('employee_no');
             $table->integer('tax_id');
             $table->string('description');

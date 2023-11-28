@@ -13,20 +13,17 @@ class PlanController extends Controller
     
     public function index()
     { 
-        // $tempid=1;
-        // $data = Plan::with('taxmaster')->get();  
+        $tempid=1;
+        $data = Plan::with('taxmaster')->get();  
         // $data=Plan::all();
         // dd($data);
-        $data = Plan::with('taxmaster')->get();
-        $tempIds = Plan::get(['_id']);
-
-       foreach ($tempIds as $tempId) {
-         echo $tempId->_id; // Access the _id field
-}
-        // dd($tempid);
-        return view('admin.plan.index',compact('data'
-        // ,'tempid'
-    ));
+        // $plans = Plan::get(['_id']);
+        // $integerIds = [];
+        
+        // foreach ($plans as $plan) {
+        //     $integerIds[] = (int) $plan->_id;
+        // }
+        return view('admin.plan.index',compact('data','tempid'));
     }
 
     

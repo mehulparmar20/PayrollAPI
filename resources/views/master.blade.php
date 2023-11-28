@@ -27,8 +27,8 @@
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 {{-- datable and export button --}}
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+<link rel="stylesheet" href="{{asset('https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css')}}">
+<link rel="stylesheet" href="{{asset('https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css')}}">
   {{-- end datable and export button --}}
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">

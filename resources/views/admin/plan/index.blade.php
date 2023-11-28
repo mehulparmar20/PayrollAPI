@@ -31,8 +31,8 @@
                     <tr>
                         {{-- @dd($row) --}}
                         <input type="hidden"class="plandeleteid" value="{{ $row->_id }}">
-                        {{-- <td scope="row">{{ $row->_id }}</td> --}}
-                        {{-- <td scope="row">{{ ++$tempid }}</td> --}}
+                        <td scope="row">{{ ++$tempid }}</td>
+                        {{-- <td scope="row">{{ (int) $row->_id }} </td> --}}
                         <td>{{ $row->plan_name }}</td>
                         <td>{{ $row->price}}</td>
                         <td>2</td>
