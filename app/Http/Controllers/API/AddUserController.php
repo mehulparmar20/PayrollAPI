@@ -11,7 +11,8 @@ class AddUserController extends Controller
 {
     public function store(Request $request)
     {
-        return Company_admin::all();
+        $data=Company_admin::all();
+        // dd($data);
         // $validatedData = $request->validate([
         //     'user_email' => 'required',
         //     'user_name'=>'required',

@@ -16,7 +16,7 @@ class Company_admin extends Model
 {
     // use HasFactory;
     protected $connection = 'mongodb';
-    // protected $collection = 'company_admin';
+    protected $collection = 'company_admin';
 
     public function up()
     {
