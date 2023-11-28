@@ -15,7 +15,16 @@ class Company_Admins extends Model
     protected $collection = 'company_admin';
 
     protected $fillable = [
-       '_id','company_name', 'company_address','admin_name','admin_contact','company_email','admin_username','total_employee','admin_password'
+        '_id',
+        'company_name',
+        'company_address',
+        'admin_name',
+        'admin_contact',
+        'emailVerificationStatus',
+        'company_email',
+        'admin_username',
+        'total_employee',
+        'admin_password'
     ];
     use HasFactory;
 }
