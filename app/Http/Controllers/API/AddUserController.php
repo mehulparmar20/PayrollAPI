@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Hash;
 
 class AddUserController extends Controller
 {
-/
         public function add_user(Request $request)
         {
             $token = $request->bearerToken();
@@ -69,3 +68,4 @@ class AddUserController extends Controller
 
 
     
+}

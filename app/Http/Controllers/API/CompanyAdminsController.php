@@ -35,6 +35,7 @@ class CompanyAdminsController extends Controller
        
         if(Company_Admins::where('company_email', $request->company_email)->first() != null)
         {
+            // dd('emmd');
             return response()->json(["result" => "Email already exits!"], 500);
         }
         $password = hash('sha1',$request->password);
@@ -91,6 +92,7 @@ class CompanyAdminsController extends Controller
             // 'deleteUser' => '',
         );
         $result=Company_Admins::raw()->insertOne($data);
+        
         if($result){
             $result=$data;
             $success = true;
