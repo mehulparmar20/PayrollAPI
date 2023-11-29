@@ -32,8 +32,6 @@ class AddUserController extends Controller
     //     $data->save();
     //     return response()->json(['message' => 'Add User successfully'], 201);
     // }//priti changes
-
-
 public function datastore(Request $request)
 {
     // Validate the incoming request data
@@ -45,11 +43,16 @@ public function datastore(Request $request)
             'user_add_date'=>'required',
            
     ]);
+  
     $password = Hash::make($validatedData['user_password']);
     $new_id = Company_user::max('_id') + 1;
-
+    // dd($new_id);
+    $data = Company_user::with('companyAdmin')->first();  
+// dd($data);
     $data = [
         '_id' => $new_id,
+        'admin_id'=>$data->companyAdmin->_id,
+        'counter'=>$data->companyAdmin->total_employee,
         'user_email' => $validatedData['user_email'],
         'user_name' => $validatedData['user_name'],
         'user_password' =>$password,
@@ -93,51 +96,6 @@ public function datastore(Request $request)
 
     }
 
-// $getCompany = Company_Admins::max('_id');
-// $new_id=$getCompany+1;
-
-// $data=array(
-// '_id' => $new_id,
-// 'company_name' => $request->input('company_name'),
-// 'company_address' => $request->input('company_address'),
-// 'admin_name' => $request->input('admin_name'),
-// 'password' => $password,
-// 'admin_contact' => $request->input('admin_contact'),
-// 'company_email' => $request->input('company_email'),
-// 'admin_username' => $request->input('admin_username'),
-// 'total_employee' => $request->input('total_employee'),
-// // 'userId' => (int)Auth::user()->_id,
-// // 'insertedUserId' => Auth::user()->userName,
-// // 'deleteStatus' => '0',
-// // 'mode' => 'day',
-// 'emailVerificationStatus' => 0,
-// 'subscription_id' => '',
-// 'subscription_status' => '',
-// 'otp' => '',
-// 'plan_name' => '',
-// 'plan_start' => '',
-// 'plan_end' => '',
-// 'api_status' => '',
-// 'company_upload_storage' => '',
-// 'register_ip' => '',
-// 'last_login_id' => '',
-// 'country' => '',
-// 'city' => '',
-// 'state' => '',
-// 'pincode' => '',
-// 'fax' => '',
-// 'os' => '',
-// 'browser' => '',
-// 'login_time' => '',
-// 'password_change' => '',
-// 'forgototp' => '',
-// 'updated_at' => '',
-// 'created_at' => '',
-// // 'deleted_at' => '',
-// // 'deleteTime' => '',
-// // 'deleteUser' => '',
-// );
-// $result=Company_Admins::raw()->insertOne($data);
 
     // public function data()
     // {
