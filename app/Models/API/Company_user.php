@@ -2,6 +2,7 @@
 
 namespace App\Models\API;
 use MongoDB\Laravel\Eloquent\Model;
+use Laravel\Sanctum\HasApiTokens;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 class Company_user extends Model
 {
     // use HasFactory;
+    use HasApiTokens;
     protected $connection = 'mongodb';
     protected $collection = 'company_user';
     protected $fillable = [
