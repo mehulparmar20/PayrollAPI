@@ -4,12 +4,13 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+// use Illuminate\Support\Facades\Hash;
 use App\Models\API\Company_Admins;
 use App\Models\API\TokenHandler;
 use Illuminate\Support\Str;
 use Auth;
 use Mail;
+use Hash;
 use Session;
 use Validator;
 
@@ -18,7 +19,6 @@ class CompanyAdminsController extends Controller
     public function store(Request $request)
     {
         $validator =  Validator::make($request->all(),[
-        // 'company_id' => 'required',
         'company_name' => 'required',
         'company_address' => 'required',
         'company_email' => 'required',
@@ -36,8 +36,8 @@ class CompanyAdminsController extends Controller
         {
             return response()->json(["result" => "Email already exits!"], 500);
         }
-        $password = hash('sha1',$request->admin_password);
-      
+        $password = hash('sha1',$request->password);
+       
         $getCompany = Company_Admins::max('_id');
         $new_id=$getCompany+1;
       
@@ -138,46 +138,45 @@ class CompanyAdminsController extends Controller
         $token=TokenHandler::where('company_id',$comapny_admin->_id)->first();
         $token->status="verified";
         $token->save();
-        
         return response()->json(["result" => "ok"], 201);
     }
 
-        public function company_login(Request $request)
-        {
-            $request->validate([
-                'company_email' => 'required',
-                'company_password' => 'required',
+    public function company_login(Request $request)
+    {
+        $validator =  Validator::make($request->all(),[
+            'company_email' => 'required',
+            'company_password' => 'required',
             ]);
+        
+            if($validator->fails()){
+                return response()->json([
+                    "error" => 'validation_error',
+                    "message" => $validator->errors(),
+                ], 422);
+            }
+          
             $email = $request->company_email;
             $password = $request->company_password;
-            // $password = hash('sha1',$request->company_password);
-        //    dd($email,sha1($password));
-        //    $password = hash('sha1',$request->company_password);
-           
-            // $user = Company_Admins::where(['company_email'=>$email, 'password'=>$password])->first();
-            // $user = Company_Admins::where(['company_email'=>$email, 'password'=>'da39a3ee5e6b4b0d3255bfef95601890afd80709'])->first();
-            // dd($user);
             $collection=Company_Admins::raw();
-        //    dd(sha1($password));
             $user = $collection->aggregate([['$match' => ['company_email' => $email, 'password' => sha1($password)]]]);
             
-            // dd($user);
-            // $user = $collection->aggregate([['$match' => ['company_email' => $email, 'password' => sha1($password)]]]);
              if ($user) {
                 foreach($user as $u){
-                    dd($u);
-
-                    // $userModel = new Company_Admins(); // Create a new instance of the User model
-                    // $userModel->companyID = $user->_id;
-                    // $userModel->userEmail = $user->company_email;
-                    // $userModel->userPass = $user->password;
-                    // $token_data = TokenHandler::where(['company_id'=>$userModel->companyID])->first();
-                    // $userModel->token = $token_data->token;
+                    if($u->emailVerificationStatus == '1'){
+                    $userModel = new Company_Admins(); // Create a new instance of the User model
+                    $userModel->companyID = $u->_id;
+                    $userModel->userEmail = $u->company_email;
+                    $userModel->userPass = $u->password;
+                    $token_data = TokenHandler::where(['company_id'=>$userModel->companyID])->first();
+                    $userModel->token = $token_data->token;
+                    }
+                    else{
+                        $userModel = "Email Not Verified";
+                    }
                 }
             }
-            die;
-            if($user){
-                // $result=$userModel;
+            if($userModel == ''){
+                $result=$userModel;
                 $success = true;
                 $message = "Login Succesfully";
             } else {
