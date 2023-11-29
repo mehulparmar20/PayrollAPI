@@ -20,6 +20,7 @@ class Plan extends Model
      */
     protected $connection = 'mongodb';
     protected $collection = 'table__plans';
+    protected $primaryKey = '_id';
     protected $fillable = [
         '_token', 
         'plan_name',

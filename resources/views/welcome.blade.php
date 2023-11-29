@@ -26,7 +26,7 @@
 
     <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-6 custom-box">
+        <div class="col-md-4 custom-box">
             <form action="{{ route('custom-login') }}" method="POST">
                 @csrf
                 

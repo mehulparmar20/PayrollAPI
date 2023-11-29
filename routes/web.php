@@ -37,7 +37,7 @@ Route::get('plan-index', [PlanController::class, 'index'])->name('admin.plan.ind
 Route::get('plan-edit/{id}', [PlanController::class, 'edit'])->name('admin.plan.edit');
 Route::post('plan-update/{id}', [PlanController::class, 'update'])->name('plan-update');
 Route::get('plan-delete/{id}', [PlanController::class, 'destroy'])->name('plan-delete'); 
-Route::get('plan-view', [PlanController::class,'show'])->name('admin.plan.view');
+Route::get('plan-view/{id}', [PlanController::class,'show'])->name('admin.plan.view');
 
 // TaxmasterController
 Route::get('tax-create', [TaxMasterController::class,'create'])->name('admin.tax.create');
@@ -46,7 +46,7 @@ Route::get('tax-index', [TaxMasterController::class, 'index'])->name('admin.tax.
 Route::get('tax-edit/{id}', [TaxMasterController::class, 'edit'])->name('admin.tax.edit');
 Route::post('tax-update/{id}', [TaxMasterController::class, 'update'])->name('tax-update');
 Route::get('tax-delete/{id}', [TaxMasterController::class, 'destroy'])->name('tax-delete'); 
-Route::get('tax-view', [TaxMasterController::class,'show'])->name('admin.tax.view');
+Route::get('tax-view/{id}', [TaxMasterController::class,'show'])->name('admin.tax.view');
 
 //AdminMasterController
 Route::get('masteradmin', [MasterAdminController::class,'masteradmin'])->name('masteradmin');

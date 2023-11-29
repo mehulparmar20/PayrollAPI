@@ -199,7 +199,7 @@
                 </p>
               </a>
               <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-th"></i>
+                <i class="nav-icon fas fa-copy"></i>
                 <p>
                   Subscription
                   {{-- <i class="right fas fa-angle-left"></i> --}}

@@ -8,21 +8,15 @@ use Illuminate\Http\Request;
 use App\Http\Requests\PlanRequest;
 use App\Models\Taxmaster;
 
+
 class PlanController extends Controller
 {
     
     public function index()
     { 
-        $tempid=1;
+        $tempid=0;
         $data = Plan::with('taxmaster')->get();  
         // $data=Plan::all();
-        // dd($data);
-        // $plans = Plan::get(['_id']);
-        // $integerIds = [];
-        
-        // foreach ($plans as $plan) {
-        //     $integerIds[] = (int) $plan->_id;
-        // }
         return view('admin.plan.index',compact('data','tempid'));
     }
 
@@ -38,8 +32,11 @@ class PlanController extends Controller
     
     public function store(PlanRequest $request)
     {
-        $new_id = Plan::max('_id') + 1;
-// dd($new_id);
+
+        $new_id = Plan::max('_id');
+
+      // $dat=((int)$new_id)+1;
+       dd($new_id);
         // dd($request);
         $input= $request->all();
         // dd($input);
@@ -53,11 +50,35 @@ class PlanController extends Controller
     // dd($input);
        return redirect()->route('admin.plan.index')->with('success','Plan Subscription Created Successfully');
     }
-
+// public function store(PlanRequest $request)
+//     {
+//         $getCompany = Plan::max('_id');
+//         // dd($getCompany);
+//         $new_id=$getCompany;
+//     //   dd($new_id);
+//         $data=array(
+//             // '_id' => $new_id,
+//             'plan_name' => $request->input('plan_name'),
+//             'price' => $request->input('price'),
+//             'employee_no' =>$request->input('employee_no'),
+//             'tax_id' => $request->input('tax_id'),
+//             'description' => $request->input('description'),
+            
+           
+//         );
+       
+//         $result = Plan::insert($data);
+//         // dd($result);
+//         return response()->json(['success' => 'Plan Adder successfully'], 201);
+    
+     
+// }
    
     public function show(string $id)
     {
-        //
+        $plan=Plan::find($id);
+        // dd($data);
+        return view('admin.plan.view',compact('plan'));
     }
 
    

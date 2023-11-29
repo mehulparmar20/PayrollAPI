@@ -11,7 +11,7 @@ class TaxMasterController extends Controller
 {
     public function index()
     {
-        $temp=1;
+        $temp=0;
         $data=Taxmaster::all();
         return view('admin.tax.index',compact('data','temp'));
     }
@@ -35,9 +35,11 @@ class TaxMasterController extends Controller
     }
 
    
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $tax=Taxmaster::find($id);
+        // dd($tax);
+        return view('admin.tax.view',compact('tax'));
     }
 
    

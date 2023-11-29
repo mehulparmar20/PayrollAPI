@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AddUserController extends Controller
 {
-    // public function datastore(Request $request)
+// public function datastore(Request $request)
     // {
     //     $validatedData = $request->validate([
     //         'user_email' => 'required',
@@ -31,7 +31,8 @@ class AddUserController extends Controller
     //     ]);
     //     $data->save();
     //     return response()->json(['message' => 'Add User successfully'], 201);
-    // }//priti changes
+// }//priti changes
+
 public function datastore(Request $request)
 {
     // Validate the incoming request data
@@ -46,13 +47,28 @@ public function datastore(Request $request)
   
     $password = Hash::make($validatedData['user_password']);
     $new_id = Company_user::max('_id') + 1;
-    // dd($new_id);
-    $data = Company_user::with('companyAdmin')->first();  
-// dd($data);
+    
+    // $data = Company_user::with('companyAdmin')->first();  
+    $data = Company_user::with('companyAdmin')->get();
+    // dd($data[2]);
+    // $data=$company_ad->companyAdmin->total_employee;
+    $admin=11;
+    // $emp=$data[2]->total_employee;
+    $emp=10;
+    if ($emp>=1 && $emp<=10) {
+       
+        $totalEmployee = $emp;
+    //    dd($totalEmployee);
+    } else {
+    //    dd('empty');
+    }
+    // dd($data);
     $data = [
         '_id' => $new_id,
-        'admin_id'=>$data->companyAdmin->_id,
-        'counter'=>$data->companyAdmin->total_employee,
+        // 'company_id'=>$data[2]->_id,
+        'company_id'=>$admin,
+        // 'counter'=>$data[2]->total_employee,
+        'counter'=>$totalEmployee,
         'user_email' => $validatedData['user_email'],
         'user_name' => $validatedData['user_name'],
         'user_password' =>$password,
