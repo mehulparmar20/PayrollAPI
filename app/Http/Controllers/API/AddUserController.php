@@ -17,7 +17,8 @@ class AddUserController extends Controller
             $secretKey ='345fgvvc4';
             $decryptedInput = decrypt($token, $secretKey);
             $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-            //dd($token_data['0']);
+            
+            $company_id=$token_data['0'];
 
             $validatedData = $request->validate([
                     'user_email' => 'required',
@@ -30,9 +31,10 @@ class AddUserController extends Controller
             $password = Hash::make($validatedData['user_password']);
             $new_id = Company_user::max('_id') + 1;
 
+            
             $data = [
                 '_id' => $new_id,
-                'company_id'=>$token_data['0'],
+                'company_id'=>$company_id,
                 'user_email' => $validatedData['user_email'],
                 'user_name' => $validatedData['user_name'],
                 'user_password' =>$password,
