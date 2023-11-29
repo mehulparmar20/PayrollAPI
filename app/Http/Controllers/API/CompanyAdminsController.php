@@ -149,25 +149,35 @@ class CompanyAdminsController extends Controller
                 'company_password' => 'required',
             ]);
             $email = $request->company_email;
-            // $password = $request->company_password;
+            $password = $request->company_password;
             // $password = hash('sha1',$request->company_password);
         //    dd($email,sha1($password));
-           $password = hash('sha1',$request->company_password);
-            $user = Company_Admins::where(['company_email'=>$email, 'password'=>'da39a3ee5e6b4b0d3255bfef95601890afd80709'])->first();
+        //    $password = hash('sha1',$request->company_password);
+           
+            // $user = Company_Admins::where(['company_email'=>$email, 'password'=>$password])->first();
+            // $user = Company_Admins::where(['company_email'=>$email, 'password'=>'da39a3ee5e6b4b0d3255bfef95601890afd80709'])->first();
             // dd($user);
-            // $collection=Company_Admins::raw();
+            $collection=Company_Admins::raw();
+        //    dd(sha1($password));
+            $user = $collection->aggregate([['$match' => ['company_email' => $email, 'password' => sha1($password)]]]);
+            
+            // dd($user);
             // $user = $collection->aggregate([['$match' => ['company_email' => $email, 'password' => sha1($password)]]]);
-             // $user = $collection->aggregate([['$match' => ['company_email' => $email, 'password' => sha1($password)]]]);
              if ($user) {
-                    $userModel = new Company_Admins(); // Create a new instance of the User model
-                    $userModel->companyID = $user->_id;
-                    $userModel->userEmail = $user->company_email;
-                    $userModel->userPass = $user->password;
-                    $token_data = TokenHandler::where(['company_id'=>$userModel->companyID])->first();
-                    $userModel->token = $token_data->token;
+                foreach($user as $u){
+                    dd($u);
+
+                    // $userModel = new Company_Admins(); // Create a new instance of the User model
+                    // $userModel->companyID = $user->_id;
+                    // $userModel->userEmail = $user->company_email;
+                    // $userModel->userPass = $user->password;
+                    // $token_data = TokenHandler::where(['company_id'=>$userModel->companyID])->first();
+                    // $userModel->token = $token_data->token;
+                }
             }
+            die;
             if($user){
-                $result=$userModel;
+                // $result=$userModel;
                 $success = true;
                 $message = "Login Succesfully";
             } else {

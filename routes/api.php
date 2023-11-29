@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\CompanyAdminsController;
+use App\Http\Controllers\API\AddUserController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -26,3 +27,6 @@ Route::post('company_login', 'App\Http\Controllers\API\CompanyAdminsController@c
 // Route::post('company_dashboard', 'App\Http\Controllers\API\CompanyAdminsController@company_dashboard');
 
 Route::get('/verify/email-auth/{email}', [CompanyAdminsController::class,'sendVerificationEmail'])->name('verify_email.auth');
+
+// priti
+Route::post('add_user',[AddUserController::class,'add_user']);
