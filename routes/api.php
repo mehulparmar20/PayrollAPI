@@ -2,9 +2,14 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+<<<<<<< HEAD
 use App\Http\Controllers\API\AddUserController;
 use App\Http\Controllers\API\CompanyController;
 
+=======
+use App\Http\Controllers\API\CompanyAdminsController;
+use App\Http\Controllers\API\AddUserController;
+>>>>>>> 93e332539e991a8ec2894efdecbccbe7dde8e856
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -23,5 +28,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('company_register', 'API\CompanyController@company_register');
 
+<<<<<<< HEAD
 // Route::get("data",[AddUserController::class,'data']);
 Route::post('datastore',[AddUserController::class,'datastore']);
+=======
+Route::post('company_login', 'App\Http\Controllers\API\CompanyAdminsController@company_login');
+
+// Route::post('company_dashboard', 'App\Http\Controllers\API\CompanyAdminsController@company_dashboard');
+
+Route::get('/verify/email-auth/{email}', [CompanyAdminsController::class,'sendVerificationEmail'])->name('verify_email.auth');
+
+// priti
+Route::post('add_user',[AddUserController::class,'add_user']);
+>>>>>>> 93e332539e991a8ec2894efdecbccbe7dde8e856

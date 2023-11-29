@@ -19,6 +19,7 @@ class Company_user extends Model
         'user_add_date',
        
     ];
+<<<<<<< HEAD
     public function companyAdmin()
     {
         return $this->belongsTo(Company_admin::class,'_id'); // Assuming there is a field 'admin_id' in the 'company_user' collection referencing '_id' in 'company_admin' collection
@@ -30,6 +31,11 @@ class Company_user extends Model
         Schema::create('company_user', function (Blueprint $collection) {
             $collection->string('company_id');
             $collection->string('counter');
+=======
+    public function up()
+    {
+        Schema::create('company_user', function (Blueprint $collection) {
+>>>>>>> 93e332539e991a8ec2894efdecbccbe7dde8e856
             $collection->string('user_email')->unique();
             $collection->string('user_name');
             $collection->string('user_password');
