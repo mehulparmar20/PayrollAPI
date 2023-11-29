@@ -12,6 +12,13 @@ class AddUserController extends Controller
 {
         public function add_user(Request $request)
         {
+            $token = $request->bearerToken();
+            //$token= $token_data->token;
+            $secretKey ='345fgvvc4';
+            $decryptedInput = decrypt($token, $secretKey);
+            $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+            //dd($token_data['0']);
+
             $validatedData = $request->validate([
                     'user_email' => 'required',
                     'user_name'=>'required',
@@ -25,6 +32,7 @@ class AddUserController extends Controller
 
             $data = [
                 '_id' => $new_id,
+                'company_id'=>$token_data['0'],
                 'user_email' => $validatedData['user_email'],
                 'user_name' => $validatedData['user_name'],
                 'user_password' =>$password,

@@ -2,8 +2,12 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\StoreTokenMiddleware;
+
+use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\API\CompanyAdminsController;
 use App\Http\Controllers\API\AddUserController;
+use Illuminate\Support\Str;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -15,16 +19,12 @@ use App\Http\Controllers\API\AddUserController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['middleware' => 'tokenauth'], function () {
+    Route::post('add_user','App\Http\Controllers\API\AddUserController@add_user');
 });
 
 
-// neha
 Route::post('company_register', 'App\Http\Controllers\API\CompanyAdminsController@store');
-Route::post('company_login', 'App\Http\Controllers\API\CompanyAdminsController@company_login');
 // Route::post('company_dashboard', 'App\Http\Controllers\API\CompanyAdminsController@company_dashboard');
 Route::get('/verify/email-auth/{email}', [CompanyAdminsController::class,'sendVerificationEmail'])->name('verify_email.auth');
-
-// priti
-Route::post('add_user',[AddUserController::class,'add_user']);
+Route::post('company_login', 'App\Http\Controllers\API\CompanyAdminsController@company_login');

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 // use Illuminate\Support\Facades\Hash;
 use App\Models\API\Company_Admins;
 use App\Models\API\TokenHandler;
+use App\Helpers\AppHelper;
 use Illuminate\Support\Str;
 use Auth;
 use Mail;
@@ -40,9 +41,15 @@ class CompanyAdminsController extends Controller
        
         $getCompany = Company_Admins::max('_id');
         $new_id=$getCompany+1;
-      
+
+        $companyname= $request->company_name;
+        $user= $request->admin_username;
+        $admin_name= $request->admin_name;
+        $id=$new_id;
+        $token = encrypt($id . '|'. $user . '|' . $admin_name. '|' . $companyname, '345fgvvc4');
+       
         $data=array(
-            '_id' => $new_id,
+             '_id' => $new_id,
             'company_name' => $request->input('company_name'),
             'company_address' => $request->input('company_address'),
             'admin_name' => $request->input('admin_name'),
@@ -51,6 +58,7 @@ class CompanyAdminsController extends Controller
             'company_email' => $request->input('company_email'),
             'admin_username' => $request->input('admin_username'),
             'total_employee' => $request->input('total_employee'),
+            'token'=> $token,
             // 'userId' => (int)Auth::user()->_id,
             // 'insertedUserId' => Auth::user()->userName,
             // 'deleteStatus' => '0',
@@ -105,7 +113,7 @@ class CompanyAdminsController extends Controller
 
         $token_handelrs = TokenHandler::max('_id');
         $new_id_token=$token_handelrs+1;
-        $token = Str::lower(Str::random(22));
+        // $token = Str::lower(Str::random(22));
             $data_token=array(    
             '_id' => $new_id_token,
             'company_id'=>$new_id,
@@ -167,8 +175,12 @@ class CompanyAdminsController extends Controller
                     $userModel->companyID = $u->_id;
                     $userModel->userEmail = $u->company_email;
                     $userModel->userPass = $u->password;
-                    $token_data = TokenHandler::where(['company_id'=>$userModel->companyID])->first();
-                    $userModel->token = $token_data->token;
+                    $token_data = TokenHandler::where(['company_id'=>$u->_id])->first();
+                    $token= $token_data->token;
+                    $secretKey ='345fgvvc4';
+                    $decryptedInput = decrypt($token, $secretKey);
+                    $token_data->token=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+                    $userModel->token = $token;
                     }
                     else{
                         $userModel = "Email Not Verified";
@@ -193,6 +205,9 @@ class CompanyAdminsController extends Controller
         }
     // public function company_dashboard(Request $request)
     // {
+    //    // $beare= AppHelper::instance()->bearer_token();
+    //     $beare=AppHelper::instance()->bearer_token("token",LoggedUsers::raw());
+    //     dd($beare);
     //     // $companyID=Auth::user()->companyID;
     //     // $employement = Company_Admins::where('id',$companyID)->first();
     //     // return response()->json($employement); 
