@@ -24,6 +24,12 @@ class AddUserController extends Controller
             // dd($latest_employee_id);
             
 
+
+            $company_id=intval($id);
+        //    dd($company_id);
+            $company_admins=Company_Admins::where('_id',$company_id)->value('total_employee');
+            //  dd($company_admins);//changes
+
             if($company_id==$latest_employee_id)
             {
                 $latest_total_employee = Company_Admins::latest('_id')->value('total_employee');
@@ -40,10 +46,9 @@ class AddUserController extends Controller
                     'user_add_date'=>'required',
                 
             ]);
-            $password = Hash::make($validatedData['user_password']);
+            // $password = Hash::make($validatedData['user_password']);
+            $password = hash('sha1',$request->password);
             $new_id = Company_user::max('_id') + 1;
-
-            
             $data = [
                 '_id' => $new_id,
                 'company_id'=>$company_id,
@@ -73,22 +78,60 @@ class AddUserController extends Controller
                 'city' => '',
                 'state' => '',
                 'os' => '',
+                'delete_status'=>1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
 
-       $result = Company_user::insert($data);
+              $result = Company_user::insert($data);
 
     
-    if ($result) {
+            if ($result) {
         return response()->json(['message' => 'User Adder successfully'], 201);
-    } else {
+       } else {
         return response()->json(['message' => 'Failed to Add user'], 500);
+       }
     }
+public function update_user(Request $request ,$id)
+{
+    // dd($request);
+    $new_id=intval($id);
+    $data = Company_user::where('_id',$new_id)->first();
+    $data->user_email = $request->user_email;
+    $data->user_name = $request->user_name;
+    $data->user_password= $request->user_password;
+    $data->user_type = $request->user_type;
+    $data->user_add_date = $request->user_add_date;
+    // dd($data);
+    $data->save();
+    
+    $response = [
+        "success" => true,
+        "data" => $data,
+        "message" => " data update Successfully !"
+    ];
+        return response()->json($response, 201);
+   
+}
+public function delete_user($id)
+{
+   
+    $new_id=intval($id);
+    $data = Company_user::where('_id',$new_id)->first();
+    $data->delete_status ='0';
+    $data->save();
+    return response()->json(['status' => 'Deleted Successfully']);
 }
 
+public function index_user(Request $request)
+{
 
-    }
+    // dd($request);
+        //   $token = $request->bearerToken();
+        //   dd($token);
+        $records = User::all();
+        //dd($records);
+        return response()->json(['success' => true, 'data' => $records], 200);
+}
 
-
-    
+}
