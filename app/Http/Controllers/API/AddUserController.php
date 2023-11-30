@@ -3,6 +3,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\API\Company_admin;
+use App\Models\API\Company_Admins;
 use App\Models\API\Company_user;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -19,7 +20,18 @@ class AddUserController extends Controller
             $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
             
             $company_id=$token_data['0'];
+            $latest_employee_id = Company_Admins::latest('_id')->value('_id');
+            // dd($latest_employee_id);
+            
 
+            if($company_id==$latest_employee_id)
+            {
+                $latest_total_employee = Company_Admins::latest('_id')->value('total_employee');
+                // dd($latest_total_employee);
+            }
+            else{
+                $latest_total_employee = 0;
+            }
             $validatedData = $request->validate([
                     'user_email' => 'required',
                     'user_name'=>'required',
@@ -35,6 +47,7 @@ class AddUserController extends Controller
             $data = [
                 '_id' => $new_id,
                 'company_id'=>$company_id,
+                'counter'=>$latest_total_employee,
                 'user_email' => $validatedData['user_email'],
                 'user_name' => $validatedData['user_name'],
                 'user_password' =>$password,
@@ -64,10 +77,18 @@ class AddUserController extends Controller
                 'updated_at' => now(),
             ];
 
-//    
+       $result = Company_user::insert($data);
+
+    
+    if ($result) {
+        return response()->json(['message' => 'User Adder successfully'], 201);
+    } else {
+        return response()->json(['message' => 'Failed to Add user'], 500);
+    }
+}
+
 
     }
 
 
     
-}
