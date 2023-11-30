@@ -29,4 +29,4 @@ Route::get('/verify/email-auth/{email}', [CompanyAdminsController::class,'sendVe
 Route::post('company_login', 'App\Http\Controllers\API\CompanyAdminsController@company_login');
 
 // priti
-Route::post('add_user',[AddUserController::class,'add_user']);
+// Route::post('add_user',[AddUserController::class,'add_user']);

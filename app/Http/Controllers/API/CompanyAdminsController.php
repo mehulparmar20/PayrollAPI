@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 // use Illuminate\Support\Facades\Hash;
 use App\Models\API\Company_Admins;
+use App\Models\API\Company_user;
+use App\Models\User;
 use App\Models\API\TokenHandler;
 use App\Helpers\AppHelper;
 use Illuminate\Support\Str;
@@ -154,8 +156,9 @@ class CompanyAdminsController extends Controller
     public function company_login(Request $request)
     {
         $validator =  Validator::make($request->all(),[
-            'company_email' => 'required',
-            'company_password' => 'required',
+            'type' => 'required',
+            'email' => 'required',
+            'password' => 'required',
             ]);
         
             if($validator->fails()){
@@ -164,32 +167,77 @@ class CompanyAdminsController extends Controller
                     "message" => $validator->errors(),
                 ], 422);
             }
-          
-            $email = $request->company_email;
-            $password = $request->company_password;
-            $collection=Company_Admins::raw();
-            $user = $collection->aggregate([['$match' => ['company_email' => $email, 'password' => sha1($password)]]]);
-            
-             if ($user) {
+            $type=$request->type;
+            $email = $request->email;
+            $password = $request->password;
+            if($type == 'company_admin'){
+                $collection=Company_Admins::raw();
+                $user = $collection->aggregate([['$match' => ['company_email' => $email, 'password' => sha1($password)]]]);
+                $collections=Company_user::raw();
+                $company_users = $collections->aggregate([['$match' => ['user_email' => $email, 'user_password' => sha1($password)]]]);   
+
+                if ($user) {
                 foreach($user as $u){
-                    if($u->emailVerificationStatus == '1'){
-                    $userModel = new Company_Admins(); // Create a new instance of the User model
-                    $userModel->companyID = $u->_id;
-                    $userModel->userEmail = $u->company_email;
-                    $userModel->userPass = $u->password;
-                    $token_data = TokenHandler::where(['company_id'=>$u->_id])->first();
-                    $token= $token_data->token;
-                    $secretKey ='345fgvvc4';
-                    $decryptedInput = decrypt($token, $secretKey);
-                    $token_data->token=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-                    $userModel->token = $token;
+                        if($u != ''){
+                        if($u->emailVerificationStatus == '1'){
+                        $userModel = new Company_Admins(); // Create a new instance of the User model
+                        $userModel->companyID = $u->_id;
+                        $userModel->userEmail = $u->company_email;
+                        $userModel->userPass = $u->password;
+                        $token_data = TokenHandler::where(['company_id'=>$u->_id])->first();
+                        $token= $token_data->token;
+                        $secretKey ='345fgvvc4';
+                        $decryptedInput = decrypt($token, $secretKey);
+                        $token_data->token=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+                        $userModel->token = $token;
+                        }
+                        else{
+                            $userModel = "Email Not Verified";
+                        }
                     }
-                    else{
-                        $userModel = "Email Not Verified";
+                  }
+                }
+                if ($company_users) {  
+                    foreach($company_users as $u){
+                        if($u != ''){
+                        $userModel = new Company_user(); // Create a new instance of the User model
+                        $userModel->id = $u->_id;
+                        $userModel->companyID = $u->company_id;
+                        $userModel->userEmail = $u->user_email;
+                        $token_data = TokenHandler::where(['company_id'=>$u->_id])->first();
+                        $token= $token_data->token;
+                        $secretKey ='345fgvvc4';
+                        $decryptedInput = decrypt($token, $secretKey);
+                        $token_data->token=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+                        $userModel->token = $token;
+                        }
+                    }
+                }
+            }   
+            if($type == 'admin')
+            {
+               
+                $collection=User::raw();
+                $admin = $collection->aggregate([['$match' => ['email' => $email, 'password' => sha1($password)]]]);
+               
+                if ($admin) {  
+                    foreach($admin as $u){
+                        // dd($u);
+                        if($u != ''){
+                        $userModel = new user(); // Create a new instance of the User model
+                        $userModel->id = $u->_id;
+                        $userModel->userEmail = $u->email;
+                        // $token_data = TokenHandler::where(['company_id'=>$u->_id])->first();
+                        // $token= $token_data->token;
+                        // $secretKey ='345fgvvc4';
+                        // $decryptedInput = decrypt($token, $secretKey);
+                        // $token_data->token=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+                        // $userModel->token = $token;
+                        }
                     }
                 }
             }
-            if($userModel == ''){
+            if($userModel != ''){
                 $result=$userModel;
                 $success = true;
                 $message = "Login Succesfully";
