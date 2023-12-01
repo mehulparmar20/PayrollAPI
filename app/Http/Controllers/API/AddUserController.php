@@ -117,6 +117,7 @@ public function update_user(Request $request) //done
     $new_id=intval($id);
 
     $existingUserData =Company_user::where('company_id',$new_id)->first();
+    
     if (!$existingUserData) {
         return response()->json(['message' => 'User not found'], 404);
     }
