@@ -16,17 +16,15 @@ use App\Http\Controllers\API\AddUserController;
 */
 
 Route::group(['middleware' => 'tokenauth'], function () {
-    // Route::get('create_user','App\Http\Controllers\API\AddUserController@create_user');
     Route::post('add_user','App\Http\Controllers\API\AddUserController@add_user');
-   
     Route::post('update_user','App\Http\Controllers\API\AddUserController@update_user');
-   
-    
+    Route::get('index_user','App\Http\Controllers\API\AddUserController@index_user');
+    Route::post('update_user','App\Http\Controllers\API\AddUserController@update_user');
+    Route::get('delete_user/{id}','App\Http\Controllers\API\AddUserController@delete_user');
 });
 
-Route::post('update_user/{id}','App\Http\Controllers\API\AddUserController@update_user');
-Route::get('delete_user/{id}','App\Http\Controllers\API\AddUserController@delete_user');
-Route::get('index_user','App\Http\Controllers\API\AddUserController@index_user');
+
+
 
 Route::post('company_register', 'App\Http\Controllers\API\CompanyAdminsController@store');
 Route::post('company_login', 'App\Http\Controllers\API\CompanyAdminsController@company_login');

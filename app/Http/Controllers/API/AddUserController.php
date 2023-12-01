@@ -93,14 +93,33 @@ class AddUserController extends Controller
                 return response()->json(['message' => 'Company not found'], 404);
             }
  }
-public function update_user(Request $request ,$id) //done
+ public function index_user(Request $request)
 {
-    // dd($request);
+    $token = $request->bearerToken();
+    //$token= $token_data->token;
+    $secretKey ='345fgvvc4';
+    $decryptedInput = decrypt($token, $secretKey);
+    $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+    $company_id=$token_data['0'];
+    $company_id=intval($id);
+    //$records=Company_Admins::all();
+    $records = Company_user::where('company_id',$company_id)->where('delete_status', 1)->get();
+    return response()->json(['success' => true, 'data' => $records], 200);
+}
+public function update_user(Request $request) //done
+{
+    $token = $request->bearerToken();
+    //$token= $token_data->token;
+    $secretKey ='345fgvvc4';
+    $decryptedInput = decrypt($token, $secretKey);
+    $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+    $company_id=$token_data['0'];
     $new_id=intval($id);
-    $data = Company_user::where('_id',$new_id)->first();
-    // dd($request);
-    $new_id=intval($id);
-    $data = Company_user::where('_id',$new_id)->first();
+
+    $existingUserData =Company_user::where('company_id',$new_id)->first();
+    if (!$existingUserData) {
+        return response()->json(['message' => 'User not found'], 404);
+    }
     $validatedData = $request->validate([
         'user_email' => 'required',
         'user_name' => 'required',
@@ -139,12 +158,8 @@ public function update_user(Request $request ,$id) //done
         'delete_status'=>1,
         'created_at' => now(),
         'updated_at' => now(),
-        // Add other fields to be updated
     ];
-    // dd($data);
-   
-    $result = Company_user::where('_id', $new_id)->update($data);
-    // dd($result);
+    $result = $existingUserData->update($data);
         if ($result) {
         return response()->json(['message' => 'User updated successfully'], 200);
     } else {
@@ -152,27 +167,20 @@ public function update_user(Request $request ,$id) //done
     }
    
 }
-public function delete_user($id) //done
+public function delete_user(Request $request,$id) //done
 {
-   
+    $token = $request->bearerToken();
+    //$token= $token_data->token;
+    $secretKey ='345fgvvc4';
+    $decryptedInput = decrypt($token, $secretKey);
+    $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+    
+    $company_id=$token_data['0'];
     $new_id=intval($id);
     $data = Company_user::where('_id',$new_id)->first();
     $data->delete_status ='0';
     $data->save();
     return response()->json(['status' => 'Deleted Successfully']);
-}
-
-public function index_user(Request $request)
-{
-
-    // dd($request);
-        //   $token = $request->bearerToken();
-        //   dd($token);
-        $records = Company_user::where('delete_status', 1)->get();//problem
-
-        // $records = Company_Admins::all();
-        //dd($records);
-        return response()->json(['success' => true, 'data' => $records], 200);
 }
 
 }
