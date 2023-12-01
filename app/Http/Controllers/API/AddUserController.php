@@ -74,8 +74,8 @@ class AddUserController extends Controller
                     'state' => '',
                     'os' => '',
                     'delete_status'=>1,
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'created_at' =>'',
+                    'updated_at' =>'',
                 ];
     
         
@@ -84,7 +84,7 @@ class AddUserController extends Controller
                     if ($result) {
                         return response()->json(['message' => 'User added successfully'], 201);
                     } else {
-                        return response()->json(['message' => 'Failed to add user'], 500);
+                        return response()->json(['message' => 'Failed to Add User'], 500);
                     }
                 } else {
                     return response()->json(['message' => 'Maximum number of employees reached for this company'], 400);
@@ -149,8 +149,8 @@ public function update_user(Request $request) //done
         'state' => '',
         'os' => '',
         'delete_status'=>1,
-        'created_at' => now(),
-        'updated_at' => now(),
+        'created_at' =>'',
+        'updated_at' =>'',
     ];
     $result = $existingUserData->update($data);
         if ($result) {
@@ -185,13 +185,13 @@ public function index_user(Request $request)
     $company_id=$token_data['0'];
     $company_id=intval($id);
     // $rec=Company_Admins::all();
-    // $rect=Company_user::all();
-    $records=Company_user::where('delete_status', 1)->paginate(2);
+    $records=Company_user::where('delete_status', 1)->get();
+    // $records=Company_user::where('delete_status', "1")->paginate(2);
     //dd($rec);
     // $records = Company_user::where('company_id',$company_id)->where('delete_status', 1)->get();
-    return response()->json(['success' => true, 'data' => $records], 200);
+    return response()->json(['success' => true,'data' => $records], 200);
 }
-public function search($name) //search
+public function searchuser($name) //search
 {
     $results=Company_user::where('user_name','like','%'.$name.'%')->get();
     // dd($results);
@@ -202,18 +202,6 @@ public function search($name) //search
         return response()->json(['results' => $results], 200);
     }
 }
-// public function search1(Request $request)
-// {
-//     $query = $request->input('user_name');
-//     $limit = $request->input('limit', 10); // Default limit is 10
-//     $offset = $request->input('offset', 0);
 
-//     $results = Company_user::where('user_name', 'like', "%{$query}%")
-//         ->limit($limit)
-//         ->offset($offset)
-//         ->get();
-//  dd($results);
-//     return response()->json($results);
-// }
 
 }
