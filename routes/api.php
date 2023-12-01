@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\CompanyAdminsController;
 use App\Http\Controllers\API\AddUserController;
+use App\Http\Controllers\API\DataTableController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -34,3 +36,7 @@ Route::post('company_login', 'App\Http\Controllers\API\CompanyAdminsController@c
 
 // priti
 Route::post('add_user',[AddUserController::class,'add_user']);
+
+// pagination
+Route::get('search/{name}',[AddUserController::class,'search']);
+// Route::get('search1',[AddUserController::class,'search1']);

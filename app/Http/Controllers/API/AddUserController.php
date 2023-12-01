@@ -93,21 +93,10 @@ class AddUserController extends Controller
                 return response()->json(['message' => 'Company not found'], 404);
             }
  }
- public function index_user(Request $request)
-{
-    $token = $request->bearerToken();
-    //$token= $token_data->token;
-    $secretKey ='345fgvvc4';
-    $decryptedInput = decrypt($token, $secretKey);
-    $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-    $company_id=$token_data['0'];
-    $company_id=intval($id);
-    //$records=Company_Admins::all();
-    $records = Company_user::where('company_id',$company_id)->where('delete_status', 1)->get();
-    return response()->json(['success' => true, 'data' => $records], 200);
-}
+ 
 public function update_user(Request $request) //done
 {
+
     $token = $request->bearerToken();
     //$token= $token_data->token;
     $secretKey ='345fgvvc4';
@@ -116,8 +105,11 @@ public function update_user(Request $request) //done
     $company_id=$token_data['0'];
     $new_id=intval($id);
 
-    $existingUserData =Company_user::where('company_id',$new_id)->first();
-    
+    $reqid=intval($request->_id);
+    // dd($reqid);
+    $existingUserData =Company_user::where('_id',$reqid)->first();
+    // $existingUserData =Company_user::where('company_id',$new_id)->get();
+    // dd($existingUserData);
     if (!$existingUserData) {
         return response()->json(['message' => 'User not found'], 404);
     }
@@ -183,5 +175,45 @@ public function delete_user(Request $request,$id) //done
     $data->save();
     return response()->json(['status' => 'Deleted Successfully']);
 }
+public function index_user(Request $request)
+{
+    $token = $request->bearerToken();
+    //$token= $token_data->token;
+    $secretKey ='345fgvvc4';
+    $decryptedInput = decrypt($token, $secretKey);
+    $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+    $company_id=$token_data['0'];
+    $company_id=intval($id);
+    // $rec=Company_Admins::all();
+    $rect=Company_user::all();
+    // $records=Company_user::where('delete_status', 1)->paginate(2);
+    //dd($rec);
+    // $records = Company_user::where('company_id',$company_id)->where('delete_status', 1)->get();
+    return response()->json(['success' => true, 'data' => $rect], 200);
+}
+public function search($name) //search
+{
+    $results=Company_user::where('user_name','like','%'.$name.'%')->get();
+    dd($results);
+     if($results->isEmpty()) {
+        return response()->json(['message' => 'No results found'], 404);
+    } else {
+        
+        return response()->json(['results' => $results], 200);
+    }
+}
+// public function search1(Request $request)
+// {
+//     $query = $request->input('user_name');
+//     $limit = $request->input('limit', 10); // Default limit is 10
+//     $offset = $request->input('offset', 0);
+
+//     $results = Company_user::where('user_name', 'like', "%{$query}%")
+//         ->limit($limit)
+//         ->offset($offset)
+//         ->get();
+//  dd($results);
+//     return response()->json($results);
+// }
 
 }
