@@ -185,16 +185,16 @@ public function index_user(Request $request)
     $company_id=$token_data['0'];
     $company_id=intval($id);
     // $rec=Company_Admins::all();
-    $rect=Company_user::all();
-    // $records=Company_user::where('delete_status', 1)->paginate(2);
+    // $rect=Company_user::all();
+    $records=Company_user::where('delete_status', 1)->paginate(2);
     //dd($rec);
     // $records = Company_user::where('company_id',$company_id)->where('delete_status', 1)->get();
-    return response()->json(['success' => true, 'data' => $rect], 200);
+    return response()->json(['success' => true, 'data' => $records], 200);
 }
 public function search($name) //search
 {
     $results=Company_user::where('user_name','like','%'.$name.'%')->get();
-    dd($results);
+    // dd($results);
      if($results->isEmpty()) {
         return response()->json(['message' => 'No results found'], 404);
     } else {
