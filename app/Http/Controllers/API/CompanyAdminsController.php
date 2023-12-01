@@ -178,42 +178,48 @@ class CompanyAdminsController extends Controller
 
                 if ($user) {
                 foreach($user as $u){
+                    
                         if($u != ''){
                         if($u->emailVerificationStatus == '1'){
-                        $userModel = new Company_Admins(); // Create a new instance of the User model
-                        $userModel->companyID = $u->_id;
-                        $userModel->userEmail = $u->company_email;
-                        $userModel->userPass = $u->password;
+                        $user_data = new Company_Admins(); // Create a new instance of the user_data model
+                        $user_data->companyID = $u->_id;
+                        $user_data->userEmail = $u->company_email;
+                        $user_data->userPass = $u->password;
                         $token_data = TokenHandler::where(['company_id'=>$u->_id])->first();
                         $token= $token_data->token;
                         $secretKey ='345fgvvc4';
                         $decryptedInput = decrypt($token, $secretKey);
                         $token_data->token=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-                        $userModel->token = $token;
+                        $user_data->token = $token;
                         }
                         else{
-                            $userModel = "Email Not Verified";
+                            $user_data = "Email Not Verified";
                         }
                     }
+                   
                   }
                 }
-                if ($company_users) {  
+               
+                // dd($user_data);
+                if($company_users) {  
                     foreach($company_users as $u){
                         if($u != ''){
-                        $userModel = new Company_user(); // Create a new instance of the User model
-                        $userModel->id = $u->_id;
-                        $userModel->companyID = $u->company_id;
-                        $userModel->userEmail = $u->user_email;
+                        $company_user_data = new Company_user(); // Create a new instance of the User model
+                        $company_user_data->id = $u->_id;
+                        $company_user_data->companyID = $u->company_id;
+                        $company_user_data->userEmail = $u->user_email;
                         $token_data = TokenHandler::where(['company_id'=>$u->_id])->first();
                         $token= $token_data->token;
                         $secretKey ='345fgvvc4';
                         $decryptedInput = decrypt($token, $secretKey);
                         $token_data->token=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-                        $userModel->token = $token;
+                        $company_user_data->token = $token;
                         }
                     }
-                }
-            }   
+                    }
+                   
+                }   
+                
             if($type == 'admin')
             {
                
@@ -236,8 +242,20 @@ class CompanyAdminsController extends Controller
                         }
                     }
                 }
+               
             }
-            if($userModel != ''){
+            
+            if($user_data != ''){
+                $result=$user_data;
+                $success = true;
+                $message = "Login Succesfully";
+            }
+            elseif($company_users != ''){
+                $result=$company_user_data;
+                $success = true;
+                $message = "Login Succesfully";
+            }
+            elseif($admin != ''){
                 $result=$userModel;
                 $success = true;
                 $message = "Login Succesfully";
