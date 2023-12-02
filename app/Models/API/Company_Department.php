@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Models\API;
 use MongoDB\Laravel\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
@@ -8,27 +9,24 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class Holiday extends Model
+class Company_Department extends Model
 {
     // use HasFactory;
     use HasApiTokens;
     protected $connection = 'mongodb';
-    protected $collection = 'company_holiday';
+    protected $collection = 'company_department';
+    public $timestamps = true;
     protected $fillable = [
         '_token', 
-        'holiday_name', 
-        'holiday_date',
-        'holiday_description',
+        'department_name', 
         'delete_status',
     ];
     public function up()
     {
-        Schema::create('company_holiday', function (Blueprint $collection) {
+        Schema::create('company_department', function (Blueprint $collection) {
             $collection->string('company_id');
             $collection->string('counter');
-            $collection->string('holiday_name');
-            $collection->date('holiday_date');
-            $collection->string('holiday_description');
+            $collection->string('department_name');
             $collection->integer('delete_status');
             $collection->timestamps();
         });
@@ -36,7 +34,7 @@ class Holiday extends Model
 
     public function down()
     {
-        Schema::dropIfExists('company_holiday');
+        Schema::dropIfExists('company_department');
     }
 }
 
