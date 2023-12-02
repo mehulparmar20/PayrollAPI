@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\API\Company_admin;
 use App\Models\API\Company_Admins;
 use App\Models\API\Company_user;
+use App\Helpers\AppHelper;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -19,7 +20,7 @@ class AddUserController extends Controller
             $decryptedInput = decrypt($token, $secretKey);
             $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
             
-            $company_id=$token_data['0'];
+            //$company_id=$token_data['0'];
             $latest_employee_id = Company_Admins::latest('_id')->value('_id');
             $company_id=intval($id);//fetch company_id
             $company_admins=Company_Admins::where('_id',$company_id)->value('total_employee'); //fetch total employee from company_admin
@@ -44,56 +45,106 @@ class AddUserController extends Controller
                 // $password = Hash::make($validatedData['user_password']);
                 $password = hash('sha1',$request->password);
                 $new_id = Company_user::max('_id') + 1;
-                $data = [
+                $maxLength = 2;
+                $companyID=intval($id);
+                $getCompany = Company_user::where('company_id',1)->first();
+                $docAvailable = AppHelper::instance()->checkDoc(Company_user::raw(),$companyID,$maxLength);
+                // dd($docAvailable);
+                if($docAvailable != "No")
+                {
+                    $info = (explode("^",$docAvailable));
+                    $docId = $info[1];
+                    $counter = $info[0];
+
+                    $user_data[]=array(    
+                        '_id' => $new_id,
+                        'company_id'=>$company_id,
+                        // 'counter'=>$latest_total_employee,
+                        'counter' => 0,
+                        'user_email' => $validatedData['user_email'],
+                        'user_name' => $validatedData['user_name'],
+                        'user_password' =>$password,
+                        'user_type' => $validatedData['user_type'],
+                        'user_add_date' => $validatedData['user_add_date'],
+                        'otp' => 0,
+                        'otpexperience' => '',
+                        'last_change_password' => '',
+                        'last_login' => '',
+                        'entry_time' => '',
+                        'user_status' => '',
+                        'shift_id' => '',
+                        'employee' => '',
+                        'payroll' => '',
+                        'attendance' => '',
+                        'break' => '',
+                        'leave' => '',
+                        'letter' => '',
+                        'administration' => '',
+                        'recruitment' => '',
+                        'ip' => '',
+                        'browser' => '',
+                        'city' => '',
+                        'state' => '',
+                        'os' => '',
+                        'delete_status'=>1,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    );
+                   
+                if($getCompany != null){
+                    $companyArray=$getCompany->company;
+                    Company_user::where(['company_id' =>1 ])->update([
+                        // 'company' =>array_merge($user_data,$companyArray) 
+                        'company' =>$user_data
+                    ]);
+    
+                    $data = [
+                        'success' => true,
+                        'message'=> 'User added successfully'
+                    ] ;
+                    
+                    return response()->json($data);
+                }else{
+                    $data_users = [
                     '_id' => $new_id,
                     'company_id'=>$company_id,
-                    'counter'=>$latest_total_employee,
-                    'user_email' => $validatedData['user_email'],
-                    'user_name' => $validatedData['user_name'],
-                    'user_password' =>$password,
-                    'user_type' => $validatedData['user_type'],
-                    'user_add_date' => $validatedData['user_add_date'],
-                    'otp' => 0,
-                    'otpexperience' => '',
-                    'last_change_password' => '',
-                    'last_login' => '',
-                    'entry_time' => '',
-                    'user_status' => '',
-                    'shift_id' => '',
-                    'employee' => '',
-                    'payroll' => '',
-                    'attendance' => '',
-                    'break' => '',
-                    'leave' => '',
-                    'letter' => '',
-                    'administration' => '',
-                    'recruitment' => '',
-                    'ip' => '',
-                    'browser' => '',
-                    'city' => '',
-                    'state' => '',
-                    'os' => '',
-                    'delete_status'=>1,
-                    'created_at' =>'',
-                    'updated_at' =>'',
-                ];
-    
-        
-                $result = Company_user::insert($data);
-        
-                    if ($result) {
-                        return response()->json(['message' => 'User added successfully'], 201);
-                    } else {
-                        return response()->json(['message' => 'Failed to Add User'], 500);
+                     'counter' => 0,
+                     'company' => $user_data,
+                     'deleteStatus' => 0,
+                    ];
+                  
+                    $data = Company_user::insert($data_users);
+                    {
+                        $data = [
+                            'success' => true,
+                            'message'=> 'User added successfully'
+                            ] ;
+                            return response()->json($data);
                     }
-                } else {
-                    return response()->json(['message' => 'Maximum number of employees reached for this company'], 400);
+                    
                 }
-            } else {
+            
+                }
+        
+                // $result = Company_user::insert($data);
+        
+                //     if ($result) {
+                //         return response()->json(['message' => 'User added successfully'], 201);
+                //     } else {
+                //         return response()->json(['message' => 'Failed to add user'], 500);
+                //     }
+                // }
+                }
+                // else {
+                //     return response()->json(['message' => 'Maximum number of employees reached for this company'], 400);
+                // }
+            } 
+            else {
                 return response()->json(['message' => 'Company not found'], 404);
             }
- }
+        }
  
+       
 public function update_user(Request $request) //done
 {
 

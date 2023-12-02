@@ -25,6 +25,7 @@ class Department extends Model
     {
         Schema::create('company_department', function (Blueprint $collection) {
             $collection->string('company_id');
+            $collection->string('counter');
             $collection->string('department_name');
             $collection->integer('delete_status');
             $collection->timestamps();
