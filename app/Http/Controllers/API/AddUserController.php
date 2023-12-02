@@ -235,9 +235,8 @@ public function index_user(Request $request)
     $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
     $company_id=$token_data['0'];
     $company_id=intval($id);
-    // $rec=Company_Admins::all();
-    $records=Company_user::where('delete_status', 1)->get();
-    // $records=Company_user::where('delete_status', "1")->paginate(2);
+    // $records=Company_user::where('delete_status', 1)->get();
+    $records=Company_user::where('delete_status',1)->paginate();
     //dd($rec);
     // $records = Company_user::where('company_id',$company_id)->where('delete_status', 1)->get();
     return response()->json(['success' => true,'data' => $records], 200);
