@@ -29,6 +29,12 @@ Route::group(['middleware' => 'tokenauth'], function () {
 
     //Announcement 
     Route::post('add_announcement','App\Http\Controllers\API\CompanyAnnouncementController@add_announcement');
+    Route::post('edit_announcement','App\Http\Controllers\API\CompanyAnnouncementController@edit_announcement');
+    Route::post('update_announcement','App\Http\Controllers\API\CompanyAnnouncementController@update_announcement');
+    Route::post('delete_announcement','App\Http\Controllers\API\CompanyAnnouncementController@delete_announcement');
+    Route::post('index_announcement','App\Http\Controllers\API\CompanyAnnouncementController@index_announcement');
+    Route::post('search_announcement','App\Http\Controllers\API\CompanyAnnouncementController@search_announcement');
+    
 });
 
 Route::post('company_register', 'App\Http\Controllers\API\CompanyAdminsController@store');
