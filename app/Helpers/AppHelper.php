@@ -12,10 +12,43 @@ class AppHelper
         return new AppHelper();
     }
 
-    public function checkDoc($collection,$companyId,$maxLength)
+    public function getNextSequenceForNewDoc( $collection)//w
+    {
+        $maxId = $collection->aggregate([
+            ['$group' => ['_id' => null, 'max_id' => ['$max' => '$_id']]],
+        ])->toArray();
+
+        if (!empty($maxId)) {
+            $maxId = $maxId[0]['max_id'];
+            $parentId = $maxId + 1;
+        } else {
+            $parentId = 1; // If no documents found for the company, start with 1
+        }
+
+        return $parentId;
+    }
+
+    public function getNextSequenceForNewId($collection,$name,$id,$companyId)//w
+    {
+        $result = $collection->aggregate([
+            ['$match' => ['companyID' => $companyId]],
+            ['$unwind' => '$'.$name],
+            ['$group' => ['_id' => null, 'maxId' => ['$max' => $id]]],
+        ]);
+        
+        $resultArray = $result->toArray();
+        if (count($resultArray) > 0) {
+            $maxId = $resultArray[0]['maxId'];
+        } else {
+            $maxId = 0;
+        }
+        $Id=$maxId+1;
+        return $Id ;
+    }
+
+    public function checkDoc($collection,$companyId,$maxLength)  //w
     {
         $show = $collection->count(['company_id' => (int)$companyId]);
-       
         if($show != 0){
                 $show = $collection->aggregate([
                     ['$match' => ['company_id' => (int)$companyId]],
@@ -25,20 +58,69 @@ class AppHelper
                 foreach ($show as $s1){
                     $doc_id = $s1['_id'];
                     $ncounter = $s1['counter'];
-                }  
-                // if($ncounter >= $maxLength){
-                //     $document = "No";
-                // }
-                // else{
-
+                }
+                if($ncounter >= $maxLength){
+                    $document = "No";
+                }else{
                     $document = $ncounter ."^". $doc_id;
-                // } 
+                }
 
+                // dd($document);
         }else{
             $document = "No";
         }
+        // dd($document);
         return $document;
     }
+
+    function getAdminDocumentSequence($key,$collection,$val, $docId)
+    {
+        // dd($key,$collection,$val, $docId);
+        $cursor = $collection->find(['company_id'=>(int)$key, '_id' => (int)$docId]);
+        $array = iterator_to_array($cursor);
+        $id = 0;
+        foreach ($array as $value)
+        {
+            $counter = $value['counter'];
+            foreach ($value[$val] as $arr)
+            {
+                $id = $arr['_id'];
+            }
+        }
+        // dd($id);
+        $id += 1;
+       $collection->updateOne(['company_id' => (int)$key,'_id'=>(int)$docId],
+        ['$inc' => ['counter' => 1]]);
+        return $id;
+    }
+
+    // public function checkDoc($collection,$companyId,$maxLength)
+    // {
+    //     $show = $collection->count(['company_id' => (int)$companyId]);
+       
+    //     if($show != 0){
+    //             $show = $collection->aggregate([
+    //                 ['$match' => ['company_id' => (int)$companyId]],
+    //                 ['$sort' => ['_id' => -1]],
+    //                 ['$limit' => 1]
+    //             ]);
+    //             foreach ($show as $s1){
+    //                 $doc_id = $s1['_id'];
+    //                 $ncounter = $s1['counter'];
+    //             }  
+    //             // if($ncounter >= $maxLength){
+    //             //     $document = "No";
+    //             // }
+    //             // else{
+
+    //                 $document = $ncounter ."^". $doc_id;
+    //             // } 
+
+    //     }else{
+    //         $document = "No";
+    //     }
+    //     return $document;
+    // }
     public function paginate($docarray)
     {
         $docarray = array_reverse($docarray);
@@ -88,6 +170,6 @@ class AppHelper
         }  
         return $doc;
     }
-    
+
 
 }

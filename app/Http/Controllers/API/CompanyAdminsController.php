@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 // use Illuminate\Support\Facades\Hash;
 use App\Models\API\Company_Admins;
 use App\Models\API\Company_user;
+use App\Models\API\Company_Employee;
 use App\Models\User;
 use App\Models\API\TokenHandler;
 use App\Helpers\AppHelper;
@@ -178,7 +179,6 @@ class CompanyAdminsController extends Controller
 
                 if ($user) {
                 foreach($user as $u){
-                    
                         if($u != ''){
                         if($u->emailVerificationStatus == '1'){
                         $user_data = new Company_Admins(); // Create a new instance of the user_data model
@@ -199,27 +199,45 @@ class CompanyAdminsController extends Controller
                    
                   }
                 }
-               
                 // dd($user_data);
                 if($company_users) {  
                     foreach($company_users as $u){
                         if($u != ''){
-                        $company_user_data = new Company_user(); // Create a new instance of the User model
-                        $company_user_data->id = $u->_id;
-                        $company_user_data->companyID = $u->company_id;
-                        $company_user_data->userEmail = $u->user_email;
+                        $user_data = new Company_user(); // Create a new instance of the User model
+                        $user_data->id = $u->_id;
+                        $user_data->companyID = $u->company_id;
+                        $user_data->userEmail = $u->user_email;
                         $token_data = TokenHandler::where(['company_id'=>$u->_id])->first();
                         $token= $token_data->token;
                         $secretKey ='345fgvvc4';
                         $decryptedInput = decrypt($token, $secretKey);
                         $token_data->token=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-                        $company_user_data->token = $token;
+                        $user_data->token = $token;
                         }
                     }
                     }
-                   
                 }   
                 
+            if($type == 'company_employee')
+            {
+                $collection=Company_Employee::raw();
+                $company_employee = $collection->aggregate([['$match' => ['employee_email' => $email, 'employee_password' => sha1($password)]]]);
+                if ($company_employee) {  
+                    foreach($company_employee as $u){
+                        if($u != ''){
+                        $company_employee_data = new Company_Employee(); // Create a new instance of the User model
+                        $company_employee_data->id = $u->_id;
+                        $company_employee_data->userEmail = $u->email;
+                        // $token_data = TokenHandler::where(['company_id'=>$u->_id])->first();
+                        // $token= $token_data->token;
+                        // $secretKey ='345fgvvc4';
+                        // $decryptedInput = decrypt($token, $secretKey);
+                        // $token_data->token=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+                        // $company_employee_data->token = $token;
+                        }
+                    }
+                }
+            }
             if($type == 'admin')
             {
                
@@ -245,24 +263,29 @@ class CompanyAdminsController extends Controller
                
             }
             
-            if($user_data != ''){
+            if($type == 'company_admin'){
                 $result=$user_data;
                 $success = true;
                 $message = "Login Succesfully";
             }
-            elseif($company_users != ''){
-                $result=$company_user_data;
+            // elseif($company_users != ''){
+            //     $result=$company_user_data;
+            //     $success = true;
+            //     $message = "Login Succesfully";
+            // }
+            elseif($type == 'company_employee'){
+                $result="success";
                 $success = true;
                 $message = "Login Succesfully";
             }
-            elseif($admin != ''){
-                $result=$userModel;
+            elseif($type == 'admin'){
+                //$result=$userModel;
                 $success = true;
                 $message = "Login Succesfully";
             } else {
                 $success = false;
                 $message = "Some error";
-                $result=$userModel;
+                $result="ss";
             }
             return response()->json([
                 'success' => $success,
