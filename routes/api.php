@@ -44,9 +44,6 @@ Route::group(['middleware' => 'tokenauth'], function () {
     Route::get('search_department/{name}',[DepartmentController::class,'searchdepartment']);
 });
 
-
-
-
 Route::post('company_register', 'App\Http\Controllers\API\CompanyAdminsController@store');
 Route::post('company_login', 'App\Http\Controllers\API\CompanyAdminsController@company_login');
 // Route::post('company_dashboard', 'App\Http\Controllers\API\CompanyAdminsController@company_dashboard');
