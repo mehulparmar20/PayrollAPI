@@ -15,6 +15,59 @@ use MongoDB\BSON\ObjectId;
 
 class CompanyAnnouncementController extends Controller
 {
+    public function view_announcement(Request $request)
+    {
+        $maxLength = 7000;
+        $token = $request->bearerToken();
+        $secretKey ='345fgvvc4';
+        $decryptedInput = decrypt($token, $secretKey);
+        list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $companyID=intval($id);
+        $parent=$request->masterId;
+        $ids=$request->id;
+        $collection=\App\Models\API\Company_Announcement::raw();
+
+        $show1 = $collection->aggregate([
+            ['$match' => ['company_id' => (int)$companyID]],
+            //['$match' => ['announcement._id' => (int)$ids,'announcement.delete_status' => 'NO']]
+        ]);
+       
+        foreach ($show1 as $row) {
+            $ann=array();
+
+            if(isset($row)){
+                $companyNameID=$row;
+                $announcementName =\App\Models\API\Company_Announcement::raw()->aggregate([
+                    ['$match' => ['company_id' => (int)$companyID]],
+                    //['$match' => ['announcement._id' => (int)$ids,'announcement.delete_status' => 'NO']]
+                ]);
+                foreach($announcementName as $name){
+                    $l=0;
+                    $ann[$l] = $name;
+                    $l++;
+                }
+            }
+            // dd($row);
+            $mainIdac = $row['_id'];
+            $activeCustomer = array();
+            $k = 0;
+            $activeCustomer[$k] = $row['announcement'];
+            $k++;
+        }
+
+        $annData[]=array("announcement" => $activeCustomer);
+        if($activeCustomer != ''){
+            return response()->json([
+                'success' => $annData,
+            ]);
+        }
+        else{
+            return response()->json([
+                'success' => 'No record'
+            ]);
+        }
+    }
+
     public function add_announcement(Request $request) //done
         {
         $maxLength = 7000;

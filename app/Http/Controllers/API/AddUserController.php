@@ -31,25 +31,14 @@ class AddUserController extends Controller
             'user_password' =>$password,
             'user_type' => $request->user_type,
             'user_add_date' => $request->user_add_date,
-            'otpexperience' => '',
-            'last_change_password' => '',
-            'last_login' => '',
-            'entry_time' => '',
-            'user_status' => '',
-            'shift_id' => '',
-            'employee' => '',
-            'payroll' => '',
-            'attendance' => '',
-            'break' => '',
-            'leave' => '',
-            'letter' => '',
-            'administration' => '',
-            'recruitment' => '',
-            'ip' => '',
-            'browser' => '',
-            'city' => '',
-            'state' => '',
-            'os' => '',
+            'role' => $request->role,
+            'employee' => $request->employee,
+            'payroll' => $request->payroll,
+            'attendance' => $request->attendance,
+            'break' => $request->break,
+            'leave' => $request->leave,
+            'letters' => $request->letters,
+            'administration' => $request->administration,
             'insertedTime' => time(),
             // 'insertedUserId' => Auth::user()->userFirstName.' '.Auth::user()->userLastName,
             'delete_status' => "NO",
@@ -148,25 +137,28 @@ class AddUserController extends Controller
             $info = (explode("^",$docAvailable));
             $docId = $info[1];
     
-            $userData=$collection->updateOne(['company_id' => (int)$companyId,'_id' => (int)$id,'company_user._id' => (int)$id],
+            $userData=$collection->updateOne(['company_id' => (int)$companyId,'company_user._id' => (int)$id],
             ['$set' => [
                 'company_user.$.user_email' => $request->user_email,
                 'company_user.$.user_name' => $request->user_name,
                 'company_user.$.user_type' => $request->user_type,
                 'company_user.$.user_add_date' => $request->user_add_date,
+                'company_user.$.role' => $request->role,
+                'company_user.$.employee' => $request->employee,
+                'company_user.$.attendance' => $request->attendance,
+                'company_user.$.break' => $request->break,
+                'company_user.$.leave' => $request->leave,
+                'company_user.$.letters' => $request->letters,
+                'company_user.$.administration' => $request->administration,
                 'company_user.$.edit_time' => time()
                 ]]
             );
-    
-    
             if ($userData==true)
             {
                 $arr = array('status' => 'success', 'message' => 'User Updated successfully.','statusCode' => 200);
                 return json_encode($arr);
             }
 
-          
-           
         }
         public function delete_user(Request $request) //done
         {
