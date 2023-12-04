@@ -93,34 +93,7 @@ class AppHelper
         ['$inc' => ['counter' => 1]]);
         return $id;
     }
-
-    // public function checkDoc($collection,$companyId,$maxLength)
-    // {
-    //     $show = $collection->count(['company_id' => (int)$companyId]);
-       
-    //     if($show != 0){
-    //             $show = $collection->aggregate([
-    //                 ['$match' => ['company_id' => (int)$companyId]],
-    //                 ['$sort' => ['_id' => -1]],
-    //                 ['$limit' => 1]
-    //             ]);
-    //             foreach ($show as $s1){
-    //                 $doc_id = $s1['_id'];
-    //                 $ncounter = $s1['counter'];
-    //             }  
-    //             // if($ncounter >= $maxLength){
-    //             //     $document = "No";
-    //             // }
-    //             // else{
-
-    //                 $document = $ncounter ."^". $doc_id;
-    //             // } 
-
-    //     }else{
-    //         $document = "No";
-    //     }
-    //     return $document;
-    // }
+    
     public function paginate($docarray)
     {
         $docarray = array_reverse($docarray);

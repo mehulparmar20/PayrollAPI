@@ -36,6 +36,14 @@ Route::group(['middleware' => 'tokenauth'], function () {
     Route::post('index_announcement','App\Http\Controllers\API\CompanyAnnouncementController@index_announcement');
     Route::post('search_announcement','App\Http\Controllers\API\CompanyAnnouncementController@search_announcement');
     
+     //Preveligies 
+     Route::post('add_previligies','App\Http\Controllers\API\CompanyPreviligiesController@add_previligies');
+     Route::post('edit_previligies','App\Http\Controllers\API\CompanyPreviligiesController@edit_previligies');
+     Route::post('update_previligies','App\Http\Controllers\API\CompanyPreviligiesController@update_previligies');
+     Route::post('delete_previligies','App\Http\Controllers\API\CompanyPreviligiesController@delete_previligies');
+     Route::post('index_previligies','App\Http\Controllers\API\CompanyPreviligiesController@index_previligies');
+     Route::post('search_previligies','App\Http\Controllers\API\CompanyPreviligiesController@search_previligies');
+    
 });
 
 Route::post('company_register', 'App\Http\Controllers\API\CompanyAdminsController@store');

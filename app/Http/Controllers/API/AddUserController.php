@@ -101,20 +101,14 @@ class AddUserController extends Controller
         // dd($show1);
         foreach ($show1 as $row) {
             $company=array();
-            $paymentTerms=array();
-            $user=array();
-            $factoringCompany=array();
             if(isset($row)){
                 $companyNameID=$row;
                 $companyName =\App\Models\API\Company_user::raw()->aggregate([
                     ['$match' => ["company_id" => (int)$companyID]],
-                    //['$unwind' => '$company'],
                     ['$match' => ["_id" => (int)$id]],
-                    // ['$project' => ['company._id' => 1,'company.companyName' => 1]]
                 ]);
                 foreach($companyName as $name){
                     $l=0;
-                    // dd($name);
                     $company[$l] = $name;
                     $l++;
                 }
@@ -180,9 +174,9 @@ class AddUserController extends Controller
             $secretKey ='345fgvvc4';
             $decryptedInput = decrypt($token, $secretKey);
             list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+            $companyID=intval($id);
             $id=(int)$request->id;
             $masterId=(int)$request->masterId;
-            $companyID=intval($id);
             $userData=Company_user::raw()->updateOne(['company_id' => $companyID,'_id' => $masterId,'company_user._id' => $id],
             ['$set' => ['company_user.$.delete_status' => 'YES','company_user.$.deleteUser' =>intval($id),'company_user.$.deleteTime' => time()]]
             );
