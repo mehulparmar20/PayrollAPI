@@ -24,7 +24,7 @@ Route::group(['middleware' => 'tokenauth'], function () {
     Route::post('add_user','App\Http\Controllers\API\AddUserController@add_user');
     Route::post('edit_companyuser','App\Http\Controllers\API\AddUserController@edit_companyuser');
     Route::post('update_user','App\Http\Controllers\API\AddUserController@update_user');
-    Route::get('index_user','App\Http\Controllers\API\AddUserController@index_user');
+    Route::get('view_companyuser','App\Http\Controllers\API\AddUserController@view_companyuser');
     Route::post('delete_user','App\Http\Controllers\API\AddUserController@delete_user');
     Route::get('search_user/{name}',[AddUserController::class,'searchuser']);
 

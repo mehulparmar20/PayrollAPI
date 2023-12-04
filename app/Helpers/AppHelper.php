@@ -127,7 +127,7 @@ class AppHelper
         $value = 100;
         $doc = array();
         $arrSize = sizeof($docarray);
-        for($c = 0; $c < $arrSize; $c++) 
+        for($c = 0; $c < $arrSize; $c++)
         {
             $j = 0;
             $index = array();
@@ -148,9 +148,9 @@ class AppHelper
                         $temp = $newsize;
                         if($newsize  < 0)
                         {
-                            $newsize = $docarray[$c+1]['size'];   
+                            $newsize = $docarray[$c+1]['size'];
                         }
-                                
+
                         $innerarray[$innerindex+1] = array("doc" => $docarray[$c+1]['id'], "start" => $docarray[$c+1]['size'], "end" => $newsize);
                         if($temp < 0)
                         {
@@ -163,11 +163,11 @@ class AppHelper
                     }
                 }
                 $index[$j] = $innerarray;
-                $j++;       
-            } 
+                $j++;
+            }
             $doc[0][] = $index;
-                
-        }  
+
+        }
         return $doc;
     }
 

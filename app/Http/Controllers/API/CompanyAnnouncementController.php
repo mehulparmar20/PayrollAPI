@@ -15,85 +15,62 @@ use MongoDB\BSON\ObjectId;
 
 class CompanyAnnouncementController extends Controller
 {
-        public function add_announcement(Request $request) //done
+    public function add_announcement(Request $request) //done
         {
-            $token = $request->bearerToken();
-            $secretKey ='345fgvvc4';
-            $decryptedInput = decrypt($token, $secretKey);
-            $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-            $company_id=intval($id);//fetch company_id
-            // if ($company_admins) {
-                    // Continue with user creation
-                    $validatedData = $request->validate([
-                        'announcement_subject' => 'required',
-                        'announcement_body'=>'required',
-                        'announcement_status'=>'required',
-                ]);
-                $new_id = Company_Announcement::max('_id') + 1;
-                $maxLength = 2;
-                $companyID=intval($id);
-                $getCompany = Company_Announcement::where('company_id',1)->first();
-                $docAvailable = AppHelper::instance()->checkDoc(Company_Announcement::raw(),$companyID,$maxLength);
-            
-                if($docAvailable != "No")
-                {
-                    $info = (explode("^",$docAvailable));
-                    $docId = $info[1];
-                    $counter = $info[0];
+        $maxLength = 7000;
+        $token = $request->bearerToken();
+        $secretKey ='345fgvvc4';
+        $decryptedInput = decrypt($token, $secretKey);
+        list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $companyId=intval($id);
+        $docAvailable = AppHelper::instance()->checkDoc(Company_Announcement::raw(),$companyId,$maxLength);
+        $password = hash('sha1',$request->password);
+        $cons = array(
+            '_id' =>1,
+            'company_id' => $companyId,
+            'counter' => 0,
+            'user_email' => $request->announcement_subject,
+            'user_name' => $request->announcement_body,
+            'user_type' => $request->announcement_status,
+            'user_add_date' => $request->user_add_date,
+            // 'insertedUserId' => Auth::user()->userFirstName.' '.Auth::user()->userLastName,
+            'delete_status' => "NO",
+            'deleteUser' => "",
+            'deleteTime' => "",
+            'created_at' => now(),
+            'updated_at' => now(),
 
-                    $announce_data[]=array(    
-                        '_id' => $new_id,
-                        'company_id'=>$company_id,
-                        'counter' => 0,
-                        'announcement_subject' => $validatedData['announcement_subject'],
-                        'announcement_body' => $validatedData['announcement_body'],
-                        'announcement_status' =>$validatedData['announcement_status'],
-                        'delete_status'=>1,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    );
-                   
-                if($getCompany != null){
-                    $companyArray=$getCompany->company;
-                    Company_Announcement::where(['company_id' =>1 ])->update([
-                        // 'company' =>array_merge($announce_data,$companyArray) 
-                        'announcement' =>$announce_data
-                    ]);
-    
-                    $data = [
-                        'success' => true,
-                        'message'=> 'Announcement added successfully'
-                    ] ;
-                    
-                    return response()->json($data);
-                }else{
-                    $data_users = [
-                     '_id' => $new_id,
-                     'company_id'=>$company_id,
-                     'counter' => 0,
-                     'announcement' => $announce_data,
-                     'deleteStatus' => 0,
-                    ];
-                    $data = Company_Announcement::insert($data_users);
-                    {
-                        $data = [
-                            'success' => true,
-                            'message'=> 'Announcement added successfully'
-                            ] ;
-                            return response()->json($data);
-                    }
-                }
-            }
-            else {
-                return response()->json(['message' => 'Announcement not found'], 404);
-            }
+        );
+        if($docAvailable != "No")
+        {
+            $info = (explode("^",$docAvailable));
+            $docId = $info[1];
+            $counter = $info[0];
+            $cons['_id'] = AppHelper::instance()->getAdminDocumentSequence($companyId, Company_Announcement::raw(),'announcement',$docId);
+            Company_Announcement::raw()->updateOne(['company_id' => $companyId,'_id'=>(int)$docId], ['$push' => ['announcement' => $cons]]);
+            $cons['masterID'] = $docId;
+            echo json_encode($cons);
+
+            return response()->json(['message' => 'User Added successfully'], 201);
         }
+        else
+        {
+            $parentId =AppHelper::instance()->getNextSequenceForNewDoc(\App\Models\API\Company_Announcement::raw());
+            $cons['_id'] =AppHelper::instance()->getNextSequenceForNewId(\App\Models\API\Company_Announcement::raw(),'announcement','$announcement._id',$companyId);
+            $arra = array(
+                "_id" => $parentId,
+                "counter" => (int)1,
+                "company_id" => (int)$companyId,
+                "announcement" => array($cons),
+            );
+            \App\Models\API\Company_Announcement::raw()->insertOne($arra);
+            return response()->json(['message' => 'Announcement Added successfully'], 201);
+        }
+    }
 
         public function edit_announcement(Request $request)
         {
             $announcement_id=(int)$request->id;
-            // $companySubId=$request->companySubId;
-            // $email=$request->email;
             $result = Company_Announcement::where('_id',$announcement_id )->first();
             $companyArray=$result->announcement;
             $arrayLength=count($companyArray);
@@ -147,39 +124,23 @@ class CompanyAnnouncementController extends Controller
             }
         }
 
-        public function delete_announcement(Request $request){
+        public function delete_announcement(Request $request)
+        {
+            $token = $request->bearerToken();
+            $secretKey ='345fgvvc4';
+            $decryptedInput = decrypt($token, $secretKey);
+            list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
             $id=(int)$request->id;
-            $result = Company_Announcement::where('_id',$id )->first();
-            $announcementArray=$result->announcement;
-    
-            $arrayLength=count($announcementArray);
-            $i=0;
-            $v=0;
-            for ($i=0; $i<$arrayLength; $i++){
-                    $id=$result->announcement[$i];
-                
-                        foreach ($id as $value){
-                            if($value){
-                                $v=$i;
-                            }
-                        }
-            }
-       
-           $announcementArray[$v]['delete_status'] = "0"; 
-           $result->announcement = $announcementArray;
-           if ($result->save()) {
-                $success = true;
-                $message = "Announcement deleted successfully";
-            } else {
-                $success = false;
-                $message = "Announcement not found";
-            }
-    
-            //  Return response
-            return response()->json([
-                'success' => $success,
-                'message' => $message,
-            ]);
+            $masterId=(int)$request->masterId;
+            $companyID=intval($id);
+            $userData=Company_Announcement::raw()->updateOne(['company_id' => $companyID,'_id' => $masterId,'announcement._id' => $id],
+            ['$set' => ['announcement.$.delete_status' => 'YES','announcement.$.deleteUser' =>intval($id),'announcement.$.deleteTime' => time()]]
+            );
+           if ($userData==true)
+           {
+               $arr = array('status' => 'success', 'message' => 'User deleted successfully.','statusCode' => 200);
+                return json_encode($arr);
+           }
         }
 
         public function index_announcement(Request $request)
