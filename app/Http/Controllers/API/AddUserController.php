@@ -85,6 +85,7 @@ class AddUserController extends Controller
 
     public function edit_companyuser(Request $request)
     {
+        // dd($request);
         // $parent=$request->masterId;
         $token = $request->bearerToken();
         $secretKey ='345fgvvc4';
@@ -92,6 +93,7 @@ class AddUserController extends Controller
         list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $companyID=intval($id);
         $id=$request->id;
+        // dd($request->_id);
         $collection=\App\Models\API\Company_user::raw();
 
         $show1 = $collection->aggregate([
@@ -147,6 +149,8 @@ class AddUserController extends Controller
             $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
             $companyId=intval($id);
             $id=$request->id;
+            // dd($id);
+
             // $masterId=(int)$request->masterId;
             $maxLength=6500;
     

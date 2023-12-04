@@ -29,11 +29,24 @@ Route::group(['middleware' => 'tokenauth'], function () {
     Route::get('search_user/{name}',[AddUserController::class,'searchuser']);
  
     // CompanyHolidayController
+
     Route::post('add_holiday','App\Http\Controllers\API\CompanyHolidayController@add_holiday');
+    Route::post('edit_holiday','App\Http\Controllers\API\CompanyHolidayController@edit_holiday');
     Route::post('update_holiday','App\Http\Controllers\API\CompanyHolidayController@update_holiday');
     Route::get('index_holiday','App\Http\Controllers\API\CompanyHolidayController@index_holiday');
-    Route::get('delete_holiday/{id}','App\Http\Controllers\API\CompanyHolidayController@delete_holiday');
+    Route::post('delete_holiday','App\Http\Controllers\API\CompanyHolidayController@delete_holiday');
     Route::get('search_holiday/{name}',[CompanyHolidayController::class,'searchholiday']);
+
+     //CompanyDepartmentController
+     Route::post('add_department','App\Http\Controllers\API\CompanyDepartmentController@add_department');
+     Route::post('edit_department','App\Http\Controllers\API\CompanyDepartmentController@edit_department');
+     Route::post('update_department','App\Http\Controllers\API\CompanyDepartmentController@update_department');
+     Route::get('index_department','App\Http\Controllers\API\CompanyDepartmentController@index_department');
+     Route::post('delete_department','App\Http\Controllers\API\CompanyDepartmentController@delete_department');
+     Route::get('search_department/{name}',[CompanyDepartmentController::class,'searchdepartment']);
+
+      //CompanyEmployeeController
+    Route::post('add_employee','App\Http\Controllers\API\CompanyEmployeeController@add_employee');
 
     //Announcement 
     Route::post('add_announcement','App\Http\Controllers\API\CompanyAnnouncementController@add_announcement');
