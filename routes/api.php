@@ -22,9 +22,10 @@ Route::group(['middleware' => 'tokenauth'], function () {
 
    // AddUserController
     Route::post('add_user','App\Http\Controllers\API\AddUserController@add_user');
+    Route::post('edit_companyuser','App\Http\Controllers\API\AddUserController@edit_companyuser');
     Route::post('update_user','App\Http\Controllers\API\AddUserController@update_user');
-    Route::get('index_user','App\Http\Controllers\API\AddUserController@index_user');
-    Route::get('delete_user/{id}','App\Http\Controllers\API\AddUserController@delete_user');
+    Route::get('view_companyuser','App\Http\Controllers\API\AddUserController@view_companyuser');
+    Route::post('delete_user','App\Http\Controllers\API\AddUserController@delete_user');
     Route::get('search_user/{name}',[AddUserController::class,'searchuser']);
  
     // CompanyHolidayController
@@ -34,15 +35,14 @@ Route::group(['middleware' => 'tokenauth'], function () {
     Route::get('delete_holiday/{id}','App\Http\Controllers\API\CompanyHolidayController@delete_holiday');
     Route::get('search_holiday/{name}',[CompanyHolidayController::class,'searchholiday']);
 
-    //CompanyDepartmentController
-    Route::post('add_department','App\Http\Controllers\API\CompanyDepartmentController@add_department');
-    Route::post('update_department','App\Http\Controllers\API\CompanyDepartmentController@update_department');
-    Route::get('index_department','App\Http\Controllers\API\CompanyDepartmentController@index_department');
-    Route::get('delete_department/{id}','App\Http\Controllers\API\CompanyDepartmentController@delete_department');
-    Route::get('search_department/{name}',[CompanyDepartmentController::class,'searchdepartment']);
-
-    //CompanyEmployeeController
-    Route::post('add_employee','App\Http\Controllers\API\CompanyEmployeeController@add_employee');
+    //Announcement 
+    Route::post('add_announcement','App\Http\Controllers\API\CompanyAnnouncementController@add_announcement');
+    Route::post('edit_announcement','App\Http\Controllers\API\CompanyAnnouncementController@edit_announcement');
+    Route::post('update_announcement','App\Http\Controllers\API\CompanyAnnouncementController@update_announcement');
+    Route::post('delete_announcement','App\Http\Controllers\API\CompanyAnnouncementController@delete_announcement');
+    Route::post('index_announcement','App\Http\Controllers\API\CompanyAnnouncementController@index_announcement');
+    Route::post('search_announcement','App\Http\Controllers\API\CompanyAnnouncementController@search_announcement');
+    
 });
 
 Route::post('company_register', 'App\Http\Controllers\API\CompanyAdminsController@store');
