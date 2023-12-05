@@ -21,12 +21,13 @@ use App\Http\Controllers\API\CompanyAnnouncementController;
 
 Route::group(['middleware' => 'tokenauth'], function () {
     // AddUserController
-    Route::post('add_user','App\Http\Controllers\API\AddUserController@add_user');
-    Route::post('edit_companyuser','App\Http\Controllers\API\AddUserController@edit_companyuser');
-    Route::post('update_user','App\Http\Controllers\API\AddUserController@update_user');
-    Route::get('view_companyuser','App\Http\Controllers\API\AddUserController@view_companyuser');
-    Route::post('delete_user','App\Http\Controllers\API\AddUserController@delete_user');
-    Route::get('search_user/{name}',[AddUserController::class,'searchuser']);
+    Route::post('add_user','App\Http\Controllers\API\CompanyUserController@add_user');
+    Route::post('edit_user','App\Http\Controllers\API\CompanyUserController@edit_user');
+    Route::post('update_user','App\Http\Controllers\API\CompanyUserController@update_user');
+    Route::get('view_user','App\Http\Controllers\API\CompanyUserController@view_user');
+    Route::get('view_user','App\Http\Controllers\API\CompanyUserController@view_user');
+    Route::get('paginate_user','App\Http\Controllers\API\CompanyUserController@paginate_user');
+    Route::post('search_user','App\Http\Controllers\API\CompanyUserController@search_user');
 
     //Announcement 
     Route::post('add_announcement','App\Http\Controllers\API\CompanyAnnouncementController@add_announcement');
@@ -45,6 +46,10 @@ Route::group(['middleware' => 'tokenauth'], function () {
      Route::post('index_previligies','App\Http\Controllers\API\CompanyPreviligiesController@index_previligies');
      Route::post('search_previligies','App\Http\Controllers\API\CompanyPreviligiesController@search_previligies');
     
+     //Company Employee
+     Route::post('add_employee','App\Http\Controllers\API\CompanyEmployeeController@add_employee');
+    
+     
 });
 
 Route::post('company_register', 'App\Http\Controllers\API\CompanyAdminsController@store');

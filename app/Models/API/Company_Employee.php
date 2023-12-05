@@ -18,24 +18,17 @@ class Company_Employee extends Model
     public $timestamps = true;
     protected $fillable = [
         '_token', 
-        'employee_email',
-        'employee_password', 
+        'first_name',
+        'last_name', 
+        'email',
+        'gender',
+        'joining_date',
+        'phone',
+        'department',
+        'designation',
+        'salary',
+        'shift',
         'delete_status',
     ];
-    public function up()
-    {
-        Schema::create('company_employee', function (Blueprint $collection) {
-            $collection->string('company_id');
-            $collection->string('counter');
-            $collection->string('employee_email')->unique();
-            $collection->string('employee_password');
-            $collection->integer('delete_status');
-            $collection->timestamps();
-        });
-    }
-
-    public function down()
-    {
-        Schema::dropIfExists('company_employee');
-    }
+   
 }

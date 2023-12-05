@@ -4,15 +4,15 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\API\Company_admin;
 use App\Models\API\Company_Admins;
-use App\Models\API\Company_user;
+use App\Models\API\Company_Employee;
 use App\Helpers\AppHelper;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-class AddUserController extends Controller
+class CompanyEmployeeController extends Controller
 {
-        public function add_user(Request $request) //done
+        public function add_employee(Request $request) //done
         {
         $maxLength = 7000;
         $token = $request->bearerToken();
@@ -20,56 +20,35 @@ class AddUserController extends Controller
         $decryptedInput = decrypt($token, $secretKey);
         list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $companyId=intval($id);
-        $docAvailable = AppHelper::instance()->checkDoc(Company_user::raw(),$companyId,$maxLength);
         $password = hash('sha1',$request->password);
-        $cons = array(
-            '_id' =>1,
-            'company_id' => $companyId,
-            'counter' => 0,
-            'user_email' => $request->user_email,
-            'user_name' => $request->user_name,
-            'user_password' =>$password,
-            'user_type' => $request->user_type,
-            'user_add_date' => $request->user_add_date,
-            'role' => $request->role,
-            'employee' => $request->employee,
-            'payroll' => $request->payroll,
-            'attendance' => $request->attendance,
-            'break' => $request->break,
-            'leave' => $request->leave,
-            'letters' => $request->letters,
-            'administration' => $request->administration,
+        $new_id = Company_Employee::max('_id') + 1;
+        $data = [
+            '_id' => $new_id,
+            'company_id'=>$companyId,
+            // 'counter'=>$latest_total_employee,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email'=>$request->email,
+            'joining_date'=>$request->joining_date,
+            'phone'=>$request->phone,
+            'department'=>$request->department,
+            'password' =>$password,
+            'salary' => $request->salary,
+            'shift' => $request->shift,
             'insertedTime' => time(),
-            // 'insertedUserId' => Auth::user()->userFirstName.' '.Auth::user()->userLastName,
             'delete_status' => "NO",
             'deleteUser' => "",
             'deleteTime' => "",
-        );
-        if($docAvailable != "No")
-        {
-            $info = (explode("^",$docAvailable));
-            $docId = $info[1];
-            $counter = $info[0];
-            $cons['_id'] = AppHelper::instance()->getAdminDocumentSequence($companyId, Company_user::raw(),'company_user',$docId);
-            Company_user::raw()->updateOne(['company_id' => $companyId,'_id'=>(int)$docId], ['$push' => ['company_user' => $cons]]);
-            $cons['masterID'] = $docId;
-            echo json_encode($cons);
-
-            return response()->json(['message' => 'User Added successfully'], 201);
-        }
-        else
-        {
-            $parentId =AppHelper::instance()->getNextSequenceForNewDoc(\App\Models\API\Company_user::raw());
-            $cons['_id'] =AppHelper::instance()->getNextSequenceForNewId(\App\Models\API\Company_user::raw(),'company_user','$company_user._id',$companyId);
-            $arra = array(
-                "_id" => $parentId,
-                "counter" => (int)1,
-                "company_id" => (int)$companyId,
-                "company_user" => array($cons),
-            );
-            \App\Models\API\Company_user::raw()->insertOne($arra);
-            return response()->json(['message' => 'User Added successfully'], 201);
-        }
+        ];
+        
+            $result = Company_Employee::insert($data);
+            
+            if ($result) {
+            return response()->json(['message' => 'Employee added successfully'], 201);
+            } else {
+            return response()->json(['message' => 'Failed to Add User'], 500);
+            }
+        
     }
 
     public function edit_companyuser(Request $request)
