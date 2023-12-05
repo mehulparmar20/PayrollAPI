@@ -68,7 +68,7 @@ class CompanyHolidayController extends Controller
         $decryptedInput = decrypt($token, $secretKey);
         list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $companyID=intval($id);
-        $id=$request->_id;
+        $id=$request->id;
        //  dd($id);
         $collection=\App\Models\API\Company_Holiday::raw();
    
@@ -125,7 +125,7 @@ class CompanyHolidayController extends Controller
         $decryptedInput = decrypt($token, $secretKey);
         $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $companyId=intval($id);
-        $id=$request->_id;
+        $id=$request->id;
         // dd($id);
 
         // $masterId=(int)$request->masterId;

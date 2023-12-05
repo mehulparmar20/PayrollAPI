@@ -68,7 +68,7 @@ class CompanyDepartmentController extends Controller
      $decryptedInput = decrypt($token, $secretKey);
      list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
      $companyID=intval($id);
-     $id=$request->_id;
+     $id=$request->id;
     //  dd($id);
      $collection=\App\Models\API\Company_Department::raw();
 
@@ -126,7 +126,7 @@ class CompanyDepartmentController extends Controller
         $decryptedInput = decrypt($token, $secretKey);
         $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $companyId=intval($id);
-        $id=$request->_id;
+        $id=$request->id;
         // dd($id);
 
         // $masterId=(int)$request->masterId;
@@ -169,7 +169,7 @@ class CompanyDepartmentController extends Controller
             return json_encode($arr);
        }
     }
-
+    
     public function index_department(Request $request)//notdone
     {
        

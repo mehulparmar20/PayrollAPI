@@ -6,6 +6,7 @@ use App\Http\Controllers\API\CompanyAdminsController;
 use App\Http\Controllers\API\AddUserController;
 use App\Http\Controllers\API\CompanyDepartmentController;
 use App\Http\Controllers\API\CompanyHolidayController;
+use App\Http\Controllers\API\CompanyDesignationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,13 +22,22 @@ use App\Http\Controllers\API\CompanyHolidayController;
 Route::group(['middleware' => 'tokenauth'], function () {
 
    // AddUserController
-    Route::post('add_user','App\Http\Controllers\API\AddUserController@add_user');
-    Route::post('edit_companyuser','App\Http\Controllers\API\AddUserController@edit_companyuser');
-    Route::post('update_user','App\Http\Controllers\API\AddUserController@update_user');
-    Route::get('view_companyuser','App\Http\Controllers\API\AddUserController@view_companyuser');
-    Route::post('delete_user','App\Http\Controllers\API\AddUserController@delete_user');
-    Route::get('search_user/{name}',[AddUserController::class,'searchuser']);
+    // Route::post('add_user','App\Http\Controllers\API\AddUserController@add_user');
+    // Route::post('edit_companyuser','App\Http\Controllers\API\AddUserController@edit_companyuser');
+    // Route::post('update_user','App\Http\Controllers\API\AddUserController@update_user');
+    // Route::get('view_companyuser','App\Http\Controllers\API\AddUserController@view_companyuser');
+    // Route::post('delete_user','App\Http\Controllers\API\AddUserController@delete_user');
+    // Route::get('search_user/{name}',[AddUserController::class,'searchuser']);
  
+    //CompanyDesignationController
+    Route::post('add_designation','App\Http\Controllers\API\CompanyDesignationController@add_designation');
+    Route::post('edit_designation','App\Http\Controllers\API\CompanyDesignationController@edit_designation');
+    Route::post('update_designation','App\Http\Controllers\API\CompanyDesignationController@update_designation');
+    Route::post('delete_designation','App\Http\Controllers\API\CompanyDesignationController@delete_designation');
+    Route::get('view_designation','App\Http\Controllers\API\CompanyDesignationController@view_designation');
+    Route::get('paginate_designation','App\Http\Controllers\API\CompanyDesignationController@paginate_designation');
+    Route::post('search_designation','App\Http\Controllers\API\CompanyDesignationController@search_designation');
+
     // CompanyHolidayController
 
     Route::post('add_holiday','App\Http\Controllers\API\CompanyHolidayController@add_holiday');
