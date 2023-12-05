@@ -47,6 +47,14 @@ Route::group(['middleware' => 'tokenauth'], function () {
 
       //CompanyEmployeeController
     Route::post('add_employee','App\Http\Controllers\API\CompanyEmployeeController@add_employee');
+    // AddUserController
+    Route::post('add_user','App\Http\Controllers\API\CompanyUserController@add_user');
+    Route::post('edit_user','App\Http\Controllers\API\CompanyUserController@edit_user');
+    Route::post('update_user','App\Http\Controllers\API\CompanyUserController@update_user');
+    Route::get('view_user','App\Http\Controllers\API\CompanyUserController@view_user');
+    Route::get('view_user','App\Http\Controllers\API\CompanyUserController@view_user');
+    Route::get('paginate_user','App\Http\Controllers\API\CompanyUserController@paginate_user');
+    Route::post('search_user','App\Http\Controllers\API\CompanyUserController@search_user');
 
     //Announcement 
     Route::post('add_announcement','App\Http\Controllers\API\CompanyAnnouncementController@add_announcement');
@@ -55,7 +63,20 @@ Route::group(['middleware' => 'tokenauth'], function () {
     Route::post('delete_announcement','App\Http\Controllers\API\CompanyAnnouncementController@delete_announcement');
     Route::post('index_announcement','App\Http\Controllers\API\CompanyAnnouncementController@index_announcement');
     Route::post('search_announcement','App\Http\Controllers\API\CompanyAnnouncementController@search_announcement');
+    Route::get('view_announcement','App\Http\Controllers\API\CompanyAnnouncementController@view_announcement');
     
+     //Preveligies 
+     Route::post('add_previligies','App\Http\Controllers\API\CompanyPreviligiesController@add_previligies');
+     Route::post('edit_previligies','App\Http\Controllers\API\CompanyPreviligiesController@edit_previligies');
+     Route::post('update_previligies','App\Http\Controllers\API\CompanyPreviligiesController@update_previligies');
+     Route::post('delete_previligies','App\Http\Controllers\API\CompanyPreviligiesController@delete_previligies');
+     Route::post('index_previligies','App\Http\Controllers\API\CompanyPreviligiesController@index_previligies');
+     Route::post('search_previligies','App\Http\Controllers\API\CompanyPreviligiesController@search_previligies');
+    
+     //Company Employee
+     Route::post('add_employee','App\Http\Controllers\API\CompanyEmployeeController@add_employee');
+    
+     
 });
 
 Route::post('company_register', 'App\Http\Controllers\API\CompanyAdminsController@store');

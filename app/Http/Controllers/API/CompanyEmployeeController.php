@@ -1,107 +1,256 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\API\Company_admin;
 use App\Models\API\Company_Admins;
 use App\Models\API\Company_Employee;
-use Illuminate\Http\Request;
 use App\Helpers\AppHelper;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class CompanyEmployeeController extends Controller
 {
- 
-    // public function add_employee(Request $request)
-    // {
-    // //   dd('dd');
-    //     $token = $request->bearerToken();
-    //     // dd($token);
-    //     // $token= $token_data->token;
-    //     // $secretKey ="345fgvvc4";
-    //     // $decryptedInput = decrypt($token, $secretKey);
-    //     // dd($decryptedInput);
-    //     // $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-    //     // $company_id = intval($id); //fetch company_id
-        
-    //     // dd($request->employee_email);
-    //             $password = Hash::make($request->user_password);
-    //             $new_id = Company_Employee::max('_id') + 1;
-    //             $data = [
-    //                 '_id' => $new_id,
-    //                 'company_id' => 2,
-    //                 'counter' => 0,
-    //                 'employee_email' => $request->employee_email,
-    //                 'employee_password' => $password,
-    //                 'delete_status' => 1,
-    //                 'created_at' => '',
-    //                 'updated_at' => '',
-    //             ];
-       
-
-    //             $result =Company_Employee::insert($data);
-
-    //             if ($result) {
-    //                 return response()->json(['message' => 'Employee added successfully'], 201);
-    //             } else {
-    //                 return response()->json(['message' => 'Failed to Add Employee'], 500);
-    //             }
-            
-        
-    // }
-    public function add_employee(Request $request)
-    {
-    
+        public function add_employee(Request $request) //done
+        {
         $maxLength = 7000;
         $token = $request->bearerToken();
-        //$token= $token_data->token;
-        $secretKey = '345fgvvc4';
+        $secretKey ='345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
-         list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-         $companyId=intval($id);
-         $docAvailable = AppHelper::instance()->checkDoc(Company_Employee::raw(),$companyId,$maxLength);
-         $password = hash('sha1',$request->password);
-         $cons = array(
-            '_id' => 1,
-            'company_id' => $companyId,
-            'counter' => 0,
-                    'employee_email' => $request->employee_email,
-                    'employee_password' => $password,
-                    'delete_status' => "NO",
-                    'created_at' => '',
-                    'updated_at' => '',
-         );
-       
-
-         if($docAvailable != "No")
-         {
-             $info = (explode("^",$docAvailable));
-             $docId = $info[1];
-             $counter = $info[0];
-        //    dd('fault');
-             $cons['_id'] = AppHelper::instance()->getAdminDocumentSequence($companyId, Company_Employee::raw(),'company_employee',$docId);
-             Company_Employee::raw()->updateOne(['company_id' => $companyId,'_id'=>(int)$docId], ['$push' => ['company_employee' => $cons]]);
-             $cons['masterID'] = $docId;
-             echo json_encode($cons);
- 
-             return response()->json(['message' => 'Employee Added successfully'], 201);
-         }
-         else
-         {
-             $parentId =AppHelper::instance()->getNextSequenceForNewDoc(\App\Models\API\Company_Employee::raw());
-             $cons['_id'] =AppHelper::instance()->getNextSequenceForNewId(\App\Models\API\Company_Employee::raw(),'company_employee','$company_employee._id',$companyId);
-             $arra = array(
-                 "_id" => $parentId,
-                 "counter" => (int)1,
-                 "company_id" => (int)$companyId,
-                 "company_employee" => array($cons),
-             );
-             \App\Models\API\Company_Employee::raw()->insertOne($arra);
-             return response()->json(['message' => 'Employee Added successfully'], 201);
-         }
+        list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $companyId=intval($id);
+        $password = hash('sha1',$request->password);
+        $new_id = Company_Employee::max('_id') + 1;
+        $data = [
+            '_id' => $new_id,
+            'company_id'=>$companyId,
+            // 'counter'=>$latest_total_employee,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email'=>$request->email,
+            'joining_date'=>$request->joining_date,
+            'phone'=>$request->phone,
+            'department'=>$request->department,
+            'password' =>$password,
+            'salary' => $request->salary,
+            'shift' => $request->shift,
+            'insertedTime' => time(),
+            'delete_status' => "NO",
+            'deleteUser' => "",
+            'deleteTime' => "",
+        ];
+        
+            $result = Company_Employee::insert($data);
             
-
+            if ($result) {
+            return response()->json(['message' => 'Employee added successfully'], 201);
+            } else {
+            return response()->json(['message' => 'Failed to Add User'], 500);
+            }
+        
     }
 
-}
+    public function edit_companyuser(Request $request)
+    {
+        // dd($request);
+        // $parent=$request->masterId;
+        $token = $request->bearerToken();
+        $secretKey ='345fgvvc4';
+        $decryptedInput = decrypt($token, $secretKey);
+        list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $companyID=intval($id);
+        $id=$request->id;
+        // dd($request->_id);
+        $collection=\App\Models\API\Company_user::raw();
 
+        $show1 = $collection->aggregate([
+            ['$match' => ['_id' => (int)$id, 'company_id' =>$companyID]]
+            // ['$unwind' => ['path' => '$company_user']]
+        ]);
+        // dd($show1);
+        foreach ($show1 as $row) {
+            $company=array();
+            if(isset($row)){
+                $companyNameID=$row;
+                $companyName =\App\Models\API\Company_user::raw()->aggregate([
+                    ['$match' => ["company_id" => (int)$companyID]],
+                    ['$match' => ["_id" => (int)$id]],
+                ]);
+                foreach($companyName as $name){
+                    $l=0;
+                    $company[$l] = $name;
+                    $l++;
+                }
+            }
+            $mainIdac = $row['_id'];
+            $activeCustomer = array();
+            $k = 0;
+            $activeCustomer[$k] = $row;
+            $k++;
+        }
+        
+        $customerData[]=array("Customer" => $activeCustomer);
+        if($activeCustomer != ''){
+            return response()->json([
+                'success' => $customerData,
+            ]);
+        }
+        else{
+            return response()->json([
+                'success' => 'No record'
+            ]);
+        }
+    }
+        public function update_user(Request $request) //done
+        {
+            $collection=\App\Models\API\Company_user::raw();
+            $token = $request->bearerToken();
+            $secretKey ='345fgvvc4';
+            $decryptedInput = decrypt($token, $secretKey);
+            $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+            $companyId=intval($id);
+            $id=$request->id;
+            // dd($id);
+
+            // $masterId=(int)$request->masterId;
+            $maxLength=6500;
+    
+            $docAvailable = AppHelper::instance()->checkDoc(\App\Models\API\Company_user::raw(),$companyId,$maxLength);
+            $info = (explode("^",$docAvailable));
+            $docId = $info[1];
+    
+            $userData=$collection->updateOne(['company_id' => (int)$companyId,'company_user._id' => (int)$id],
+            ['$set' => [
+                'company_user.$.user_email' => $request->user_email,
+                'company_user.$.user_name' => $request->user_name,
+                'company_user.$.user_type' => $request->user_type,
+                'company_user.$.user_add_date' => $request->user_add_date,
+                'company_user.$.role' => $request->role,
+                'company_user.$.employee' => $request->employee,
+                'company_user.$.attendance' => $request->attendance,
+                'company_user.$.break' => $request->break,
+                'company_user.$.leave' => $request->leave,
+                'company_user.$.letters' => $request->letters,
+                'company_user.$.administration' => $request->administration,
+                'company_user.$.edit_time' => time()
+                ]]
+            );
+            if ($userData==true)
+            {
+                $arr = array('status' => 'success', 'message' => 'User Updated successfully.','statusCode' => 200);
+                return json_encode($arr);
+            }
+
+        }
+        public function delete_user(Request $request) //done
+        {
+            $token = $request->bearerToken();
+            $secretKey ='345fgvvc4';
+            $decryptedInput = decrypt($token, $secretKey);
+            list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+            $companyID=intval($id);
+            $id=(int)$request->id;
+            $masterId=(int)$request->masterId;
+            $userData=Company_user::raw()->updateOne(['company_id' => $companyID,'_id' => $masterId,'company_user._id' => $id],
+            ['$set' => ['company_user.$.delete_status' => 'YES','company_user.$.deleteUser' =>intval($id),'company_user.$.deleteTime' => time()]]
+            );
+           if ($userData==true)
+           {
+               $arr = array('status' => 'success', 'message' => 'User deleted successfully.','statusCode' => 200);
+                return json_encode($arr);
+           }
+         }
+            
+    public function view_companyuser(Request $request)
+    {
+        $token = $request->bearerToken();
+        $secretKey ='345fgvvc4';
+        $decryptedInput = decrypt($token, $secretKey);
+        $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $companyID=intval($id);
+        $total_records = 0;
+        $cursor = Company_user::raw()->aggregate([
+            ['$match' => ['company_id' => (int)$companyID]],
+            ['$project' => ['size' => ['$size' => ['$company_user']],
+            ]]
+        ]);
+
+        $totalarray = $cursor;
+
+        $docarray = array();
+        foreach ($cursor as $v)
+        {
+
+            $docarray[] = array("size" => $v['size'], "id" => $v['_id']);
+            $total_records += (int)$v['size'];
+        }
+
+        $completedata = array();
+        $partialdata = array();
+        $paginate = AppHelper::instance()->paginate($docarray);
+        if (!empty($paginate[0][0][0]))
+        {
+            for ($i = 0; $i < sizeof($paginate[0][0][0]); $i++)
+            {
+                $pagina_data= str_replace( array('"',":"," " ,"doc",'start',"end", ']','[','{','}' ), ' ', $request->arr);
+                $pagina_data=explode(",",$pagina_data);
+                if(!empty($request->arr))
+                {
+                    $docid=preg_replace('/\s+/',"", $pagina_data[0]);
+                    $start=preg_replace('/\s+/',"",$pagina_data[1]);
+                    $end=preg_replace('/\s+/',"",$pagina_data[2]);
+                    $docid=intval($docid);
+                    $start=intval($start);
+                    $end=intval($end);
+                }
+                else
+                {
+                    $docid= $paginate[0][0][0][$i]['doc'];
+                    $end=$paginate[0][0][0][$i]['end'];
+                    $start=$paginate[0][0][0][$i]['start'];
+                }
+                $show1 = Company_user::raw()->aggregate([
+                    ['$match' => ["company_id" => $companyID, "_id" => $docid]],
+                    // ['$unwind' => ['path' => '$company_user']],
+                    ['$project' => ["company_id" => $companyID, "company_user" => ['$slice' => ['$company_user', $end, $start - $end]]]],
+                    // ['$match' => ['company_user.userId' => (int)Auth::user()->_id]],
+                    ['$project' => ["company_user.userId" => 1,"company_user._id" => 1,"company_user.counter" => 1, "company_user.custName" => 1, "company_user.custLocation" => 1, "company_user.custLocationCity" => 1, "company_user.custLocationState" => 1, "company_user.custZip" => 1, "company_user.primaryContact" => 1,
+                        "company_user.custTelephone" => 1, "company_user.custEmail" => 1,"company_user.factoringCompany" => 1,"company_user.currencySetting" => 1,"company_user.paymentTerms" => 1,"company_user.insertedTime" => 1,"company_user.insertedUserId" => 1,
+                        "company_user.edit_by" => 1,"company_user.edit_time" => 1,"company_user.deleteStatus" => 1,"company_user.deleteUser" => 1,"company_user.deleteTime" => 1]]
+                ]);
+                
+                //dd($show1);
+                $c = 0;
+                $arrData1 = "";
+                $userid=intval($id);
+                foreach ($show1 as $arrData11)
+                {  
+                        $arrData1 = $arrData11;
+                }
+               $arrData2 = array(
+                    'arrData1' => $arrData1,
+                );
+                $partialdata[]= $arrData2;
+            }
+        }
+      
+        $completedata[] = $partialdata;
+        $completedata[] = $paginate;
+        $completedata[] = $total_records;
+        echo json_encode($completedata);
+    }
+
+        public function searchuser($name) //search
+        {
+            $results=Company_user::where('user_name','like','%'.$name.'%')->get();
+            // dd($results);
+             if($results->isEmpty()) {
+                return response()->json(['message' => 'No results found'], 404);
+            } else {
+                
+                return response()->json(['results' => $results], 200);
+            }
+        }
+            
+}

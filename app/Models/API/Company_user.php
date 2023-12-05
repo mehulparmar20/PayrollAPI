@@ -22,6 +22,13 @@ class Company_user extends Model
         'user_password',
         'user_type',
         'user_add_date',
+        'attendance',
+        'break',
+        'leave',
+        'letters',
+        'administration',
+        'employee',
+        'payroll',
         'delete_status',
     ];
     public function companyAdmin()
