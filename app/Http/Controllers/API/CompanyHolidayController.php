@@ -189,7 +189,7 @@ class CompanyHolidayController extends Controller
         $query = $request->input('query');
 
         // Perform a basic search query on the MongoDB collection
-        $results = CompanyDepartment::where('field_to_search', 'like', "%$query%")->get();
+        $results = Company_Holiday::where('field_to_search', 'like', "%$query%")->get();
 
         return response()->json($results);
         // $results = Company_Holiday::where('holiday_name', 'like', '%' . $name . '%')->get();

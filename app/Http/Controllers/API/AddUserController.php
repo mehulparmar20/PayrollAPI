@@ -255,7 +255,7 @@ class AddUserController extends Controller
                         "company_user.edit_by" => 1,"company_user.edit_time" => 1,"company_user.deleteStatus" => 1,"company_user.deleteUser" => 1,"company_user.deleteTime" => 1]]
                 ]);
                 
-                
+                //dd($show1);
                 $c = 0;
                 $arrData1 = "";
                 $userid=intval($id);

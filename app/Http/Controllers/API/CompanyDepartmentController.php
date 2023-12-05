@@ -172,19 +172,25 @@ class CompanyDepartmentController extends Controller
 
     public function index_department(Request $request)//notdone
     {
-        $token = $request->bearerToken();
-        //$token= $token_data->token;
-        $secretKey = '345fgvvc4';
-        $decryptedInput = decrypt($token, $secretKey);
-        $token_data = list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-        $company_id = $token_data['0'];
-        $company_id = intval($id);
-        // $records = Company_Department::all();
-        // dd($records);
-        $records = Company_Department::where('delete_status', 1)->paginate(1);
-        // return $records;
-        return response()->json(['success' => true, 'data' => $records], 200);
-    }
+       
+        // $token = $request->bearerToken();
+        // //$token= $token_data->token;
+        // $secretKey = '345fgvvc4';
+        // $decryptedInput = decrypt($token, $secretKey);
+        // $token_data = list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        // $company_id = $token_data['0'];
+        // $company_id = intval($id);
+        // // $records = Company_Department::all();
+        // // dd($records);
+        // $records = Company_Department::where('delete_status', 1)->paginate(1);
+        // // return $records;
+        // return response()->json(['success' => true, 'data' => $records], 200);
+       
+           
+        }
+    
+      
+
 
     public function searchdepartment($name) //notdone search
     {
@@ -197,6 +203,7 @@ class CompanyDepartmentController extends Controller
             return response()->json(['results' => $results], 200);
         }
     }
+
+
+
 }
-
-
