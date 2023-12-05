@@ -24,7 +24,7 @@ Route::group(['middleware' => 'tokenauth'], function () {
     Route::post('add_user','App\Http\Controllers\API\CompanyUserController@add_user');
     Route::post('edit_user','App\Http\Controllers\API\CompanyUserController@edit_user');
     Route::post('update_user','App\Http\Controllers\API\CompanyUserController@update_user');
-    Route::get('view_user','App\Http\Controllers\API\CompanyUserController@view_user');
+    Route::post('delete_user','App\Http\Controllers\API\CompanyUserController@delete_user');
     Route::get('view_user','App\Http\Controllers\API\CompanyUserController@view_user');
     Route::get('paginate_user','App\Http\Controllers\API\CompanyUserController@paginate_user');
     Route::post('search_user','App\Http\Controllers\API\CompanyUserController@search_user');
@@ -48,7 +48,9 @@ Route::group(['middleware' => 'tokenauth'], function () {
     
      //Company Employee
      Route::post('add_employee','App\Http\Controllers\API\CompanyEmployeeController@add_employee');
-    
+     Route::post('edit_employee','App\Http\Controllers\API\CompanyEmployeeController@edit_employee');
+     Route::post('update_employee','App\Http\Controllers\API\CompanyEmployeeController@update_employee');
+     Route::post('delete_employee','App\Http\Controllers\API\CompanyEmployeeController@delete_employee');
      
 });
 
