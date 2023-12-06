@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\API\Company_Admins;
 use App\Models\API\Company_Designation;
 use App\Helpers\AppHelper;
+use App\Models\API\Company_Department;
 use Illuminate\Http\Request;
 
 class CompanyDesignationController extends Controller
@@ -18,6 +19,10 @@ class CompanyDesignationController extends Controller
         $decryptedInput = decrypt($token, $secretKey);
          list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
          $companyId=intval($id);
+         //relation
+        //  $designation = Company_Designation::find($companyId); 
+        //  $departmentName = $designation->companydepartment->department_name;
+
          $docAvailable = AppHelper::instance()->checkDoc(Company_Designation::raw(),$companyId,$maxLength);
          $password = hash('sha1',$request->password);
          $cons = array(
@@ -174,6 +179,8 @@ class CompanyDesignationController extends Controller
     }
     public function view_designation(Request $request)// done
     {
+        // $designations = Company_Designation::with('companydepartment')->get();
+        // dd($designations);
         $token = $request->bearerToken();
         //$token= $token_data->token;
         $secretKey ='345fgvvc4';
@@ -182,7 +189,7 @@ class CompanyDesignationController extends Controller
         $company_id=intval($id);
         // dd($company_id);
         // $records=Company_Designation::all();
-        $records=Company_Designation::where('company_designation.delete_status','NO')->where('company_id',$company_id)->get();
+        $records=Company_Designation::with('companydepartment')->where('company_designation.delete_status','NO')->where('company_id',$company_id)->get();
     //   dd($records);
         return response()->json(['success' => true,'data' => $records], 200);
     }

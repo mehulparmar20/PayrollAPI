@@ -21,6 +21,11 @@ class Company_Designation extends Model
         'designation_name', 
         'delete_status',
     ];
+    public function companydepartment()
+{
+    return $this->belongsTo(Company_Department::class, 'department_id');
+}
+   
     public function up()
     {
         Schema::create('company_designation', function (Blueprint $collection) {
