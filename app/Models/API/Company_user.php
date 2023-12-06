@@ -14,6 +14,7 @@ class Company_user extends Model
     use HasApiTokens;
     protected $connection = 'mongodb';
     protected $collection = 'company_user';
+    protected $primaryKey = '_id';
     protected $fillable = [
         '_token', 
         'user_email',
@@ -21,16 +22,19 @@ class Company_user extends Model
         'user_password',
         'user_type',
         'user_add_date',
-       
+        'attendance',
+        'break',
+        'leave',
+        'letters',
+        'administration',
+        'employee',
+        'payroll',
+        'delete_status',
     ];
     public function companyAdmin()
     {
         return $this->belongsTo(Company_admin::class,'_id'); // Assuming there is a field 'admin_id' in the 'company_user' collection referencing '_id' in 'company_admin' collection
     }
-
-  
-    
-    
 
     public function up()
     {
@@ -42,6 +46,7 @@ class Company_user extends Model
             $collection->string('user_password');
             $collection->string('user_type');
             $collection->date('user_add_date');
+            $collection->integer('delete_status');
             $collection->timestamps();
         });
     }

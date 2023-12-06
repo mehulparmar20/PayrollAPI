@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 // use Illuminate\Support\Facades\Hash;
 use App\Models\API\Company_Admins;
 use App\Models\API\Company_user;
+use App\Models\API\Company_Employee;
+use App\Models\API\Login_History;
 use App\Models\User;
 use App\Models\API\TokenHandler;
 use App\Helpers\AppHelper;
@@ -156,9 +158,9 @@ class CompanyAdminsController extends Controller
     public function company_login(Request $request)
     {
         $validator =  Validator::make($request->all(),[
-            'type' => 'required',
             'email' => 'required',
             'password' => 'required',
+            'type' => 'required',
             ]);
         
             if($validator->fails()){
@@ -167,124 +169,194 @@ class CompanyAdminsController extends Controller
                     "message" => $validator->errors(),
                 ], 422);
             }
-            $type=$request->type;
+          
             $email = $request->email;
             $password = $request->password;
-            if($type == 'company_admin'){
-                $collection=Company_Admins::raw();
-                $user = $collection->aggregate([['$match' => ['company_email' => $email, 'password' => sha1($password)]]]);
-                $collections=Company_user::raw();
-                $company_users = $collections->aggregate([['$match' => ['user_email' => $email, 'user_password' => sha1($password)]]]);   
-
-                if ($user) {
-                foreach($user as $u){
-                    
-                        if($u != ''){
-                        if($u->emailVerificationStatus == '1'){
-                        $user_data = new Company_Admins(); // Create a new instance of the user_data model
-                        $user_data->companyID = $u->_id;
-                        $user_data->userEmail = $u->company_email;
-                        $user_data->userPass = $u->password;
-                        $token_data = TokenHandler::where(['company_id'=>$u->_id])->first();
-                        $token= $token_data->token;
-                        $secretKey ='345fgvvc4';
-                        $decryptedInput = decrypt($token, $secretKey);
-                        $token_data->token=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-                        $user_data->token = $token;
-                        }
-                        else{
-                            $user_data = "Email Not Verified";
-                        }
-                    }
-                   
-                  }
-                }
-               
-                // dd($user_data);
-                if($company_users) {  
-                    foreach($company_users as $u){
-                        if($u != ''){
-                        $company_user_data = new Company_user(); // Create a new instance of the User model
-                        $company_user_data->id = $u->_id;
-                        $company_user_data->companyID = $u->company_id;
-                        $company_user_data->userEmail = $u->user_email;
-                        $token_data = TokenHandler::where(['company_id'=>$u->_id])->first();
-                        $token= $token_data->token;
-                        $secretKey ='345fgvvc4';
-                        $decryptedInput = decrypt($token, $secretKey);
-                        $token_data->token=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-                        $company_user_data->token = $token;
-                        }
-                    }
-                    }
-                   
-                }   
-                
-            if($type == 'admin')
-            {
-               
-                $collection=User::raw();
-                $admin = $collection->aggregate([['$match' => ['email' => $email, 'password' => sha1($password)]]]);
-               
-                if ($admin) {  
-                    foreach($admin as $u){
-                        // dd($u);
-                        if($u != ''){
-                        $userModel = new user(); // Create a new instance of the User model
-                        $userModel->id = $u->_id;
-                        $userModel->userEmail = $u->email;
-                        // $token_data = TokenHandler::where(['company_id'=>$u->_id])->first();
-                        // $token= $token_data->token;
-                        // $secretKey ='345fgvvc4';
-                        // $decryptedInput = decrypt($token, $secretKey);
-                        // $token_data->token=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-                        // $userModel->token = $token;
-                        }
-                    }
-                }
-               
-            }
+            $types = $request->type;
+            $maxLength = 7000;
+            if($types == 'admin'){ // check the type is company admin or not in copnany_user table and compnay_user table
+            $collection=Company_Admins::raw();
+            $company_admin = $collection->aggregate([['$match' => ['company_email' => $email, 'password' => sha1($password)]]]);
             
-            if($user_data != ''){
-                $result=$user_data;
-                $success = true;
-                $message = "Login Succesfully";
+            $collection=Company_user::raw();
+            $company_user = $collection->aggregate([['$match' => ['user_email' => $email, 'user_password' => sha1($password)]]]);
+            
+            if ($company_admin) {
+                foreach($company_admin as $u){
+                    if($u != ''){
+                    if($u->emailVerificationStatus == '1'){
+                    $companyModel = new Company_Admins(); // Create a new instance of the User model
+                    $companyModel->companyID = $u->_id;
+                    $companyModel->userEmail = $u->company_email;
+                    $companyModel->userPass = $u->password;
+                    $token_data = TokenHandler::where(['company_id'=>$u->_id])->first();
+                    $token= $token_data->token;
+                    $secretKey ='345fgvvc4';
+                    $decryptedInput = decrypt($token, $secretKey);
+                    $token_data->token=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+                    $companyModel->token = $token;
+                    }
+                    else{
+                        $companyModel = "Email Not Verified";
+                    }
+                    // Login_history
+                    $companyId=$u->_id;
+                    $company_email=$u->company_email;
+                    $docAvailable = AppHelper::instance()->checkDoc(Login_History::raw(),$companyId,$maxLength);
+                    $cons = array(
+                        '_id' =>1,
+                        'company_id' => $companyId,
+                        'counter' => 0,
+                        'email'=>$company_email,
+                        'insertedTime' => time(),
+                    );
+                    if($docAvailable != "No")
+                    {
+                        $info = (explode("^",$docAvailable));
+                        $docId = $info[1];
+                        $counter = $info[0];
+                        $cons['_id'] = AppHelper::instance()->getAdminDocumentSequence($companyId, Login_History::raw(),'company_user',$docId);
+                        Login_History::raw()->updateOne(['company_id' => $companyId,'_id'=>(int)$docId], ['$push' => ['company_user' => $cons]]);
+                        $cons['masterID'] = $docId;}
+                    else
+                    {
+                        $parentId =AppHelper::instance()->getNextSequenceForNewDoc(\App\Models\API\Login_History::raw());
+                        $cons['_id'] =AppHelper::instance()->getNextSequenceForNewId(\App\Models\API\Login_History::raw(),'company_user','$company_user._id',$companyId);
+                        $arra = array(
+                            "_id" => $parentId,
+                            "counter" => (int)1,
+                            "company_id" => (int)$companyId,
+                            "company_user" => array($cons),
+                        );
+                        \App\Models\API\Login_History::raw()->insertOne($arra);
+                    }
+                
+                    return response()->json([
+                        'success' => true,
+                        'message' => "success",
+                        'data'=>$companyModel,
+                    ]);
+                    }
+                }
+               
             }
-            elseif($company_users != ''){
-                $result=$company_user_data;
-                $success = true;
-                $message = "Login Succesfully";
+
+            if ($company_user) {
+                foreach($company_user as $u){
+                    if($u != ''){
+                    $userModel = new Company_user(); // Create a new instance of the User model
+                    $userModel->companyID = $u->_id;
+                    $userModel->userEmail = $u->user_email;
+                    $userModel->userPass = $u->user_password;
+                    $token_data = TokenHandler::where(['company_id'=>$u->company_id])->first();
+                    $token= $token_data->token;
+                    $secretKey ='345fgvvc4';
+                    $decryptedInput = decrypt($token, $secretKey);
+                    $token_data->token=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+                    $userModel->token = $token;  
+                    // Login_history
+                    $companyId=$u->company_id;
+                    $company_email=$u->user_email;
+                    $docAvailable = AppHelper::instance()->checkDoc(Login_History::raw(),$companyId,$maxLength);
+                    $cons = array(
+                        '_id' =>1,
+                        'company_id' => $companyId,
+                        'counter' => 0,
+                        'email'=>$company_email,
+                        'insertedTime' => time(),
+                    );
+                    if($docAvailable != "No")
+                    {
+                        $info = (explode("^",$docAvailable));
+                        $docId = $info[1];
+                        $counter = $info[0];
+                        $cons['_id'] = AppHelper::instance()->getAdminDocumentSequence($companyId, Login_History::raw(),'company_user',$docId);
+                        Login_History::raw()->updateOne(['company_id' => $companyId,'_id'=>(int)$docId], ['$push' => ['company_user' => $cons]]);
+                        $cons['masterID'] = $docId;}
+                    else
+                    {
+                        $parentId =AppHelper::instance()->getNextSequenceForNewDoc(\App\Models\API\Login_History::raw());
+                        $cons['_id'] =AppHelper::instance()->getNextSequenceForNewId(\App\Models\API\Login_History::raw(),'company_user','$company_user._id',$companyId);
+                        $arra = array(
+                            "_id" => $parentId,
+                            "counter" => (int)1,
+                            "company_id" => (int)$companyId,
+                            "company_user" => array($cons),
+                        );
+                        \App\Models\API\Login_History::raw()->insertOne($arra);
+                    }
+                    
+                    return response()->json([
+                        'success' => true,
+                        'message' => "success",
+                        'data'=>$userModel,
+                    ]);
+                }
+                }
             }
-            elseif($admin != ''){
-                $result=$userModel;
-                $success = true;
-                $message = "Login Succesfully";
-            } else {
-                $success = false;
-                $message = "Some error";
-                $result=$userModel;
+            }
+            else{
+                $collection=Company_Employee::raw();
+                $company_employee = $collection->aggregate([['$match' => ['email' => $email, 'password' => sha1($password)]]]);
+                if ($company_employee) {
+                    foreach($company_employee as $u){
+                        if($u != ''){
+                        $userModel = new Company_Employee(); // Create a new instance of the User model
+                        $userModel->companyID = $u->_id;
+                        $userModel->userEmail = $u->email;
+                        $userModel->userPass = $u->password;
+                        $token_data = TokenHandler::where(['company_id'=>$u->company_id])->first();
+                        $token= $token_data->token;
+                        $secretKey ='345fgvvc4';
+                        $decryptedInput = decrypt($token, $secretKey);
+                        $token_data->token=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+                        $userModel->token = $token;
+                         // Login_history
+                         $companyId=$u->_id;
+                         $company_email=$u->email;
+                         $docAvailable = AppHelper::instance()->checkDoc(Login_History::raw(),$companyId,$maxLength);
+                         $cons = array(
+                             '_id' =>1,
+                             'company_id' => $companyId,
+                             'counter' => 0,
+                             'email'=>$company_email,
+                             'insertedTime' => time(),
+                         );
+                         if($docAvailable != "No")
+                         {
+                             $info = (explode("^",$docAvailable));
+                             $docId = $info[1];
+                             $counter = $info[0];
+                             $cons['_id'] = AppHelper::instance()->getAdminDocumentSequence($companyId, Login_History::raw(),'company_user',$docId);
+                             Login_History::raw()->updateOne(['company_id' => $companyId,'_id'=>(int)$docId], ['$push' => ['company_user' => $cons]]);
+                             $cons['masterID'] = $docId;}
+                         else
+                         {
+                             $parentId =AppHelper::instance()->getNextSequenceForNewDoc(\App\Models\API\Login_History::raw());
+                             $cons['_id'] =AppHelper::instance()->getNextSequenceForNewId(\App\Models\API\Login_History::raw(),'company_user','$company_user._id',$companyId);
+                             $arra = array(
+                                 "_id" => $parentId,
+                                 "counter" => (int)1,
+                                 "company_id" => (int)$companyId,
+                                 "company_user" => array($cons),
+                             );
+                             \App\Models\API\Login_History::raw()->insertOne($arra);
+                         }  
+                        return response()->json([
+                            'success' => true,
+                            'message' => "success",
+                            'data'=>$userModel,
+                        ]);
+                    }
+                    }
+                }
+               
             }
             return response()->json([
-                'success' => $success,
-                'message' => $message,
-                'data'=>$result,
+            'success' => False,
+            'message' => "EmailNot Found",
             ]);
+            
       
         }
-    // public function company_dashboard(Request $request)
-    // {
-    //    // $beare= AppHelper::instance()->bearer_token();
-    //     $beare=AppHelper::instance()->bearer_token("token",LoggedUsers::raw());
-    //     dd($beare);
-    //     // $companyID=Auth::user()->companyID;
-    //     // $employement = Company_Admins::where('id',$companyID)->first();
-    //     // return response()->json($employement); 
-    //     $companyID=$request->input('company_id');
-     
-    //     $company = Company_Admins::where('_id',$companyID)->get();
-    //     dd($company);
-    //     return response()->json($company); 
-     
-    //     // return response()->json($customerCurr, 200, [], JSON_PARTIAL_OUTPUT_ON_ERROR);
-    // }
-}
+    }
