@@ -15,7 +15,6 @@ class CompanyUserController extends Controller
         public function add_user(Request $request) //done
         {
         $token = $request->bearerToken();
-        //$token= $token_data->token;
         $secretKey ='345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
         $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
@@ -82,19 +81,15 @@ class CompanyUserController extends Controller
             }
         }
 
-        public function edit_user(Request $request)
+    public function edit_user(Request $request)
     {
-        // $parent=$request->masterId;
         $token = $request->bearerToken();
         $secretKey ='345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
         list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $companyID=intval($id);
         $id=intval($request->id);
-        // dd($id);
-        //$collection=\App\Models\API\Company_user::raw();
         $existingUserData =Company_user::where('_id',$id)->where('delete_status','NO')->get();
-        // dd($existingUserData);
         if($existingUserData != ''){
             return response()->json([
                 'success' => $existingUserData,
@@ -109,20 +104,14 @@ class CompanyUserController extends Controller
        
         public function update_user(Request $request) //done
         {
-            // dd($request->break);
             $token = $request->bearerToken();
-            //$token= $token_data->token;
             $secretKey ='345fgvvc4';
             $decryptedInput = decrypt($token, $secretKey);
             $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
             $company_id=$token_data['0'];
             $new_id=intval($id);
-
             $reqid=intval($request->id);
-            // dd($reqid);
             $existingUserData =Company_user::where('_id',$reqid)->first();
-            // $existingUserData =Company_user::where('company_id',$new_id)->get();
-            // dd($existingUserData);
             if (!$existingUserData) {
                 return response()->json(['message' => 'User not found'], 404);
             }
@@ -136,9 +125,6 @@ class CompanyUserController extends Controller
 
             $password = hash('sha1', $request->user_password);
             $data = [
-                // '_id' => $new_id,
-                // 'company_id'=>$company_id,
-                // 'counter'=>$latest_total_employee,
                 'user_email' => $request->user_email,
                 'user_name' => $request->user_name,
                 'user_password' =>$password,
@@ -169,7 +155,6 @@ class CompanyUserController extends Controller
         public function delete_user(Request $request) //done
         {
             $token = $request->bearerToken();
-            //$token= $token_data->token;
             $secretKey ='345fgvvc4';
             $decryptedInput = decrypt($token, $secretKey);
             $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);

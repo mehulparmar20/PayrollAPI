@@ -8,6 +8,8 @@ use App\Models\API\Company_Employee;
 use App\Helpers\AppHelper;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Image;
+use File;
 use Illuminate\Support\Facades\Hash;
 
 class CompanyEmployeeController extends Controller
@@ -22,6 +24,27 @@ class CompanyEmployeeController extends Controller
         $companyId=intval($id);
         $password = hash('sha1',$request->password);
         $new_id = Company_Employee::max('_id') + 1;
+
+        $photo_name="";
+        $original_name="";
+        $size="";
+        $photo_path="";
+        $path = public_path().'/CompanyEmployee';
+        if ($files = $request->file('file')) {
+            $ImageUpload = Image::make($files);
+            $originalPath = 'CompanyEmployee/';
+            // $ImageUpload->save($originalPath.time().$files->getClientOriginalName());
+
+            $ImageUpload =  $originalPath.time().$files->getClientOriginalName();
+                        $filePath=$files->move($path, $ImageUpload);
+
+            $photo_path = 'CompanyEmployee/'.time().$files->getClientOriginalName();
+            $photo_name = time().$files->getClientOriginalName();
+            $original_name = $files->getClientOriginalName();
+            $size = $request->file("file")->getSize();
+        }
+
+
         $data = [
             '_id' => $new_id,
             'company_id'=>$companyId,
@@ -35,6 +58,13 @@ class CompanyEmployeeController extends Controller
             'password' =>$password,
             'salary' => $request->salary,
             'shift' => $request->shift,
+            'file' => array(array(
+                'filename' => $photo_name,
+                'Originalname' => $original_name,
+                'filesize' => $size,
+                'filepath' => $photo_path
+            )
+            ),
             'insertedTime' => time(),
             'delete_status' => "NO",
             'deleteUser' => "",
@@ -51,99 +81,98 @@ class CompanyEmployeeController extends Controller
         
     }
 
-    public function edit_companyuser(Request $request)
+    public function edit_employee(Request $request)
     {
-        // dd($request);
-        // $parent=$request->masterId;
+       $token = $request->bearerToken();
+       $secretKey ='345fgvvc4';
+       $decryptedInput = decrypt($token, $secretKey);
+       list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+       $companyId=intval($id);
+       $id=intval($request->id);
+       $existingemployeeData =Company_Employee::where('_id',$id)->where('delete_status','NO')->get();
+       if($existingemployeeData != ''){
+           return response()->json([
+               'success' => $existingemployeeData,
+           ]);
+       }
+       else{
+           return response()->json([
+               'success' => 'No record'
+           ]);
+       }
+    }
+    public function update_employee(Request $request) //done
+    {
         $token = $request->bearerToken();
         $secretKey ='345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
-        list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-        $companyID=intval($id);
-        $id=$request->id;
-        // dd($request->_id);
-        $collection=\App\Models\API\Company_user::raw();
-
-        $show1 = $collection->aggregate([
-            ['$match' => ['_id' => (int)$id, 'company_id' =>$companyID]]
-            // ['$unwind' => ['path' => '$company_user']]
-        ]);
-        // dd($show1);
-        foreach ($show1 as $row) {
-            $company=array();
-            if(isset($row)){
-                $companyNameID=$row;
-                $companyName =\App\Models\API\Company_user::raw()->aggregate([
-                    ['$match' => ["company_id" => (int)$companyID]],
-                    ['$match' => ["_id" => (int)$id]],
-                ]);
-                foreach($companyName as $name){
-                    $l=0;
-                    $company[$l] = $name;
-                    $l++;
+        $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $companyId=intval($id);
+        $reqid=intval($request->id);
+        $companyArrayUp =Company_Employee::where('_id',$reqid)->first();
+        if (!$companyArrayUp) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+            $photo_name='';
+            $original_name='';
+            $size='';
+            $photo_path='';
+            if($request->file != null){
+                if ($request->hasFile('file') && $request->file('file') != '') {
+                    if(!empty($companyArrayUp['file'][0]['filename'])){
+                        $imagePath = public_path('CompanyEmployee/'.$companyArrayUp['file'][0]['filename']);
+                        if(File::exists($imagePath)){
+                            unlink($imagePath);
+                        }
+                    }
+                    $files = $request->file('file');
+                    $ImageUpload = Image::make($files);
+                    $originalPath = 'CompanyEmployee/';
+                    $ImageUpload->save($originalPath.time().$files->getClientOriginalName());
+                    $photo_path = 'CompanyEmployee/'.time().$files->getClientOriginalName();
+                    $photo_name = time().$files->getClientOriginalName();
+                    $original_name = $files->getClientOriginalName();
+                    $size = $request->file("file")->getSize();
                 }
-            }
-            $mainIdac = $row['_id'];
-            $activeCustomer = array();
-            $k = 0;
-            $activeCustomer[$k] = $row;
-            $k++;
-        }
-        
-        $customerData[]=array("Customer" => $activeCustomer);
-        if($activeCustomer != ''){
-            return response()->json([
-                'success' => $customerData,
-            ]);
-        }
-        else{
-            return response()->json([
-                'success' => 'No record'
-            ]);
-        }
-    }
-        public function update_user(Request $request) //done
-        {
-            $collection=\App\Models\API\Company_user::raw();
-            $token = $request->bearerToken();
-            $secretKey ='345fgvvc4';
-            $decryptedInput = decrypt($token, $secretKey);
-            $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-            $companyId=intval($id);
-            $id=$request->id;
-            // dd($id);
-
-            // $masterId=(int)$request->masterId;
-            $maxLength=6500;
-    
-            $docAvailable = AppHelper::instance()->checkDoc(\App\Models\API\Company_user::raw(),$companyId,$maxLength);
-            $info = (explode("^",$docAvailable));
-            $docId = $info[1];
-    
-            $userData=$collection->updateOne(['company_id' => (int)$companyId,'company_user._id' => (int)$id],
-            ['$set' => [
-                'company_user.$.user_email' => $request->user_email,
-                'company_user.$.user_name' => $request->user_name,
-                'company_user.$.user_type' => $request->user_type,
-                'company_user.$.user_add_date' => $request->user_add_date,
-                'company_user.$.role' => $request->role,
-                'company_user.$.employee' => $request->employee,
-                'company_user.$.attendance' => $request->attendance,
-                'company_user.$.break' => $request->break,
-                'company_user.$.leave' => $request->leave,
-                'company_user.$.letters' => $request->letters,
-                'company_user.$.administration' => $request->administration,
-                'company_user.$.edit_time' => time()
-                ]]
-            );
-            if ($userData==true)
-            {
-                $arr = array('status' => 'success', 'message' => 'User Updated successfully.','statusCode' => 200);
-                return json_encode($arr);
+            }else{
+                $photo_name=$companyArrayUp['file'][0]['filename'];
+                $original_name=$companyArrayUp['file'][0]['Originalname'];
+                $size=$companyArrayUp['file'][0]['filesize'];
+                $photo_path=$companyArrayUp['file'][0]['filepath'];
             }
 
+        $password = hash('sha1', $request->user_password);
+        $data = [
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email'=>$request->email,
+            'joining_date'=>$request->joining_date,
+            'phone'=>$request->phone,
+            'department'=>$request->department,
+            'password' =>$password,
+            'salary' => $request->salary,
+            'shift' => $request->shift,
+            'file' => array(array(
+                'filename' => $photo_name,
+                'Originalname' => $original_name,
+                'filesize' => $size,
+                'filepath' => $photo_path
+            )
+            ),
+            'insertedTime' => time(),
+            'delete_status' => "NO",
+            'deleteUser' => "",
+            'deleteTime' => "",
+        ];
+        $result = $companyArrayUp->update($data);
+            if ($result) {
+            return response()->json(['message' => 'User updated successfully'], 200);
+        } else {
+            return response()->json(['message' => 'Failed to update user'], 500);
         }
-        public function delete_user(Request $request) //done
+
+        }
+        public function delete_employee(Request $request) //done
         {
             $token = $request->bearerToken();
             $secretKey ='345fgvvc4';
