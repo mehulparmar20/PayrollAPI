@@ -185,6 +185,7 @@ class CompanyAnnouncementController extends Controller
             $companyId=intval($id);
             $collection=\App\Models\API\Company_Announcement::raw();
             $id=$request->id;
+            
             $masterId=(int)$request->masterId;
             $maxLength=6500;
             $docAvailable = AppHelper::instance()->checkDoc(\App\Models\API\Company_Announcement::raw(),$companyId,$maxLength);

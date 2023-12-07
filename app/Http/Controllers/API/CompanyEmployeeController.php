@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\API\Company_admin;
 use App\Models\API\Company_Admins;
+use App\Models\API\Company_user;
 use App\Models\API\Company_Employee;
 use App\Helpers\AppHelper;
 use App\Models\User;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Hash;
 
 class CompanyEmployeeController extends Controller
 {
-        public function add_employee(Request $request) //done
+    public function add_employee(Request $request) //done
         {
         $maxLength = 7000;
         $token = $request->bearerToken();
@@ -30,6 +31,7 @@ class CompanyEmployeeController extends Controller
         $size="";
         $photo_path="";
         $path = public_path().'/CompanyEmployee';
+        // dd($path);
         if ($files = $request->file('file')) {
             $ImageUpload = Image::make($files);
             $originalPath = 'CompanyEmployee/';
@@ -270,16 +272,16 @@ class CompanyEmployeeController extends Controller
         echo json_encode($completedata);
     }
 
-        public function searchuser($name) //search
-        {
-            $results=Company_user::where('user_name','like','%'.$name.'%')->get();
-            // dd($results);
-             if($results->isEmpty()) {
-                return response()->json(['message' => 'No results found'], 404);
-            } else {
+        // public function searchuser($name) //search
+        // {
+        //     $results=Company_user::where('user_name','like','%'.$name.'%')->get();
+        //     // dd($results);
+        //      if($results->isEmpty()) {
+        //         return response()->json(['message' => 'No results found'], 404);
+        //     } else {
                 
-                return response()->json(['results' => $results], 200);
-            }
-        }
+        //         return response()->json(['results' => $results], 200);
+        //     }
+        // }
             
 }

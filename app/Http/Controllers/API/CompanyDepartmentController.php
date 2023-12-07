@@ -14,7 +14,6 @@ class CompanyDepartmentController extends Controller
     {
         $maxLength = 7000;
         $token = $request->bearerToken();
-        //$token= $token_data->token;
         $secretKey = '345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
          list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
@@ -35,7 +34,6 @@ class CompanyDepartmentController extends Controller
              $info = (explode("^",$docAvailable));
              $docId = $info[1];
              $counter = $info[0];
-        //    dd('fault');
              $cons['_id'] = AppHelper::instance()->getAdminDocumentSequence($companyId, Company_Department::raw(),'company_department',$docId);
              Company_Department::raw()->updateOne(['company_id' => $companyId,'_id'=>(int)$docId], ['$push' => ['company_department' => $cons]]);
              $cons['masterID'] = $docId;
@@ -61,7 +59,6 @@ class CompanyDepartmentController extends Controller
 
     public function edit_department(Request $request)//done
    {
-    // dd($request);
      // $parent=$request->masterId;
      $token = $request->bearerToken();
      $secretKey ='345fgvvc4';
@@ -69,14 +66,12 @@ class CompanyDepartmentController extends Controller
      list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
      $companyID=intval($id);
      $id=$request->id;
-    //  dd($id);
      $collection=\App\Models\API\Company_Department::raw();
 
      $show1 = $collection->aggregate([
          ['$match' => ['_id' => (int)$id, 'company_id' =>$companyID]]
          // ['$unwind' => ['path' => '$company_user']]
      ]);
-     // dd($show1);
      foreach ($show1 as $row) {
          $company=array();
          $paymentTerms=array();
@@ -92,7 +87,6 @@ class CompanyDepartmentController extends Controller
              ]);
              foreach($companyName as $name){
                  $l=0;
-                 // dd($name);
                  $company[$l] = $name;
                  $l++;
              }
@@ -127,23 +121,17 @@ class CompanyDepartmentController extends Controller
         $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $companyId=intval($id);
         $id=$request->id;
-        // dd($id);
-
         // $masterId=(int)$request->masterId;
         $maxLength=6500;
-
         $docAvailable = AppHelper::instance()->checkDoc(\App\Models\API\Company_Department::raw(),$companyId,$maxLength);
         $info = (explode("^",$docAvailable));
         $docId = $info[1];
-
         $userData=$collection->updateOne(['company_id' => (int)$companyId,'_id' => (int)$id,'company_department._id' => (int)$id],
         ['$set' => [
             'company_department.$.department_name' => $request->department_name,
             'company_department.$.edit_time' => time()
             ]]
         );
-
-
         if ($userData==true)
         {
             $arr = array('status' => 'success', 'message' => 'Department Updated successfully.','statusCode' => 200);
@@ -152,16 +140,16 @@ class CompanyDepartmentController extends Controller
     }
     public function delete_department(Request $request) //done
     {
-        
         $token = $request->bearerToken();
         $secretKey ='345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
         list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-        $id=(int)$request->id;
+        $ids=(int)$request->id;
         $masterId=(int)$request->masterId;
+        // $masterId=(int)$request->parentId;
         $companyID=intval($id);
-        $departData=Company_Department::raw()->updateOne(['company_id' => $companyID,'_id' => $masterId,'company_department._id' => $id],
-        ['$set' => ['company_department.$.delete_status' => 'YES','company_department.$.deleteUser' =>intval($id),'company_department.$.deleteTime' => time()]]
+        $departData=Company_Department::raw()->updateOne(['company_id' => $companyID,'_id' => $masterId,'company_department._id' => $ids],
+        ['$set' => ['company_department.$.delete_status' => 'YES','company_department.$.deleteUser' =>$companyID,'company_department.$.deleteTime' => time()]]
         );
        if ($departData==true)
        {
@@ -170,40 +158,35 @@ class CompanyDepartmentController extends Controller
        }
     }
     
-    public function index_department(Request $request)//notdone
+    public function view_department(Request $request)// done
     {
-       
-        // $token = $request->bearerToken();
-        // //$token= $token_data->token;
-        // $secretKey = '345fgvvc4';
-        // $decryptedInput = decrypt($token, $secretKey);
-        // $token_data = list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-        // $company_id = $token_data['0'];
-        // $company_id = intval($id);
-        // // $records = Company_Department::all();
-        // // dd($records);
-        // $records = Company_Department::where('delete_status', 1)->paginate(1);
-        // // return $records;
-        // return response()->json(['success' => true, 'data' => $records], 200);
-       
-           
-        }
-    
-      
-
-
-    public function searchdepartment($name) //notdone search
+        $token = $request->bearerToken();
+        $secretKey ='345fgvvc4';
+        $decryptedInput = decrypt($token, $secretKey);
+        $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $company_id=intval($id);
+        $records=Company_Department::where('company_department.delete_status','NO')->where('company_id',$company_id)->get();
+        // dd($records);
+        return response()->json(['success' => true,'data' => $records], 200);
+    }
+    public function paginate_department(Request $request)
     {
-        $results =Company_Department::where('department_name', 'like', '%' . $name . '%')->get();
-        // dd($results);
-        if ($results->isEmpty()) {
+        $token = $request->bearerToken();
+        $secretKey ='345fgvvc4';
+        $decryptedInput = decrypt($token, $secretKey);
+        $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $company_id=intval($id);
+        $records=Company_Department::where('company_department.delete_status','NO')->where('company_id',$company_id)->paginate(10);
+        return response()->json(['success' => true,'data' => $records], 200);
+    }
+    public function search_department(Request $request) //search
+    {
+        $name=$request->department_name;
+        $results=Company_Department::where('company_department.department_name','like','%'.$name.'%')->get();
+        if($results->isEmpty()) {
             return response()->json(['message' => 'No results found'], 404);
         } else {
-
             return response()->json(['results' => $results], 200);
         }
     }
-
-
-
 }

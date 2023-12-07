@@ -10,24 +10,19 @@ use Illuminate\Http\Request;
 
 class CompanyDesignationController extends Controller
 {
-    public function add_designation(Request $request) //done
+    public function add_designation(Request $request) 
     {
         $maxLength = 7000;
         $token = $request->bearerToken();
-        //$token= $token_data->token;
         $secretKey = '345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
-         list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-         $companyId=intval($id);
-         //relation
-        //  $designation = Company_Designation::find($companyId); 
-        //  $departmentName = $designation->companydepartment->department_name;
-
-         $docAvailable = AppHelper::instance()->checkDoc(Company_Designation::raw(),$companyId,$maxLength);
-         $password = hash('sha1',$request->password);
-         $cons = array(
-                    '_id' => 1,
-                    'company_id' => $companyId,
+        list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $companyId=intval($id);
+        $docAvailable = AppHelper::instance()->checkDoc(Company_Designation::raw(),$companyId,$maxLength);
+        $password = hash('sha1',$request->password);
+        $cons = array(
+            '_id' => 1,
+            'company_id' => $companyId,
                     'counter' => 0,
                     'designation_name' => $request->designation_name,
                     'department_id'=>$request->department_id,
@@ -75,7 +70,6 @@ class CompanyDesignationController extends Controller
       list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
       $companyID=intval($id);
       $id=$request->id;
-        // dd($id);
       $collection=\App\Models\API\Company_Designation::raw();
       $show1 = $collection->aggregate([
           ['$match' => ['_id' => (int)$id, 'company_id' =>$companyID]]
@@ -96,7 +90,6 @@ class CompanyDesignationController extends Controller
               ]);
               foreach($companyName as $name){
                   $l=0;
-                  // dd($name);
                   $company[$l] = $name;
                   $l++;
               }
@@ -157,18 +150,16 @@ class CompanyDesignationController extends Controller
             return json_encode($arr);
         }
     }
-     public function delete_designation(Request $request) // done
+     public function delete_designation(Request $request) 
     {
         $token = $request->bearerToken();
         $secretKey ='345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
         list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $companyID=intval($id);
-        $id=(int)$request->id;
-        // dd($id);
+        $ids=(int)$request->id;
         $masterId=(int)$request->masterId;
-        // dd($masterId);
-        $designData=Company_Designation::raw()->updateOne(['company_id' => $companyID,'_id' => $masterId,'company_designation._id' => $id],
+        $designData=Company_Designation::raw()->updateOne(['company_id' => $companyID,'_id' => $masterId,'company_designation._id' => $ids],
         ['$set' => ['company_designation.$.delete_status' =>'YES','company_designation.$.deleteUser' =>$companyID,'company_designation.$.deleteTime' => time()]]
         );
        if ($designData==true)
@@ -179,39 +170,33 @@ class CompanyDesignationController extends Controller
     }
     public function view_designation(Request $request)// done
     {
-        // $designations = Company_Designation::with('companydepartment')->get();
-        // dd($designations);
+        $designations = Company_Designation::with('companydepartment')->get();
+        dd($designations);
         $token = $request->bearerToken();
-        //$token= $token_data->token;
         $secretKey ='345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
         $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $company_id=intval($id);
-        // dd($company_id);
-        // $records=Company_Designation::all();
         $records=Company_Designation::with('companydepartment')->where('company_designation.delete_status','NO')->where('company_id',$company_id)->get();
-    //   dd($records);
         return response()->json(['success' => true,'data' => $records], 200);
     }
     public function paginate_designation(Request $request)//done
     {
         $token = $request->bearerToken();
-        //$token= $token_data->token;
         $secretKey ='345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
-        $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-        // $company_id=$token_data['0'];
+        $token_data=list($id, $user, $admin_name, $companyname) =
+         explode('|', $decryptedInput);
         $company_id=intval($id);
-        // $records=Company_Designation::paginate(10);
-        $records=Company_Designation::where('company_designation.delete_status','NO')->where('company_id',$company_id)->paginate(10);
+        $records=Company_Designation::where('company_designation.delete_status','NO')
+        ->where('company_id',$company_id)->paginate(10);
         // dd($records);
         return response()->json(['success' => true,'data' => $records], 200);
     }
     public function search_designation(Request $request) //search
     {
-        $name=$request->name;
+        $name=$request->designation_name;
         $results=Company_Designation::where('company_designation.designation_name','like','%'.$name.'%')->get();
-        // dd($results);
         if($results->isEmpty()) {
             return response()->json(['message' => 'No results found'], 404);
         } else {

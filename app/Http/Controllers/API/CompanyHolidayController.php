@@ -10,11 +10,10 @@ use App\Helpers\AppHelper;
 
 class CompanyHolidayController extends Controller
 {
-    public function add_holiday(Request $request) //done
+    public function add_holiday(Request $request) 
     { 
         $maxLength = 7000;
         $token = $request->bearerToken();
-        //$token= $token_data->token;
         $secretKey = '345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
          list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
@@ -26,24 +25,22 @@ class CompanyHolidayController extends Controller
             'company_id' => $companyId,
             'counter' => 0,
             'holiday_name' => $request->holiday_name,
-                    'holiday_date' => $request->holiday_date,
-                    'holiday_description' => $request->holiday_description,
-                    'delete_status' => "NO",
-                    'created_at' => '',
-                    'updated_at' => '',
+            'holiday_date' => $request->holiday_date,
+            'holiday_description' => $request->holiday_description,
+            'delete_status' => "NO",
+            'created_at' => '',
+            'updated_at' => '',
          );
          if($docAvailable != "No")
          {
              $info = (explode("^",$docAvailable));
              $docId = $info[1];
              $counter = $info[0];
-        //    dd('fault');
              $cons['_id'] = AppHelper::instance()->getAdminDocumentSequence($companyId, Company_Holiday::raw(),'company_holiday',$docId);
              Company_Holiday::raw()->updateOne(['company_id' => $companyId,'_id'=>(int)$docId], ['$push' => ['company_holiday' => $cons]]);
              $cons['masterID'] = $docId;
              echo json_encode($cons);
- 
-             return response()->json(['message' => 'Holiday Added successfully'], 201);
+          return response()->json(['message' => 'Holiday Added successfully'], 201);
          }
          else
          {
@@ -61,22 +58,23 @@ class CompanyHolidayController extends Controller
             
     }
 
-    public function edit_holiday(Request $request)//done
+    public function edit_holiday(Request $request)//doubt
     {
+        $maxLength = 7000;
         $token = $request->bearerToken();
         $secretKey ='345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
         list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $companyID=intval($id);
+        $parent=$request->masterId;
         $id=$request->id;
-       //  dd($id);
+        //parent
         $collection=\App\Models\API\Company_Holiday::raw();
-   
         $show1 = $collection->aggregate([
-            ['$match' => ['_id' => (int)$id, 'company_id' =>$companyID]]
+            ['$match' => ['_id' => (int)$id, 'company_id' =>$companyID]],
+            ['$match' => ['company_holiday._id' => (int)$id,'company_holiday.delete_status' => 'NO']]
             // ['$unwind' => ['path' => '$company_user']]
-        ]);
-        // dd($show1);
+        ]);    
         foreach ($show1 as $row) {
             $company=array();
             $paymentTerms=array();
@@ -88,11 +86,11 @@ class CompanyHolidayController extends Controller
                     ['$match' => ["company_id" => (int)$companyID]],
                     //['$unwind' => '$company'],
                     ['$match' => ["_id" => (int)$id]],
+                    ['$match' => ['company_holiday._id' => (int)$id,'company_holiday.delete_status' => 'NO']]
                     // ['$project' => ['company._id' => 1,'company.companyName' => 1]]
                 ]);
                 foreach($companyName as $name){
                     $l=0;
-                    // dd($name);
                     $company[$l] = $name;
                     $l++;
                 }
@@ -116,7 +114,7 @@ class CompanyHolidayController extends Controller
             ]);
         }
     }
-    public function update_holiday(Request $request) //done
+    public function update_holiday(Request $request)
     {
 
         $collection=\App\Models\API\Company_Holiday::raw();
@@ -125,17 +123,14 @@ class CompanyHolidayController extends Controller
         $decryptedInput = decrypt($token, $secretKey);
         $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $companyId=intval($id);
-        $id=$request->id;
-        // dd($id);
-
+        $ids=$request->id;
         // $masterId=(int)$request->masterId;
         $maxLength=6500;
-
         $docAvailable = AppHelper::instance()->checkDoc(\App\Models\API\Company_Holiday::raw(),$companyId,$maxLength);
         $info = (explode("^",$docAvailable));
         $docId = $info[1];
 
-        $userData=$collection->updateOne(['company_id' => (int)$companyId,'_id' => (int)$id,'company_holiday._id' => (int)$id],
+        $userData=$collection->updateOne(['company_id' => (int)$companyId,'_id' => (int)$id,'company_holiday._id' => (int)$ids],
         ['$set' => [
             'company_holiday.$.holiday_name' => $request->holiday_name,
             'company_holiday.$.holiday_date' => $request->holiday_date,
@@ -151,17 +146,17 @@ class CompanyHolidayController extends Controller
             return json_encode($arr);
         }
     }
-    public function delete_holiday(Request $request) //done
+    public function delete_holiday(Request $request) //doubt
     {
         $token = $request->bearerToken();
         $secretKey ='345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
         list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-        $id=(int)$request->id;
+        $ids=(int)$request->id;
         $masterId=(int)$request->masterId;
         $companyID=intval($id);
-        $departData=Company_Holiday::raw()->updateOne(['company_id' => $companyID,'_id' => $masterId,'company_holiday._id' => $id],
-        ['$set' => ['company_holiday.$.delete_status' => 'YES','company_holiday.$.deleteUser' =>intval($id),'company_holiday.$.deleteTime' => time()]]
+        $departData=Company_Holiday::raw()->updateOne(['company_id' => $companyID,'_id' => $masterId,'company_holiday._id' => $ids],
+        ['$set' => ['company_holiday.$.delete_status' => 'YES','company_holiday.$.deleteUser' =>$companyID,'company_holiday.$.deleteTime' => time()]]
         );
        if ($departData==true)
        {
@@ -170,36 +165,36 @@ class CompanyHolidayController extends Controller
        }
     }
 
-    public function index_holiday(Request $request)//not done
+    public function view_holiday(Request $request)
     {
         $token = $request->bearerToken();
-        //$token= $token_data->token;
-        $secretKey = '345fgvvc4';
+        $secretKey ='345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
-        $token_data = list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-        $company_id = $token_data['0'];
-        $company_id = intval($id);
-        $records = Company_Holiday::where('delete_status', 1)->get();
-        // $records=Holiday::where("delete_status","1")->paginate(1);
-        return response()->json(['success' => true, 'data' => $records], 200);
+        $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $company_id=intval($id);
+        $records=Company_Holiday::where('company_holiday.delete_status',"NO")->where('company_id',$company_id)->get();
+        return response()->json(['success' => true,'data' => $records], 200);
     }
-
-    public function searchholiday(Request $request) //not done search
+    public function paginate_holiday(Request $request)
     {
-        $query = $request->input('query');
-
-        // Perform a basic search query on the MongoDB collection
-        $results = Company_Holiday::where('field_to_search', 'like', "%$query%")->get();
-
-        return response()->json($results);
-        // $results = Company_Holiday::where('holiday_name', 'like', '%' . $name . '%')->get();
-        // // dd($results);
-        // if ($results->isEmpty()) {
-        //     return response()->json(['message' => 'No results found'], 404);
-        // } else {
-
-        //     return response()->json(['results' => $results], 200);
-        // }
+        $token = $request->bearerToken();
+        $secretKey ='345fgvvc4';
+        $decryptedInput = decrypt($token, $secretKey);
+        $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $company_id=intval($id);
+        $records=Company_Holiday::where('company_holiday.delete_status','NO')->where('company_id',$company_id)->paginate(10);
+        return response()->json(['success' => true,'data' => $records], 200);
+    }
+    public function search_holiday(Request $request) 
+    {
+        $name=$request->holiday_name;
+        $results=Company_Holiday::where('company_holiday.holiday_name','like','%'.$name.'%')->get();
+        if($results->isEmpty()) {
+            return response()->json(['message' => 'No results found'], 404);
+        } else {
+            
+            return response()->json(['results' => $results], 200);
+        }
     }
 
 }
