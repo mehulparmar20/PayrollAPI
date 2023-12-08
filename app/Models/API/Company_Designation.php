@@ -4,6 +4,7 @@
 namespace App\Models\API;
 use MongoDB\Laravel\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\API\Company_Department;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
@@ -15,17 +16,20 @@ class Company_Designation extends Model
    use HasApiTokens;
     protected $connection = 'mongodb';
     protected $collection = 'company_designation';
+    protected $primarykey="_id";
     public $timestamps = true;
+    function getcompanydepartment()
+    {
+        return $this->hasOne('App\Models\API\Company_Department','department_id');
+    }
     protected $fillable = [
         '_token', 
         'designation_name', 
+        'department_id',
         'delete_status',
     ];
-    public function companydepartment()
-{
-    return $this->belongsTo(Company_Department::class, 'department_id');
-}
    
+  
     public function up()
     {
         Schema::create('company_designation', function (Blueprint $collection) {

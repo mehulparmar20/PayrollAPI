@@ -50,7 +50,7 @@ class CompanyAdminsController extends Controller
         $getCompany = Company_Admins::max('_id');
         $new_id=$getCompany+1;
 
-        $companyname= $request->company_name;
+ $companyname= $request->company_name;
         $user= $request->admin_username;
         $admin_name= $request->admin_name;
         $id=$new_id;
@@ -403,7 +403,7 @@ class CompanyAdminsController extends Controller
        
 
     }
-    public function update_companyadmin(Request $request)
+    public function update_companyadmin(Request $request)//success new field country..
     {
         $token = $request->bearerToken();
         $secretKey ='345fgvvc4';

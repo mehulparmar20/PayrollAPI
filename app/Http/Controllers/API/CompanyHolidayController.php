@@ -57,7 +57,6 @@ class CompanyHolidayController extends Controller
          }
             
     }
-
     public function edit_holiday(Request $request)//doubt
     {
         $maxLength = 7000;
@@ -116,7 +115,6 @@ class CompanyHolidayController extends Controller
     }
     public function update_holiday(Request $request)
     {
-
         $collection=\App\Models\API\Company_Holiday::raw();
         $token = $request->bearerToken();
         $secretKey ='345fgvvc4';
@@ -124,13 +122,12 @@ class CompanyHolidayController extends Controller
         $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $companyId=intval($id);
         $ids=$request->id;
-        // $masterId=(int)$request->masterId;
+        $masterId=(int)$request->masterId;
         $maxLength=6500;
         $docAvailable = AppHelper::instance()->checkDoc(\App\Models\API\Company_Holiday::raw(),$companyId,$maxLength);
         $info = (explode("^",$docAvailable));
         $docId = $info[1];
-
-        $userData=$collection->updateOne(['company_id' => (int)$companyId,'_id' => (int)$id,'company_holiday._id' => (int)$ids],
+        $userData=$collection->updateOne(['company_id' => (int)$companyId,'_id' => (int)$info,'company_holiday._id' => (int)$ids],
         ['$set' => [
             'company_holiday.$.holiday_name' => $request->holiday_name,
             'company_holiday.$.holiday_date' => $request->holiday_date,
@@ -138,9 +135,7 @@ class CompanyHolidayController extends Controller
             'company_holiday.$.edit_time' => time()
             ]]
         );
-
-
-        if ($userData==true)
+       if ($userData==true)
         {
             $arr = array('status' => 'success', 'message' => 'Holiday Updated successfully.','statusCode' => 200);
             return json_encode($arr);
@@ -173,7 +168,21 @@ class CompanyHolidayController extends Controller
         $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $company_id=intval($id);
         $records=Company_Holiday::where('company_holiday.delete_status',"NO")->where('company_id',$company_id)->get();
-        return response()->json(['success' => true,'data' => $records], 200);
+        $data = json_decode($records, true);
+
+        if ($data) {
+            $filteredData = array_map(function ($item)
+            {
+                $filteredDepartments = array_filter($item['company_holiday'], function ($holiday) {
+                    return $holiday['delete_status'] === 'NO';
+                });
+                $filteredDepartments = array_intersect_key($item['company_holiday'], $filteredDepartments);
+                $item['company_holiday'] = $filteredDepartments;
+        
+                return $item;
+            }, $data);
+        }
+        return response()->json(['success' => true,'data' => $filteredData], 200);
     }
     public function paginate_holiday(Request $request)
     {
