@@ -158,16 +158,16 @@ class CompanyDesignationController extends Controller
     }
     public function view_designation(Request $request)// done
     {
-    
         $token = $request->bearerToken();
         $secretKey ='345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
         $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $company_id=intval($id);
-    //    $records=Company_Designation::where('company_designation.delete_status','NO')
-    //    ->where('company_id',$company_id)->get();
-       $records = Company_Designation::with('department')->where('company_id',$company_id)->get();
-       dd($records);
+       $records=Company_Designation::where('company_designation.delete_status','NO')
+       ->where('company_id',$company_id)->get();
+      //relation
+      // $records = Company_Designation::with('department')->get();
+      // dd($records);
        $data = json_decode($records, true);
        if ($data) {
         $filteredData = array_map(function ($item)
