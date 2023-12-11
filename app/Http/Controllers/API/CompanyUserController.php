@@ -152,7 +152,7 @@ class CompanyUserController extends Controller
             }
         
         }
-        public function delete_user(Request $request) //done
+         public function delete_user(Request $request) //done
         {
             $token = $request->bearerToken();
             $secretKey ='345fgvvc4';
@@ -161,7 +161,9 @@ class CompanyUserController extends Controller
             
             $company_id=$token_data['0'];
             $new_id=intval($id);
-            $data = Company_user::where('_id',$new_id)->first();
+            $ida=intval($request->id);
+            $data = Company_user::where('_id',$ida)->first();
+            // dd($data);
             $data->delete_status ='YES';
             $data->save();
             return response()->json(['status' => 'Deleted Successfully']);
