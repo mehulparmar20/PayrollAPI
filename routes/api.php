@@ -60,7 +60,7 @@ Route::group(['middleware' => 'tokenauth'], function () {
      Route::get('view_department','App\Http\Controllers\API\CompanyDepartmentController@view_department');
      Route::post('delete_department','App\Http\Controllers\API\CompanyDepartmentController@delete_department');
      Route::get('paginate_department','App\Http\Controllers\API\CompanyDepartmentController@paginate_department');
-    Route::post('search_department','App\Http\Controllers\API\CompanyDepartmentController@search_department');
+     Route::post('search_department','App\Http\Controllers\API\CompanyDepartmentController@search_department');
 
       //CompanyEmployeeController
     Route::post('add_employee','App\Http\Controllers\API\CompanyEmployeeController@add_employee');

@@ -18,10 +18,7 @@ class Company_Designation extends Model
     protected $collection = 'company_designation';
     protected $primarykey="_id";
     public $timestamps = true;
-    function getcompanydepartment()
-    {
-        return $this->hasOne('App\Models\API\Company_Department','department_id');
-    }
+   
     protected $fillable = [
         '_token', 
         'designation_name', 
@@ -45,6 +42,10 @@ class Company_Designation extends Model
     public function down()
     {
         Schema::dropIfExists('company_designation');
+    }
+    public function department()
+    {
+        return $this->belongsTo(Company_Department::class, 'department_id');
     }
 }
 
