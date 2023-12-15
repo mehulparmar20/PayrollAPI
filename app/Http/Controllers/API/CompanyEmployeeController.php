@@ -103,6 +103,8 @@ class CompanyEmployeeController extends Controller
            ]);
        }
     }
+    
+   
     public function update_employee(Request $request) //done
     {
         $token = $request->bearerToken();
