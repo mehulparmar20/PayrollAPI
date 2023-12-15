@@ -87,9 +87,9 @@ class CompanyUserController extends Controller
         $secretKey ='345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
         list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-        $companyID=intval($id);
+        $company_id=intval($id);
         $id=intval($request->id);
-        $existingUserData =Company_user::where('_id',$id)->where('delete_status','NO')->get();
+        $existingUserData =Company_user::where('_id',$id)->where('company_id',$company_id)->where('delete_status','NO')->get();
         if($existingUserData != ''){
             return response()->json([
                 'success' => $existingUserData,
@@ -108,7 +108,6 @@ class CompanyUserController extends Controller
             $secretKey ='345fgvvc4';
             $decryptedInput = decrypt($token, $secretKey);
             $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-            $company_id=$token_data['0'];
             $new_id=intval($id);
             $reqid=intval($request->id);
             $existingUserData =Company_user::where('_id',$reqid)->first();
@@ -167,6 +166,7 @@ class CompanyUserController extends Controller
             $data->delete_status ='YES';
             $data->save();
             return response()->json(['status' => 'Deleted Successfully']);
+            
         }
         public function view_user(Request $request)
         {
@@ -175,10 +175,15 @@ class CompanyUserController extends Controller
             $secretKey ='345fgvvc4';
             $decryptedInput = decrypt($token, $secretKey);
             $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-            $company_id=$token_data['0'];
+            //$company_id=$token_data['0'];
             $company_id=intval($id);
-            $records=Company_user::where('delete_status', 'NO')->get();
-            return response()->json(['success' => true,'data' => $records], 200);
+            $records=Company_user::where('delete_status', 'NO')->where('company_id',$company_id)->get();
+            //return response()->json(['success' => true,'data' => $records], 200);
+            if ($records->isEmpty()) {
+            return response()->json(['message' => 'No results found'], 404);
+            } else {
+                return response()->json(['success' => true, 'data' => $records], 200);
+            }
         }
         public function paginate_user(Request $request)
         {
@@ -187,10 +192,15 @@ class CompanyUserController extends Controller
             $secretKey ='345fgvvc4';
             $decryptedInput = decrypt($token, $secretKey);
             $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-            $company_id=$token_data['0'];
+            //$company_id=$token_data['0'];
             $company_id=intval($id);
             $records=Company_user::where('delete_status', 'NO')->paginate(10);
-            return response()->json(['success' => true,'data' => $records], 200);
+            //return response()->json(['success' => true,'data' => $records], 200);
+            if ($records->isEmpty()) {
+            return response()->json(['message' => 'No results found'], 404);
+            } else {
+                return response()->json(['success' => true, 'data' => $records], 200);
+            }
         }
         public function search_user(Request $request) //search
         {
