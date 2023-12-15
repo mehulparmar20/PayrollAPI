@@ -18,6 +18,9 @@ use Mail;
 use Hash;
 use Session;
 use Validator;
+use Intervention\Image\Facades\Image;
+// use Image;
+use File;
 
 class CompanyAdminsController extends Controller
 {
@@ -47,10 +50,29 @@ class CompanyAdminsController extends Controller
         $getCompany = Company_Admins::max('_id');
         $new_id=$getCompany+1;
 
-        $companyname= $request->company_name;
+ $companyname= $request->company_name;
         $user= $request->admin_username;
         $admin_name= $request->admin_name;
         $id=$new_id;
+      //logo
+    //   $photo_name="";
+    //   $original_name="";
+    //   $size="";
+    //   $photo_path="";
+    //   $path = public_path().'/CompanyAdmins';
+    //   if ($files = $request->file('file')) {
+    //       $ImageUpload = Image::make($files);
+    //       $originalPath = 'CompanyAdmins/';
+    //       // $ImageUpload->save($originalPath.time().$files->getClientOriginalName());
+
+    //       $ImageUpload =  $originalPath.time().$files->getClientOriginalName();
+    //                   $filePath=$files->move($path, $ImageUpload);
+
+    //       $photo_path = 'CompanyAdmins/'.time().$files->getClientOriginalName();
+    //       $photo_name = time().$files->getClientOriginalName();
+    //       $original_name = $files->getClientOriginalName();
+    //       $size = $request->file("file")->getSize();
+    //   }//end logo
         $token = encrypt($id . '|'. $user . '|' . $admin_name. '|' . $companyname, '345fgvvc4');
        
         $data=array(
@@ -64,6 +86,11 @@ class CompanyAdminsController extends Controller
             'admin_username' => $request->input('admin_username'),
             'total_employee' => $request->input('total_employee'),
             'token'=> $token,
+            'country' => $request->input('country'),
+            'city' => $request->input('city'),
+            'state' => $request->input('state'),
+            'pincode' => $request->input('pincode'),
+            'fax' => $request->input('fax'),
             // 'userId' => (int)Auth::user()->_id,
             // 'insertedUserId' => Auth::user()->userName,
             // 'deleteStatus' => '0',
@@ -79,11 +106,6 @@ class CompanyAdminsController extends Controller
             'company_upload_storage' => '',
             'register_ip' => '',
             'last_login_id' => '',
-            'country' => '',
-            'city' => '',
-            'state' => '',
-            'pincode' => '',
-            'fax' => '',
             'os' => '',
             'browser' => '',
             'login_time' => '',
@@ -350,6 +372,7 @@ class CompanyAdminsController extends Controller
                     }
                     }
                 }
+               
             }
             return response()->json([
             'success' => False,
@@ -357,5 +380,120 @@ class CompanyAdminsController extends Controller
             ]);
             
       
-        }
     }
+
+    public function edit_companyadmin(Request $request)//done
+    {
+        $token = $request->bearerToken();
+       $secretKey ='345fgvvc4';
+       $decryptedInput = decrypt($token, $secretKey);
+       list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+       $companyId=intval($id);
+       $id=intval($request->id);
+       $existingemployeeData =Company_Admins::where('_id',$id)->get();
+       if($existingemployeeData != ''){
+           return response()->json([
+               'success' => $existingemployeeData,
+           ]);
+       }
+       else{
+           return response()->json([
+               'success' => 'No record'
+           ]);
+       }
+       
+
+    }
+    public function update_companyadmin(Request $request)//success new field country..
+    {
+        $token = $request->bearerToken();
+        $secretKey ='345fgvvc4';
+        $decryptedInput = decrypt($token, $secretKey);
+        $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $companyId=intval($id);
+        $reqid=intval($request->id);
+        $companyArrayUp =Company_Admins::where('_id',$reqid)->first();
+        if (!$companyArrayUp) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+            // $photo_name='';
+            // $original_name='';
+            // $size='';
+            // $photo_path='';
+            // if($request->file != null){
+            //     if ($request->hasFile('file') && $request->file('file') != '') {
+            //         if(!empty($companyArrayUp['file'][0]['filename'])){
+            //             $imagePath = public_path('CompanyEmployee/'.$companyArrayUp['file'][0]['filename']);
+            //             if(File::exists($imagePath)){
+            //                 unlink($imagePath);
+            //             }
+            //         }
+            //         $files = $request->file('file');
+            //         $ImageUpload = Image::make($files);
+            //         $originalPath = 'CompanyEmployee/';
+            //         $ImageUpload->save($originalPath.time().$files->getClientOriginalName());
+            //         $photo_path = 'CompanyEmployee/'.time().$files->getClientOriginalName();
+            //         $photo_name = time().$files->getClientOriginalName();
+            //         $original_name = $files->getClientOriginalName();
+            //         $size = $request->file("file")->getSize();
+            //     }
+            // }else{
+            //     $photo_name=$companyArrayUp['file'][0]['filename'];
+            //     $original_name=$companyArrayUp['file'][0]['Originalname'];
+            //     $size=$companyArrayUp['file'][0]['filesize'];
+            //     $photo_path=$companyArrayUp['file'][0]['filepath'];
+            // }
+
+        $password = hash('sha1', $request->password);
+        $data = [
+            'company_name' => $request->company_name,
+            'company_address' => $request->company_address,
+            'admin_name'=>$request->admin_name,
+            'password' =>$password,
+            'admin_contact' => $request->admin_contact,
+            'company_email' => $request->company_email,
+            'admin_username' => $request->admin_username,
+            'total_employee' => $request->total_employee,
+            'token'=> $token,
+            'country' => $request->country,
+            'city' => $request->city,
+            'state' => $request->state,
+            'pincode' => $request->pincode,
+            'fax' => $request->fax,
+            // 'file' => array(array(
+            //     'filename' => $photo_name,
+            //     'Originalname' => $original_name,
+            //     'filesize' => $size,
+            //     'filepath' => $photo_path
+            // )
+            // ),
+            'emailVerificationStatus' => 0,
+            'subscription_id' => '',
+            'subscription_status' => '',
+            'otp' => '',
+            'plan_name' => '',
+            'plan_start' => '',
+            'plan_end' => '',
+            'api_status' => '',
+            'company_upload_storage' => '',
+            'register_ip' => '',
+            'last_login_id' => '',
+            'os' => '',
+            'browser' => '',
+            'login_time' => '',
+            'password_change' => '',
+            'forgototp' => '',
+            'updated_at' => '',
+            'created_at' => '',
+        ];
+        // dd($data);
+        $result = $companyArrayUp->update($data);
+        // dd($result);
+            if ($result) {
+            return response()->json(['message' => 'Admin updated successfully'], 200);
+        } else {
+            return response()->json(['message' => 'Failed to update Admin'], 500);
+        }
+
+    }
+}

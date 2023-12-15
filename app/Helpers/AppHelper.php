@@ -12,7 +12,7 @@ class AppHelper
         return new AppHelper();
     }
 
-    public function getNextSequenceForNewDoc( $collection)//w
+    public function getNextSequenceForNewDoc($collection)//w
     {
         $maxId = $collection->aggregate([
             ['$group' => ['_id' => null, 'max_id' => ['$max' => '$_id']]],

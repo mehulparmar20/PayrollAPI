@@ -1,0 +1,220 @@
+<?php
+
+namespace App\Http\Controllers\API;
+
+use App\Http\Controllers\Controller;
+use App\Models\API\Company_Admins;
+use App\Models\API\Company_Department;
+use Illuminate\Http\Request;
+
+class CompanyDepartmentController extends Controller
+{
+    public function add_department(Request $request) //done
+    {
+        $token = $request->bearerToken();
+        //$token= $token_data->token;
+        $secretKey = '345fgvvc4';
+        $decryptedInput = decrypt($token, $secretKey);
+        $token_data = list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $company_id = $token_data['0'];
+
+        $latest_employee_id = Company_Admins::latest('_id')->value('_id');
+        $company_id = intval($id); //fetch company_id
+        $company_admins = Company_Admins::where('_id', $company_id)->value('total_employee'); //fetch total employee from company_admin
+        $total = Company_Department::where('company_id', $company_id)->count(); //user count that particular id
+        $company_admins = Company_Admins::where('_id', $company_id)->first();  //get latest record from company_admin
+        if ($company_admins) {
+            $allowed_total_employee = $company_admins->total_employee;
+
+            $latest_total_employee = Company_Admins::latest('_id')->value('total_employee');
+            // Check if the current number of employees is less than the allowed total employees
+
+            if ($total < $allowed_total_employee) {
+
+
+                $validatedData = $request->validate([
+                    'department_name' => 'required',
+                ]);
+
+                $new_id = Company_Department::max('_id') + 1;
+                $data = [
+                    '_id' => $new_id,
+                    'company_id' => $company_id,
+                    'counter' => $latest_total_employee,
+                    'department_name' => $validatedData['department_name'],
+                    'delete_status' => 1,
+                    'created_at' => '',
+                    'updated_at' => '',
+                ];
+
+
+                $result = Company_Department::insert($data);
+
+                if ($result) {
+                    return response()->json(['message' => 'Department added successfully'], 201);
+                } else {
+                    return response()->json(['message' => 'Failed to Add Department'], 500);
+                }
+            } else {
+                return response()->json(['message' => 'Maximum number of employees reached for this company'], 400);
+            }
+        } else {
+            return response()->json(['message' => 'Company not found'], 404);
+        }
+    }
+
+
+    public function update_department(Request $request) //done
+    {
+
+        $token = $request->bearerToken();
+        //$token= $token_data->token;
+        $secretKey = '345fgvvc4';
+        $decryptedInput = decrypt($token, $secretKey);
+        $token_data = list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $company_id = $token_data['0'];
+        $new_id = intval($id);
+
+        $reqid = intval($request->_id);
+        // dd($reqid);
+        $existingUserData = Company_Department::where('_id', $reqid)->first();
+
+        if (!$existingUserData) {
+            return response()->json(['message' => 'Department not found'], 404);
+        }
+        $validatedData = $request->validate([
+            'department_name' => 'required',
+
+        ]);
+
+        $data = [
+            'department_name' => $request['department_name'],
+            'delete_status' => 1,
+            'created_at' => '',
+            'updated_at' => '',
+        ];
+        $result = $existingUserData->update($data);
+        if ($result) {
+            return response()->json(['message' => 'Department updated successfully'], 200);
+        } else {
+            return response()->json(['message' => 'Failed to Update Department'], 500);
+        }
+    }
+    public function delete_department(Request $request, $id) //done
+    {
+        $token = $request->bearerToken();
+        //$token= $token_data->token;
+        $secretKey = '345fgvvc4';
+        $decryptedInput = decrypt($token, $secretKey);
+        $token_data = list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+
+        $company_id = $token_data['0'];
+        $new_id = intval($request->id);
+        // dd($new_id);
+        $data = Company_Department::where('_id', $new_id)->first();
+        $data->delete_status = '0';
+        $data->save();
+        return response()->json(['status' => 'Deleted Successfully']);
+    }
+
+    public function index_department(Request $request)
+    {
+        $token = $request->bearerToken();
+        //$token= $token_data->token;
+        $secretKey = '345fgvvc4';
+        $decryptedInput = decrypt($token, $secretKey);
+        $token_data = list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $company_id = $token_data['0'];
+        $company_id = intval($id);
+        // $records = Company_Department::all();
+        // dd($records);
+        $records = Company_Department::where('delete_status', 1)->paginate(1);
+        // return $records;
+        return response()->json(['success' => true, 'data' => $records], 200);
+    }
+
+    public function searchdepartment($name) //search
+    {
+        $results =Company_Department::where('department_name', 'like', '%' . $name . '%')->get();
+        // dd($results);
+        if ($results->isEmpty()) {
+            return response()->json(['message' => 'No results found'], 404);
+        } else {
+
+            return response()->json(['results' => $results], 200);
+        }
+    }
+}
+
+
+*******************
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\CompanyAdminsController;
+use App\Http\Controllers\API\AddUserController;
+use App\Http\Controllers\API\CompanyDepartmentController;
+use App\Http\Controllers\API\CompanyHolidayController;
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
+|
+*/
+
+Route::group(['middleware' => 'tokenauth'], function () {
+
+   // AddUserController
+    Route::post('add_user','App\Http\Controllers\API\AddUserController@add_user');
+    Route::post('edit_companyuser','App\Http\Controllers\API\AddUserController@edit_companyuser');
+    Route::post('update_user','App\Http\Controllers\API\AddUserController@update_user');
+    Route::get('view_companyuser','App\Http\Controllers\API\AddUserController@view_companyuser');
+    Route::post('delete_user','App\Http\Controllers\API\AddUserController@delete_user');
+    Route::get('search_user/{name}',[AddUserController::class,'searchuser']);
+ 
+    // CompanyHolidayController
+    Route::post('add_holiday','App\Http\Controllers\API\CompanyHolidayController@add_holiday');
+    Route::post('update_holiday','App\Http\Controllers\API\CompanyHolidayController@update_holiday');
+    Route::get('index_holiday','App\Http\Controllers\API\CompanyHolidayController@index_holiday');
+    Route::get('delete_holiday/{id}','App\Http\Controllers\API\CompanyHolidayController@delete_holiday');
+    Route::get('search_holiday/{name}',[CompanyHolidayController::class,'searchholiday']);
+
+<<<<<<< HEAD
+    //CompanyDepartmentController
+    Route::post('add_department','App\Http\Controllers\API\CompanyDepartmentController@add_department');
+    Route::post('update_department','App\Http\Controllers\API\CompanyDepartmentController@update_department');
+    Route::get('index_department','App\Http\Controllers\API\CompanyDepartmentController@index_department');
+    Route::get('delete_department/{id}','App\Http\Controllers\API\CompanyDepartmentController@delete_department');
+    Route::get('search_department/{name}',[CompanyDepartmentController::class,'searchdepartment']);
+
+    //CompanyEmployeeController
+    Route::post('add_employee','App\Http\Controllers\API\CompanyEmployeeController@add_employee');
+=======
+    //Announcement 
+    Route::post('add_announcement','App\Http\Controllers\API\CompanyAnnouncementController@add_announcement');
+    Route::post('edit_announcement','App\Http\Controllers\API\CompanyAnnouncementController@edit_announcement');
+    Route::post('update_announcement','App\Http\Controllers\API\CompanyAnnouncementController@update_announcement');
+    Route::post('delete_announcement','App\Http\Controllers\API\CompanyAnnouncementController@delete_announcement');
+    Route::post('index_announcement','App\Http\Controllers\API\CompanyAnnouncementController@index_announcement');
+    Route::post('search_announcement','App\Http\Controllers\API\CompanyAnnouncementController@search_announcement');
+    
+>>>>>>> 32ee30f432a4a025e18a2fc9f5e33f9b93f7d444
+});
+
+Route::post('company_register', 'App\Http\Controllers\API\CompanyAdminsController@store');
+Route::post('company_login', 'App\Http\Controllers\API\CompanyAdminsController@company_login');
+// Route::post('company_dashboard', 'App\Http\Controllers\API\CompanyAdminsController@company_dashboard');
+Route::get('/verify/email-auth/{email}', [CompanyAdminsController::class,'sendVerificationEmail'])->name('verify_email.auth');
+Route::post('company_login', 'App\Http\Controllers\API\CompanyAdminsController@company_login');
+
+// priti
+Route::post('add_user',[AddUserController::class,'add_user']);
+
+// pagination
+

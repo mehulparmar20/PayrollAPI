@@ -23,7 +23,13 @@ class Company_Admins extends Model
         'company_email',
         'admin_username',
         'total_employee',
-        'admin_password'
+        'admin_password',
+        'country',
+        'city' ,
+        'state',
+        'pincode' ,
+        'fax' ,
+        
     ];
     use HasFactory;
 }
