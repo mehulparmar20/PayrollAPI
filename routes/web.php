@@ -24,14 +24,8 @@ use Illuminate\Support\Facades\Route;
 // });
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin', [MasterAdminController::class, 'admin'])->name('admin');
-});
-Route::get('/', [MasterAdminController::class, 'welcome'])->name('welcome');
-// Route::get('login', [MasterAdminController::class, 'login'])->name('login');
-Route::post('custom-login', [MasterAdminController::class, 'customLogin'])->name('custom-login'); 
-Route::get('logout', [MasterAdminController::class, 'logout'])->name('log-out');
 
-//PlanController
-Route::get('plan-create', [PlanController::class,'create'])->name('admin.plan.create');
+    Route::get('plan-create', [PlanController::class,'create'])->name('admin.plan.create');
 Route::post('plan-store', [PlanController::class, 'store'])->name('plan-store');
 Route::get('plan-index', [PlanController::class, 'index'])->name('admin.plan.index');
 Route::get('plan-edit/{id}', [PlanController::class, 'edit'])->name('admin.plan.edit');
@@ -51,3 +45,10 @@ Route::get('tax-view/{id}', [TaxMasterController::class,'show'])->name('admin.ta
 //AdminMasterController
 Route::get('masteradmin', [MasterAdminController::class,'masteradmin'])->name('masteradmin');
 Route::post('masteradmin-store', [MasterAdminController::class, 'store'])->name('masteradmin-store');
+});
+Route::get('/', [MasterAdminController::class, 'welcome'])->name('welcome');
+// Route::get('login', [MasterAdminController::class, 'login'])->name('login');
+Route::post('custom-login', [MasterAdminController::class, 'customLogin'])->name('custom-login'); 
+Route::get('logout', [MasterAdminController::class, 'logout'])->name('log-out');
+
+//PlanController
