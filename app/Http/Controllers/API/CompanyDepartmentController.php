@@ -113,7 +113,8 @@ class CompanyDepartmentController extends Controller
         $info = (explode("^", $docAvailable));
         $docId = $info[1];
         $userData = $collection->updateOne(
-            ['company_id' => (int)$companyId, '_id' => (int)$masterId, 'company_department._id' =>
+            ['company_id' => (int)$companyId, '_id' => (int)$masterId, 'company_department._id'
+             =>
              (int)$id],
             ['$set' => [
                 'company_department.$.department_name' => $request->department_name,
