@@ -57,57 +57,100 @@ class CompanyHolidayController extends Controller
          }
             
     }
-    public function edit_holiday(Request $request)//doubt
+    // public function edit_holiday(Request $request)//doubt
+    // {
+    //     $maxLength = 7000;
+    //     $token = $request->bearerToken();
+    //     $secretKey ='345fgvvc4';
+    //     $decryptedInput = decrypt($token, $secretKey);
+    //     list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+    //     $companyID=intval($id);
+    //     $sid = intval($request->id);
+    //     $masterId=(int)$request->masterId;
+       
+    //     //parent
+    //     $collection=\App\Models\API\Company_Holiday::raw();
+    //     $show1 = $collection->aggregate([
+    //         ['$match' => ['_id' => (int)$id, 'company_id' =>$companyID]],
+    //         ['$match' => ['company_holiday._id' => (int)$id,'company_holiday.delete_status' => 'NO']]
+    //         // ['$unwind' => ['path' => '$company_user']]
+    //     ]);    
+    //     foreach ($show1 as $row) {
+    //         $company=array();
+    //         $paymentTerms=array();
+    //         $user=array();
+    //         $factoringCompany=array();
+    //         if(isset($row)){
+    //             $companyNameID=$row;
+    //             $companyName =\App\Models\API\Company_Holiday::raw()->aggregate([
+    //                 ['$match' => ["company_id" => (int)$companyID]],
+    //                 //['$unwind' => '$company'],
+    //                 ['$match' => ["_id" => (int)$id]],
+    //                 ['$match' => ['company_holiday._id' => (int)$id,'company_holiday.delete_status' => 'NO']]
+    //                 // ['$project' => ['company._id' => 1,'company.companyName' => 1]]
+    //             ]);
+    //             foreach($companyName as $name){
+    //                 $l=0;
+    //                 $company[$l] = $name;
+    //                 $l++;
+    //             }
+    //         }
+    //         $mainIdac = $row['_id'];
+    //         $activeCustomer = array();
+    //         $k = 0;
+    //         $activeCustomer[$k] = $row;
+    //         $k++;
+    //     }
+        
+    //     $customerData[]=array("Customer" => $activeCustomer);
+    //     if($activeCustomer != ''){
+    //         return response()->json([
+    //             'success' => $customerData,
+    //         ]);
+    //     }
+    //     else{
+    //         return response()->json([
+    //             'success' => 'No record'
+    //         ]);
+    //     }
+    // }
+    public function edit_holiday(Request $request)
     {
-        $maxLength = 7000;
+
         $token = $request->bearerToken();
-        $secretKey ='345fgvvc4';
+        $secretKey = '345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
         list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-        $companyID=intval($id);
-        $parent=$request->masterId;
-        $id=$request->id;
-        //parent
-        $collection=\App\Models\API\Company_Holiday::raw();
-        $show1 = $collection->aggregate([
-            ['$match' => ['_id' => (int)$id, 'company_id' =>$companyID]],
-            ['$match' => ['company_holiday._id' => (int)$id,'company_holiday.delete_status' => 'NO']]
-            // ['$unwind' => ['path' => '$company_user']]
-        ]);    
-        foreach ($show1 as $row) {
-            $company=array();
-            $paymentTerms=array();
-            $user=array();
-            $factoringCompany=array();
-            if(isset($row)){
-                $companyNameID=$row;
-                $companyName =\App\Models\API\Company_Holiday::raw()->aggregate([
-                    ['$match' => ["company_id" => (int)$companyID]],
-                    //['$unwind' => '$company'],
-                    ['$match' => ["_id" => (int)$id]],
-                    ['$match' => ['company_holiday._id' => (int)$id,'company_holiday.delete_status' => 'NO']]
-                    // ['$project' => ['company._id' => 1,'company.companyName' => 1]]
-                ]);
-                foreach($companyName as $name){
-                    $l=0;
-                    $company[$l] = $name;
-                    $l++;
+        $companyID = intval($id);
+        $sid = intval($request->id);
+        $masterId = (int)$request->masterId;
+        $cursor = Company_Holiday::raw()
+        ->findOne(['company_id' => $companyID,'_id'=>$masterId,'company_holiday._id' => $sid]);
+        if ($cursor !== null && property_exists($cursor, 'company_holiday')) {
+        $consigneeArray=$cursor->company_holiday;
+        $consigneeLength=count($consigneeArray);
+        $i=0;
+        $v=0;
+        for($i=0; $i<$consigneeLength; $i++)
+        {
+            $ids=$cursor->company_holiday[$i]['_id'];
+            $ids=(array)$ids;
+            foreach($ids as $value)
+            {
+                if($value==$sid)
+                {
+                    $v=$i;
                 }
             }
-            $mainIdac = $row['_id'];
-            $activeCustomer = array();
-            $k = 0;
-            $activeCustomer[$k] = $row;
-            $k++;
         }
-        
-        $customerData[]=array("Customer" => $activeCustomer);
-        if($activeCustomer != ''){
+        $companyID=array(
+            "companyID"=>$masterId
+        );
+        $consignee=(array)$cursor->company_holiday[$v];
             return response()->json([
-                'success' => $customerData,
+                'success' => $consignee,
             ]);
-        }
-        else{
+        } else {
             return response()->json([
                 'success' => 'No record'
             ]);
@@ -127,7 +170,8 @@ class CompanyHolidayController extends Controller
         $docAvailable = AppHelper::instance()->checkDoc(\App\Models\API\Company_Holiday::raw(),$companyId,$maxLength);
         $info = (explode("^",$docAvailable));
         $docId = $info[1];
-        $userData=$collection->updateOne(['company_id' => (int)$companyId,'_id' => (int)$info,'company_holiday._id' => (int)$ids],
+        $userData=$collection->updateOne(['company_id' => (int)$companyId,'_id' => (int)$masterId,
+        'company_holiday._id' => (int)$ids],
         ['$set' => [
             'company_holiday.$.holiday_name' => $request->holiday_name,
             'company_holiday.$.holiday_date' => $request->holiday_date,
@@ -150,8 +194,10 @@ class CompanyHolidayController extends Controller
         $ids=(int)$request->id;
         $masterId=(int)$request->masterId;
         $companyID=intval($id);
-        $departData=Company_Holiday::raw()->updateOne(['company_id' => $companyID,'_id' => $masterId,'company_holiday._id' => $ids],
-        ['$set' => ['company_holiday.$.delete_status' => 'YES','company_holiday.$.deleteUser' =>$companyID,'company_holiday.$.deleteTime' => time()]]
+        $departData=Company_Holiday::raw()->updateOne(['company_id' => $companyID,
+        '_id' => $masterId,'company_holiday._id' => $ids],
+        ['$set' => ['company_holiday.$.delete_status' => 'YES','company_holiday.$.deleteUser'
+         =>$companyID,'company_holiday.$.deleteTime' => time()]]
         );
        if ($departData==true)
        {
