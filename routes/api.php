@@ -9,6 +9,8 @@ use App\Http\Controllers\API\CompanyHolidayController;
 use App\Http\Controllers\API\CompanyDesignationController;
 use App\Http\Controllers\API\CompanyTimeController;
 use App\Http\Controllers\API\CompanyLeaveTypeController;
+use App\Http\Controllers\API\CompanyComposeController;
+use App\Http\Controllers\API\CompanyJoiningController;
 
 
 
@@ -87,6 +89,15 @@ Route::group(['middleware' => 'tokenauth'], function () {
     Route::post('delete_leave','App\Http\Controllers\API\CompanyLeaveTypeController@delete_leave');
     Route::get('paginate_leave','App\Http\Controllers\API\CompanyLeaveTypeController@paginate_leave');
     Route::post('search_leave','App\Http\Controllers\API\CompanyLeaveTypeController@search_leave');
+    
+    //CompanyComposeController
+    Route::post('add_compose','App\Http\Controllers\API\CompanyComposeController@add_compose');
+    Route::get('view_compose','App\Http\Controllers\API\CompanyComposeController@view_compose');
+
+    //CompanyJoiningController
+    Route::post('view_joinemployee','App\Http\Controllers\API\CompanyJoiningController@view_joinemployee');
+    Route::post('view_joindepartment','App\Http\Controllers\API\CompanyJoiningController@view_joindepartment');
+
     // AddUserController
     Route::post('add_user','App\Http\Controllers\API\CompanyUserController@add_user');
     Route::post('edit_user','App\Http\Controllers\API\CompanyUserController@edit_user');
