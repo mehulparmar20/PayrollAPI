@@ -267,7 +267,8 @@ class CompanyAdminsController extends Controller
                 foreach($company_user as $u){
                     if($u != ''){
                     $userModel = new Company_user(); // Create a new instance of the User model
-                    $userModel->companyID = $u->_id;
+                    $userModel->companyID = $u->company_id;
+                    $userModel->id = $u->_id;
                     $userModel->userEmail = $u->user_email;
                     $userModel->userPass = $u->user_password;
                     $token_data = TokenHandler::where(['company_id'=>$u->company_id])->first();
@@ -324,7 +325,8 @@ class CompanyAdminsController extends Controller
                     foreach($company_employee as $u){
                         if($u != ''){
                         $userModel = new Company_Employee(); // Create a new instance of the User model
-                        $userModel->companyID = $u->_id;
+                        $userModel->id = $u->_id;
+                        $userModel->companyID = $u->company_id;
                         $userModel->userEmail = $u->email;
                         $userModel->userPass = $u->password;
                         $token_data = TokenHandler::where(['company_id'=>$u->company_id])->first();

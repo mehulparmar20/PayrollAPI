@@ -254,7 +254,7 @@ class CompanyEmployeeController extends Controller
                 );
                 $partialdata[]= $arrData2;
             }
-        }
+        
       
         $completedata[] = $partialdata;
         $completedata[] = $paginate;

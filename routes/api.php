@@ -117,6 +117,13 @@ Route::group(['middleware' => 'tokenauth'], function () {
      Route::get('view_employee','App\Http\Controllers\API\CompanyEmployeeController@view_employee');
      Route::get('paginate_employee','App\Http\Controllers\API\CompanyEmployeeController@paginate_employee');
      Route::post('search_employee','App\Http\Controllers\API\CompanyEmployeeController@search_employee');
+
+     //Employee Leave 
+     Route::post('add_employee_leave','App\Http\Controllers\API\EmployeeLeaveController@add_employee_leave');
+     Route::post('delete_employee_leave','App\Http\Controllers\API\EmployeeLeaveController@delete_employee_leave');
+
+     //Employee Attendance
+     Route::post('add_employee_attendance','App\Http\Controllers\API\EmployeeAttendanceController@add_employee_attendance');
      
 });
 
