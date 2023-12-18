@@ -108,11 +108,13 @@ class CompanyDepartmentController extends Controller
         $masterId = (int)$request->masterId;
         // dd($masterId);
         $maxLength = 6500;
-        $docAvailable = AppHelper::instance()->checkDoc(\App\Models\API\Company_Department::raw(), $companyId, $maxLength);
+        $docAvailable = AppHelper::instance()->checkDoc(\App\Models\API\Company_Department::raw(),
+         $companyId, $maxLength);
         $info = (explode("^", $docAvailable));
         $docId = $info[1];
         $userData = $collection->updateOne(
-            ['company_id' => (int)$companyId, '_id' => (int)$masterId, 'company_department._id' => (int)$id],
+            ['company_id' => (int)$companyId, '_id' => (int)$masterId, 'company_department._id' =>
+             (int)$id],
             ['$set' => [
                 'company_department.$.department_name' => $request->department_name,
                 'company_department.$.edit_time' => time()
@@ -138,10 +140,12 @@ class CompanyDepartmentController extends Controller
         $companyID = intval($id);
         $departData = Company_Department::raw()->updateOne(
             ['company_id' => $companyID, '_id' => $masterId, 'company_department._id' => $ids],
-            ['$set' => ['company_department.$.delete_status' => 'YES', 'company_department.$.deleteUser' => $companyID, 'company_department.$.deleteTime' => time()]]
+            ['$set' => ['company_department.$.delete_status' => 'YES', 'company_department.$.deleteUser'
+             => $companyID, 'company_department.$.deleteTime' => time()]]
         );
         if ($departData == true) {
-            $arr = array('status' => 'success', 'message' => 'Department deleted successfully.', 'statusCode' => 200);
+            $arr = array('status' => 'success', 'message' => 'Department deleted successfully.',
+             'statusCode' => 200);
             return json_encode($arr);
         }
     }
