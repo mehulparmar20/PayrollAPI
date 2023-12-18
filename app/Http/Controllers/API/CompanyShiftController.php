@@ -100,7 +100,6 @@ class CompanyShiftController extends Controller
                 return $item;
             }, $data);
         }
-
         return response()->json(['success' => true,'data' => $filteredData], 200);
     }
     public function paginate_time(Request $request)
