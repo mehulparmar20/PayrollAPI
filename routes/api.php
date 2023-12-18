@@ -135,14 +135,3 @@ Route::group(['middleware' => 'tokenauth'], function () {
      
 });
 
-Route::post('company_register', 'App\Http\Controllers\API\CompanyAdminsController@store');
-Route::post('company_login', 'App\Http\Controllers\API\CompanyAdminsController@company_login');
-// Route::post('company_dashboard', 'App\Http\Controllers\API\CompanyAdminsController@company_dashboard');
-Route::get('/verify/email-auth/{email}', [CompanyAdminsController::class,'sendVerificationEmail'])->name('verify_email.auth');
-Route::post('company_login', 'App\Http\Controllers\API\CompanyAdminsController@company_login');
-
-// priti
-Route::post('add_user',[AddUserController::class,'add_user']);
-
-// pagination
-
