@@ -51,15 +51,6 @@ Route::post('company_login', 'App\Http\Controllers\API\CompanyAdminsController@c
     
 Route::group(['middleware' => 'tokenauth'], function () {
 
-   // AddUserController
-    // Route::post('add_user','App\Http\Controllers\API\AddUserController@add_user');
-    // Route::post('edit_companyuser','App\Http\Controllers\API\AddUserController@edit_companyuser');
-    // Route::post('update_user','App\Http\Controllers\API\AddUserController@update_user');
-    // Route::get('view_companyuser','App\Http\Controllers\API\AddUserController@view_companyuser');
-    // Route::post('delete_user','App\Http\Controllers\API\AddUserController@delete_user');
-    // Route::get('search_user/{name}',[AddUserController::class,'searchuser']);
- 
-
     //CompanyAdminsController
     Route::post('edit_companyadmin','App\Http\Controllers\API\CompanyAdminsController@edit_companyadmin');
     Route::post('update_companyadmin','App\Http\Controllers\API\CompanyAdminsController@update_companyadmin');
@@ -92,8 +83,6 @@ Route::group(['middleware' => 'tokenauth'], function () {
      Route::get('paginate_department','App\Http\Controllers\API\CompanyDepartmentController@paginate_department');
      Route::post('search_department','App\Http\Controllers\API\CompanyDepartmentController@search_department');
 
-      //CompanyEmployeeController
-    Route::post('add_employee','App\Http\Controllers\API\CompanyEmployeeController@add_employee');
     // AddUserController
     Route::post('add_user','App\Http\Controllers\API\CompanyUserController@add_user');
     Route::post('edit_user','App\Http\Controllers\API\CompanyUserController@edit_user');
@@ -125,6 +114,9 @@ Route::group(['middleware' => 'tokenauth'], function () {
      Route::post('edit_employee','App\Http\Controllers\API\CompanyEmployeeController@edit_employee');
      Route::post('update_employee','App\Http\Controllers\API\CompanyEmployeeController@update_employee');
      Route::post('delete_employee','App\Http\Controllers\API\CompanyEmployeeController@delete_employee');
+     Route::get('view_employee','App\Http\Controllers\API\CompanyEmployeeController@view_employee');
+     Route::get('paginate_employee','App\Http\Controllers\API\CompanyEmployeeController@paginate_employee');
+     Route::post('search_employee','App\Http\Controllers\API\CompanyEmployeeController@search_employee');
      
 });
 
