@@ -132,6 +132,10 @@ Route::group(['middleware' => 'tokenauth'], function () {
      //Employee Attendance
      Route::post('add_employee_attendance','App\Http\Controllers\API\EmployeeAttendanceController@add_employee_attendance');
      Route::get('view_employee_attendance','App\Http\Controllers\API\EmployeeAttendanceController@view_employee_attendance');
-     
+    
+      //Company Shift
+      Route::post('add_company_shift','App\Http\Controllers\API\CompanyShiftController@add_company_shift');
+      Route::get('view_company_shift','App\Http\Controllers\API\CompanyShiftController@view_company_shift');
+      
 });
 
