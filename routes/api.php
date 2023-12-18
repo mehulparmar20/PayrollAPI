@@ -7,6 +7,9 @@ use App\Http\Controllers\API\AddUserController;
 use App\Http\Controllers\API\CompanyDepartmentController;
 use App\Http\Controllers\API\CompanyHolidayController;
 use App\Http\Controllers\API\CompanyDesignationController;
+use App\Http\Controllers\API\CompanyTimeController;
+use App\Http\Controllers\API\CompanyLeaveTypeController;
+
 
 
 /*
@@ -84,13 +87,23 @@ Route::group(['middleware' => 'tokenauth'], function () {
      Route::get('paginate_department','App\Http\Controllers\API\CompanyDepartmentController@paginate_department');
      Route::post('search_department','App\Http\Controllers\API\CompanyDepartmentController@search_department');
 
-<<<<<<< HEAD
-     
+    // CompanyTimeController
+    Route::post('add_time','App\Http\Controllers\API\CompanyTimeController@add_time');
+    Route::post('edit_time','App\Http\Controllers\API\CompanyTimeController@edit_time');
+    Route::post('update_time','App\Http\Controllers\API\CompanyTimeController@update_time');
+    Route::get('view_time','App\Http\Controllers\API\CompanyTimeController@view_time');
+    Route::post('delete_time','App\Http\Controllers\API\CompanyTimeController@delete_time');
+    Route::get('paginate_time','App\Http\Controllers\API\CompanyTimeController@paginate_time');
+    Route::post('search_time','App\Http\Controllers\API\CompanyTimeController@search_time');
 
-      //CompanyEmployeeController
-    Route::post('add_employee','App\Http\Controllers\API\CompanyEmployeeController@add_employee');
-=======
->>>>>>> 637c59f34b81848a41ebe93a3a3910ce3abbfebc
+    //CompanyLeaveTypeController
+    Route::post('add_leave','App\Http\Controllers\API\CompanyLeaveTypeController@add_leave');
+    Route::post('edit_leave','App\Http\Controllers\API\CompanyLeaveTypeController@edit_leave');
+    Route::post('update_leave','App\Http\Controllers\API\CompanyLeaveTypeController@update_leave');
+    Route::get('view_leave','App\Http\Controllers\API\CompanyLeaveTypeController@view_leave');
+    Route::post('delete_leave','App\Http\Controllers\API\CompanyLeaveTypeController@delete_leave');
+    Route::get('paginate_leave','App\Http\Controllers\API\CompanyLeaveTypeController@paginate_leave');
+    Route::post('search_leave','App\Http\Controllers\API\CompanyLeaveTypeController@search_leave');
     // AddUserController
     Route::post('add_user','App\Http\Controllers\API\CompanyUserController@add_user');
     Route::post('edit_user','App\Http\Controllers\API\CompanyUserController@edit_user');
