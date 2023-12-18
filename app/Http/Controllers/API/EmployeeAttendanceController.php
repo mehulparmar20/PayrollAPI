@@ -40,7 +40,7 @@ class EmployeeAttendanceController extends Controller
             $cons['masterID'] = $docId;
             echo json_encode($cons);
 
-            return response()->json(['message' => 'Leave Added successfully'], 201);
+            return response()->json(['message' => 'Attendance Added successfully'], 201);
         } else {
             $parentId = AppHelper::instance()->getNextSequenceForNewDoc(\App\Models\API\Employee_Attendance::raw());
             $cons['_id'] = AppHelper::instance()->getNextSequenceForNewId(\App\Models\API\Employee_Attendance::raw(), 'employee_attendance', '$employee_attendance._id', $companyId);
@@ -51,26 +51,7 @@ class EmployeeAttendanceController extends Controller
                 "employee_leave" => array($cons),
             );
             \App\Models\API\Employee_Attendance::raw()->insertOne($arra);
-            return response()->json(['message' => 'Leave Added successfully'], 201);
+            return response()->json(['message' => 'Attendance Added successfully'], 201);
         }
-    }
-
-    public function delete_employee_leave(Request $request) 
-    {
-        $token = $request->bearerToken();
-        $secretKey ='345fgvvc4';
-        $decryptedInput = decrypt($token, $secretKey);
-        list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-        $companyID=intval($id);
-        $ids=(int)$request->id;
-        $masterId=(int)$request->masterId;
-        $designData=Employee_leave::raw()->updateOne(['company_id' => $companyID,'_id' => $masterId,'employee_leave._id' => $ids],
-        ['$set' => ['employee_leave.$.delete_status' =>'YES','employee_leave.$.deleteUser' =>$companyID,'employee_leave.$.deleteTime' => time()]]
-        );
-       if ($designData==true)
-       {
-           $arr = array('status' => 'success', 'message' => 'Leave deleted successfully.','statusCode' => 200);
-            return json_encode($arr);
-       }
     }
 }
