@@ -7,7 +7,7 @@ use App\Http\Controllers\API\AddUserController;
 use App\Http\Controllers\API\CompanyDepartmentController;
 use App\Http\Controllers\API\CompanyHolidayController;
 use App\Http\Controllers\API\CompanyDesignationController;
-use App\Http\Controllers\API\CompanyEmployeeHistoryController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -93,15 +93,7 @@ Route::group(['middleware' => 'tokenauth'], function () {
      Route::get('paginate_department','App\Http\Controllers\API\CompanyDepartmentController@paginate_department');
      Route::post('search_department','App\Http\Controllers\API\CompanyDepartmentController@search_department');
 
-     //CompanyEmployeeHistoryController
-
-     Route::post('add_employeehistory','App\Http\Controllers\API\CompanyEmployeeHistoryController@add_employeehistory');
-    //  Route::post('edit_employeehistory','App\Http\Controllers\API\CompanyEmployeeHistoryController@edit_employeehistory');
-    //  Route::post('update_employeehistory','App\Http\Controllers\API\CompanyEmployeeHistoryController@update_employeehistory');
-    //  Route::get('view_employeehistory','App\Http\Controllers\API\CompanyEmployeeHistoryController@view_employeehistory');
-    //  Route::post('delete_employeehistory','App\Http\Controllers\API\CompanyEmployeeHistoryController@delete_employeehistory');
-    //  Route::get('paginate_employeehistory','App\Http\Controllers\API\CompanyEmployeeHistoryController@paginate_employeehistory');
-    //  Route::post('search_employeehistory','App\Http\Controllers\API\CompanyEmployeeHistoryController@search_employeehistory');
+     
 
       //CompanyEmployeeController
     Route::post('add_employee','App\Http\Controllers\API\CompanyEmployeeController@add_employee');
