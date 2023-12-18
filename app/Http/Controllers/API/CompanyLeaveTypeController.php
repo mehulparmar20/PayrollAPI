@@ -181,11 +181,10 @@ class CompanyLeaveTypeController extends Controller
         $decryptedInput = decrypt($token, $secretKey);
         $token_data = list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $company_id = intval($id);
-        $record = Company_leave::where('company_leave.delete_status', 'NO')
-            ->where('company_id', $company_id)
-            ->paginate(10);
-            $data = json_decode($record, true);
-
+        $record = Company_leave::where('company_leave.delete_status','NO')
+        ->where('company_leave.company_id', $company_id)
+        ->paginate(10);
+        // dd($record);
         return response()->json(['success' => true, 'data' => $record], 200);
     }
     public function search_leave(Request $request)
