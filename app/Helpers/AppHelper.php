@@ -87,7 +87,6 @@ class AppHelper
                 $id = $arr['_id'];
             }
         }
-        // dd($id);
         $id += 1;
        $collection->updateOne(['company_id' => (int)$key,'_id'=>(int)$docId],
         ['$inc' => ['counter' => 1]]);

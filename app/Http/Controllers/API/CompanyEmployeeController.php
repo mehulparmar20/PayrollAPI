@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\API\Company_admin;
 use App\Models\API\Company_Admins;
-use App\Models\API\Company_user;
 use App\Models\API\Company_Employee;
 use App\Helpers\AppHelper;
 use App\Models\User;
@@ -15,7 +14,7 @@ use Illuminate\Support\Facades\Hash;
 
 class CompanyEmployeeController extends Controller
 {
-    public function add_employee(Request $request) //done
+        public function add_employee(Request $request) //done
         {
         $maxLength = 7000;
         $token = $request->bearerToken();
@@ -31,7 +30,6 @@ class CompanyEmployeeController extends Controller
         $size="";
         $photo_path="";
         $path = public_path().'/CompanyEmployee';
-        // dd($path);
         if ($files = $request->file('file')) {
             $ImageUpload = Image::make($files);
             $originalPath = 'CompanyEmployee/';
@@ -76,7 +74,7 @@ class CompanyEmployeeController extends Controller
             $result = Company_Employee::insert($data);
             
             if ($result) {
-            return response()->json(['message' => 'Employee added successfully'], 201);
+            return response()->json(['message' => 'Employee added successfully'], 200);
             } else {
             return response()->json(['message' => 'Failed to Add User'], 500);
             }
@@ -170,9 +168,9 @@ class CompanyEmployeeController extends Controller
         ];
         $result = $companyArrayUp->update($data);
             if ($result) {
-            return response()->json(['message' => 'User updated successfully'], 200);
+            return response()->json(['message' => 'Employee updated successfully'], 200);
         } else {
-            return response()->json(['message' => 'Failed to update user'], 500);
+            return response()->json(['message' => 'Failed to update Employee'], 500);
         }
 
         }
@@ -184,45 +182,35 @@ class CompanyEmployeeController extends Controller
             list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
             $companyID=intval($id);
             $id=(int)$request->id;
-            $masterId=(int)$request->masterId;
-            $userData=Company_user::raw()->updateOne(['company_id' => $companyID,'_id' => $masterId,'company_user._id' => $id],
-            ['$set' => ['company_user.$.delete_status' => 'YES','company_user.$.deleteUser' =>intval($id),'company_user.$.deleteTime' => time()]]
+            // $masterId=(int)$request->masterId;
+            $userData=Company_Employee::raw()->updateOne(['company_id' => $companyID,'_id' => $id],
+            ['$set' => ['delete_status' => 'YES','deleteUser' =>intval($id),'deleteTime' => time()]]
             );
            if ($userData==true)
            {
-               $arr = array('status' => 'success', 'message' => 'User deleted successfully.','statusCode' => 200);
+               $arr = array('status' => 'success', 'message' => 'Employee deleted successfully.','statusCode' => 200);
                 return json_encode($arr);
            }
          }
             
-    public function view_companyuser(Request $request)
-    {
-        $token = $request->bearerToken();
-        $secretKey ='345fgvvc4';
-        $decryptedInput = decrypt($token, $secretKey);
-        $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-        $companyID=intval($id);
-        $total_records = 0;
-        $cursor = Company_user::raw()->aggregate([
-            ['$match' => ['company_id' => (int)$companyID]],
-            ['$project' => ['size' => ['$size' => ['$company_user']],
-            ]]
-        ]);
-
-        $totalarray = $cursor;
-
-        $docarray = array();
-        foreach ($cursor as $v)
+      public function view_employee(Request $request)
         {
-
-            $docarray[] = array("size" => $v['size'], "id" => $v['_id']);
-            $total_records += (int)$v['size'];
+            $token = $request->bearerToken();
+            //$token= $token_data->token;
+            $secretKey ='345fgvvc4';
+            $decryptedInput = decrypt($token, $secretKey);
+            $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+            $company_id=intval($id);
+            $records=Company_Employee::where('delete_status', 'NO')->where('company_id',$company_id)->get();
+            // return response()->json(['success' => true,'data' => $records], 200);
+            if ($records->isEmpty()) {
+            return response()->json(['message' => 'No results found'], 404);
+            } else {
+                return response()->json(['success' => true, 'data' => $records], 200);
+            }
         }
-
-        $completedata = array();
-        $partialdata = array();
-        $paginate = AppHelper::instance()->paginate($docarray);
-        if (!empty($paginate[0][0][0]))
+        
+    public function paginate_employee(Request $request)
         {
             for ($i = 0; $i < sizeof($paginate[0][0][0]); $i++)
             {
@@ -253,7 +241,7 @@ class CompanyEmployeeController extends Controller
                         "company_user.edit_by" => 1,"company_user.edit_time" => 1,"company_user.deleteStatus" => 1,"company_user.deleteUser" => 1,"company_user.deleteTime" => 1]]
                 ]);
                 
-                //dd($show1);
+                
                 $c = 0;
                 $arrData1 = "";
                 $userid=intval($id);
@@ -266,7 +254,7 @@ class CompanyEmployeeController extends Controller
                 );
                 $partialdata[]= $arrData2;
             }
-        }
+        
       
         $completedata[] = $partialdata;
         $completedata[] = $paginate;
@@ -274,16 +262,16 @@ class CompanyEmployeeController extends Controller
         echo json_encode($completedata);
     }
 
-        // public function searchuser($name) //search
-        // {
-        //     $results=Company_user::where('user_name','like','%'.$name.'%')->get();
-        //     // dd($results);
-        //      if($results->isEmpty()) {
-        //         return response()->json(['message' => 'No results found'], 404);
-        //     } else {
+        public function searchuser($name) //search
+        {
+            $results=Company_user::where('user_name','like','%'.$name.'%')->get();
+            // dd($results);
+             if($results->isEmpty()) {
+                return response()->json(['message' => 'No results found'], 404);
+            } else {
                 
-        //         return response()->json(['results' => $results], 200);
-        //     }
-        // }
+                return response()->json(['results' => $results], 200);
+            }
+        }
             
 }
