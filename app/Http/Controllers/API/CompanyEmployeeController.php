@@ -273,5 +273,24 @@ class CompanyEmployeeController extends Controller
                 return response()->json(['results' => $results], 200);
             }
         }
-            
+        public function employee_history(Request $request)
+        {
+            $token = $request->bearerToken();
+            //$token= $token_data->token;
+            $secretKey ='345fgvvc4';
+            $decryptedInput = decrypt($token, $secretKey);
+            $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+            $company_id=intval($id);
+            // $records=Company_Employee::where('company_id',$company_id)->get();
+           // $records=Company_Employee::where('company_id',$company_id)->select('first_name','last_name','joining_date','delete_status');
+            $records = Company_Employee::where('company_id', $company_id)
+            ->select('first_name', 'last_name', 'joining_date', 'delete_status') // Specify the columns you want
+            ->get();
+    
+          if ($records->isEmpty()) {
+            return response()->json(['message' => 'No results found'], 404);
+            } else {
+                return response()->json(['success' => true, 'data' => $records], 200);
+            }
+        }    
 }

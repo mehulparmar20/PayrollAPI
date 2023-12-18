@@ -48,10 +48,38 @@ class EmployeeAttendanceController extends Controller
                 "_id" => $parentId,
                 "counter" => (int)1,
                 "company_id" => (int)$companyId,
-                "employee_leave" => array($cons),
+                "employee_attendance" => array($cons),
             );
             \App\Models\API\Employee_Attendance::raw()->insertOne($arra);
             return response()->json(['message' => 'Attendance Added successfully'], 201);
         }
+    }
+
+    public function view_employee_attendance(Request $request)// done
+    {
+        $token = $request->bearerToken();
+        $secretKey ='345fgvvc4';
+        $decryptedInput = decrypt($token, $secretKey);
+        $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $company_id=intval($id);
+       $records=Company_Designation::where('company_designation.delete_status','NO')
+       ->where('company_id',$company_id)->get();
+      //relation
+      // $records = Company_Designation::with('department')->get();
+      // dd($records);
+       $data = json_decode($records, true);
+       if ($data) {
+        $filteredData = array_map(function ($item)
+        {
+            $filteredDepartments = array_filter($item['company_designation'], function ($design) {
+                return $design['delete_status'] === 'NO';
+            });
+            $filteredDepartments = array_intersect_key($item['company_designation'], $filteredDepartments);
+            $item['company_designation'] = $filteredDepartments;
+    
+            return $item;
+        }, $data);
+    }
+      return response()->json(['success' => true,'data' => $filteredData], 200);
     }
 }
