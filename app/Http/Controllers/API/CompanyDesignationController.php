@@ -61,55 +61,44 @@ class CompanyDesignationController extends Controller
     }
     public function edit_designation(Request $request)
     {
-      // $parent=$request->masterId;
-      $token = $request->bearerToken();
-      $secretKey ='345fgvvc4';
-      $decryptedInput = decrypt($token, $secretKey);
-      list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-      $companyID=intval($id);
-      $id=$request->id;
-      $collection=\App\Models\API\Company_Designation::raw();
-      $show1 = $collection->aggregate([
-          ['$match' => ['_id' => (int)$id, 'company_id' =>$companyID]]
-          // ['$unwind' => ['path' => '$company_user']]
-      ]);
-      foreach ($show1 as $row) {
-          $company=array();
-          $paymentTerms=array();
-          $user=array();
-          $factoringCompany=array();
-          if(isset($row)){
-              $companyNameID=$row;
-              $companyName =\App\Models\API\Company_Designation::raw()->aggregate([
-                  ['$match' => ["company_id" => (int)$companyID]],
-                  //['$unwind' => '$company'],
-                  ['$match' => ["_id" => (int)$id]],
-                  // ['$project' => ['company._id' => 1,'company.companyName' => 1]]
-              ]);
-              foreach($companyName as $name){
-                  $l=0;
-                  $company[$l] = $name;
-                  $l++;
-              }
-          }
-          $mainIdac = $row['_id'];
-          $activeCustomer = array();
-          $k = 0;
-          $activeCustomer[$k] = $row;
-          $k++;
-      }
-      $customerData[]=array("Customer" => $activeCustomer);
-      if($activeCustomer != ''){
-          return response()->json([
-              'success' => $customerData,
-          ]);
-      }
-      else{
-          return response()->json([
-              'success' => 'No record'
-          ]);
-      }
- 
+        $token = $request->bearerToken();
+        $secretKey = '345fgvvc4';
+        $decryptedInput = decrypt($token, $secretKey);
+        list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $companyID = intval($id);
+        $sid = intval($request->id);
+        $masterId = (int)$request->masterId;
+        $cursor = Company_Designation::raw()
+        ->findOne(['company_id' => $companyID,'_id'=>$masterId,'company_designation._id' => $sid]);
+        if ($cursor !== null && property_exists($cursor, 'company_designation')) {
+        $consigneeArray=$cursor->company_designation;
+        $consigneeLength=count($consigneeArray);
+        $i=0;
+        $v=0;
+        for($i=0; $i<$consigneeLength; $i++)
+        {
+            $ids=$cursor->company_designation[$i]['_id'];
+            $ids=(array)$ids;
+            foreach($ids as $value)
+            {
+                if($value==$sid)
+                {
+                    $v=$i;
+                }
+            }
+        }
+        $companyID=array(
+            "companyID"=>$masterId
+        );
+        $consignee=(array)$cursor->company_designation[$v];
+            return response()->json([
+                'success' => $consignee,
+            ]);
+        } else {
+            return response()->json([
+                'success' => 'No record'
+            ]);
+        }
     }
     public function update_designation(Request $request) 
     {
