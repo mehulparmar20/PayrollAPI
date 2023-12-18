@@ -110,10 +110,12 @@ class CompanyHolidayController extends Controller
         $ids=$request->id;
         $masterId=(int)$request->masterId;
         $maxLength=6500;
-        $docAvailable = AppHelper::instance()->checkDoc(\App\Models\API\Company_Holiday::raw(),$companyId,$maxLength);
+        $docAvailable = AppHelper::instance()->checkDoc(\App\Models\API\Company_Holiday::raw(),
+        $companyId,$maxLength);
         $info = (explode("^",$docAvailable));
         $docId = $info[1];
-        $userData=$collection->updateOne(['company_id' => (int)$companyId,'_id' => (int)$masterId,
+        $userData=$collection->updateOne(['company_id' => (int)$companyId,'_id' =>
+         (int)$masterId,
         'company_holiday._id' => (int)$ids],
         ['$set' => [
             'company_holiday.$.holiday_name' => $request->holiday_name,
