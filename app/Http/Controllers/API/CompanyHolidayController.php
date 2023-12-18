@@ -57,63 +57,6 @@ class CompanyHolidayController extends Controller
          }
             
     }
-    // public function edit_holiday(Request $request)//doubt
-    // {
-    //     $maxLength = 7000;
-    //     $token = $request->bearerToken();
-    //     $secretKey ='345fgvvc4';
-    //     $decryptedInput = decrypt($token, $secretKey);
-    //     list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-    //     $companyID=intval($id);
-    //     $sid = intval($request->id);
-    //     $masterId=(int)$request->masterId;
-       
-    //     //parent
-    //     $collection=\App\Models\API\Company_Holiday::raw();
-    //     $show1 = $collection->aggregate([
-    //         ['$match' => ['_id' => (int)$id, 'company_id' =>$companyID]],
-    //         ['$match' => ['company_holiday._id' => (int)$id,'company_holiday.delete_status' => 'NO']]
-    //         // ['$unwind' => ['path' => '$company_user']]
-    //     ]);    
-    //     foreach ($show1 as $row) {
-    //         $company=array();
-    //         $paymentTerms=array();
-    //         $user=array();
-    //         $factoringCompany=array();
-    //         if(isset($row)){
-    //             $companyNameID=$row;
-    //             $companyName =\App\Models\API\Company_Holiday::raw()->aggregate([
-    //                 ['$match' => ["company_id" => (int)$companyID]],
-    //                 //['$unwind' => '$company'],
-    //                 ['$match' => ["_id" => (int)$id]],
-    //                 ['$match' => ['company_holiday._id' => (int)$id,'company_holiday.delete_status' => 'NO']]
-    //                 // ['$project' => ['company._id' => 1,'company.companyName' => 1]]
-    //             ]);
-    //             foreach($companyName as $name){
-    //                 $l=0;
-    //                 $company[$l] = $name;
-    //                 $l++;
-    //             }
-    //         }
-    //         $mainIdac = $row['_id'];
-    //         $activeCustomer = array();
-    //         $k = 0;
-    //         $activeCustomer[$k] = $row;
-    //         $k++;
-    //     }
-        
-    //     $customerData[]=array("Customer" => $activeCustomer);
-    //     if($activeCustomer != ''){
-    //         return response()->json([
-    //             'success' => $customerData,
-    //         ]);
-    //     }
-    //     else{
-    //         return response()->json([
-    //             'success' => 'No record'
-    //         ]);
-    //     }
-    // }
     public function edit_holiday(Request $request)
     {
 
