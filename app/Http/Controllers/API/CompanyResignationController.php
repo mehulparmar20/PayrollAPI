@@ -1,17 +1,16 @@
 <?php
 
-
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\API\Company_Admins;
-use App\Models\API\Company_Time;
+use App\Models\API\Company_Resignation;
 use App\Helpers\AppHelper;
 use Illuminate\Http\Request;
 
-class CompanyTimeController extends Controller
+class CompanyResignationController extends Controller
 {
-    public function add_time(Request $request)
+    public function add_resignation(Request $request)
     {
         $maxLength = 7000;
         $token = $request->bearerToken();
@@ -19,20 +18,17 @@ class CompanyTimeController extends Controller
         $decryptedInput = decrypt($token, $secretKey);
         list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $companyId = intval($id);
-        $docAvailable = AppHelper::instance()->checkDoc(Company_Time::raw(), $companyId, $maxLength);
+        $docAvailable = AppHelper::instance()->checkDoc(Company_Resignation::raw(), $companyId, $maxLength);
         $password = hash('sha1', $request->password);
         $cons = array(
             '_id' => 1,
             'company_id' => $companyId,
             'counter' => 0,
-            'shift_no' => $request->shift_no,
-            'company_start_time' => $request->company_start_time,
-            'company_end_time' => $request->company_end_time,
-            'company_break_time' => $request->company_break_time,
-            'company_break_fine' => $request->company_break_fine,
-            'company_late_fine' => $request->company_late_fine,
-            'timezone' => $request->timezone,
-            'delete_status' => "NO",
+            'reason' => $request->reason,
+            'notice_date' => $request->notice_date,
+            'resignation_date' => $request->resignation_date,
+            'employee_id' => $request->employee_id,
+            'status' => "NO",
             'created_at' => '',
             'updated_at' => '',
         );
@@ -40,26 +36,26 @@ class CompanyTimeController extends Controller
             $info = (explode("^", $docAvailable));
             $docId = $info[1];
             $counter = $info[0];
-            $cons['_id'] = AppHelper::instance()->getAdminDocumentSequence($companyId, Company_Time::raw(), 'company_time', $docId);
-            Company_Time::raw()->updateOne(['company_id' => $companyId, '_id' => (int)$docId], ['$push' => ['company_time' => $cons]]);
+            $cons['_id'] = AppHelper::instance()->getAdminDocumentSequence($companyId, Company_Resignation::raw(), 'company_resignation', $docId);
+            Company_Resignation::raw()->updateOne(['company_id' => $companyId, '_id' => (int)$docId], ['$push' => ['company_resignation' => $cons]]);
             $cons['masterID'] = $docId;
             echo json_encode($cons);
 
-            return response()->json(['message' => 'Time Added successfully'], 201);
+            return response()->json(['message' => 'Resignation Added successfully'], 201);
         } else {
-            $parentId = AppHelper::instance()->getNextSequenceForNewDoc(\App\Models\API\Company_Time::raw());
-            $cons['_id'] = AppHelper::instance()->getNextSequenceForNewId(\App\Models\API\Company_Time::raw(), 'company_time', '$company_time._id', $companyId);
+            $parentId = AppHelper::instance()->getNextSequenceForNewDoc(\App\Models\API\Company_Resignation::raw());
+            $cons['_id'] = AppHelper::instance()->getNextSequenceForNewId(\App\Models\API\Company_Resignation::raw(), 'company_resignation', '$company_resignation._id', $companyId);
             $arra = array(
                 "_id" => $parentId,
                 "counter" => (int)1,
                 "company_id" => (int)$companyId,
-                "company_time" => array($cons),
+                "company_resignation" => array($cons),
             );
-            \App\Models\API\Company_Time::raw()->insertOne($arra);
-            return response()->json(['message' => 'Time Added successfully'], 201);
+            \App\Models\API\Company_Resignation::raw()->insertOne($arra);
+            return response()->json(['message' => 'Resignation Added Successfully'], 201);
         }
     }
-    public function edit_time(Request $request)
+    public function edit_resignation(Request $request)
     {
 
         $token = $request->bearerToken();
@@ -69,16 +65,16 @@ class CompanyTimeController extends Controller
         $companyID = intval($id);
         $sid = intval($request->id);
         $masterId = (int)$request->masterId;
-        $cursor = Company_Time::raw()
-        ->findOne(['company_id' => $companyID,'_id'=>$masterId,'company_time._id' => $sid]);
-        if ($cursor !== null && property_exists($cursor, 'company_time')) {
-        $consigneeArray=$cursor->company_time;
+        $cursor = Company_Resignation::raw()
+        ->findOne(['company_id' => $companyID,'_id'=>$masterId,'company_resignation._id' => $sid]);
+        if ($cursor !== null && property_exists($cursor, 'company_resignation')) {
+        $consigneeArray=$cursor->company_resignation;
         $consigneeLength=count($consigneeArray);
         $i=0;
         $v=0;
         for($i=0; $i<$consigneeLength; $i++)
         {
-            $ids=$cursor->company_time[$i]['_id'];
+            $ids=$cursor->company_resignation[$i]['_id'];
             $ids=(array)$ids;
             foreach($ids as $value)
             {
@@ -91,7 +87,7 @@ class CompanyTimeController extends Controller
         $companyID=array(
             "companyID"=>$masterId
         );
-        $consignee=(array)$cursor->company_time[$v];
+        $consignee=(array)$cursor->company_resignation[$v];
             return response()->json([
                 'success' => $consignee,
             ]);
@@ -101,9 +97,9 @@ class CompanyTimeController extends Controller
             ]);
         }
     }
-    public function update_time(Request $request)
+    public function update_resignation(Request $request)
     {
-        $collection = \App\Models\API\Company_Time::raw();
+        $collection = \App\Models\API\Company_Resignation::raw();
         $token = $request->bearerToken();
         $secretKey = '345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
@@ -111,35 +107,31 @@ class CompanyTimeController extends Controller
         $companyId = intval($id); //21
         $id = $request->id; //1
         $masterId = (int)$request->masterId;
-        // dd($masterId);
         $maxLength = 6500;
-        $docAvailable = AppHelper::instance()->checkDoc(\App\Models\API\Company_Time::raw(),
+        $docAvailable = AppHelper::instance()->checkDoc(\App\Models\API\Company_Resignation::raw(),
          $companyId, $maxLength);
         $info = (explode("^", $docAvailable));
         $docId = $info[1];
         $userData = $collection->updateOne(
-            ['company_id' => (int)$companyId, '_id' => (int)$masterId, 'company_time._id' =>
+            ['company_id' => (int)$companyId, '_id' => (int)$masterId, 'company_resignation._id' =>
              (int)$id],
             ['$set' => [
-                'company_time.$.shift_no' => $request->shift_no,
-                'company_time.$.company_start_time' => $request->company_start_time,
-                'company_time.$.company_end_time' => $request->company_end_time,
-                'company_time.$.company_break_time' => $request->company_break_time,
-                'company_time.$.company_break_fine' => $request->company_break_fine,
-                'company_time.$.company_late_fine' => $request->company_late_fine,
-                'company_time.$.timezone' => $request->timezone,
-                'company_time.$.edit_time' => time()
+                'company_resignation.$.reason' => $request->reason,
+                'company_resignation.$.notice_date' => $request->notice_date,
+                'company_resignation.$.resignation_date' => $request->resignation_date,
+                'company_resignation.$.employee_id' => $request->employee_id,
+                'company_resignation.$.edit_time' => time()
             ]]
         );
         if ($userData == true) {
-            $arr = array('status' => 'success', 'message' => 'Time Updated successfully.', 'statusCode' => 200);
+            $arr = array('status' => 'success', 'message' => 'Resignation Updated Successfully.', 'statusCode' => 200);
             return json_encode($arr);
         } else {
-            $arr = array('status' => 'success', 'message' => 'NO Time Updated.', 'statusCode' => 500);
+            $arr = array('status' => 'success', 'message' => 'NO Resignation Updated.', 'statusCode' => 500);
             return json_encode($arr);
         }
     }
-    public function delete_time(Request $request)
+    public function delete_resignation(Request $request)
     {
         $token = $request->bearerToken();
         $secretKey = '345fgvvc4';
@@ -149,25 +141,25 @@ class CompanyTimeController extends Controller
         $masterId = (int)$request->masterId;
         // $masterId=(int)$request->parentId;
         $companyID = intval($id);
-        $departData = Company_Time::raw()->updateOne(
-            ['company_id' => $companyID, '_id' => $masterId, 'company_time._id' => $ids],
-            ['$set' => ['company_time.$.delete_status' => 'YES', 'company_time.$.deleteUser'
-             => $companyID, 'company_time.$.deleteTime' => time()]]
+        $departData = Company_Resignation::raw()->updateOne(
+            ['company_id' => $companyID, '_id' => $masterId, 'company_resignation._id' => $ids],
+            ['$set' => ['company_resignation.$.status' => 'YES', 'company_resignation.$.deleteUser'
+             => $companyID, 'company_resignation.$.deleteTime' => time()]]
         );
         if ($departData == true) {
-            $arr = array('status' => 'success', 'message' => 'Time deleted successfully.',
+            $arr = array('status' => 'success', 'message' => 'Resignation deleted successfully.',
              'statusCode' => 200);
             return json_encode($arr);
         }
     }
-     public function view_time(Request $request)
+     public function view_resignation(Request $request)
     {
         $token = $request->bearerToken();
         $secretKey = '345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
         $token_data = list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $company_id = intval($id);
-        $records = Company_Time::where('company_time.delete_status', 'NO')
+        $records = Company_Resignation::where('company_resignation.status', 'NO')
             ->where('company_id', $company_id)
             ->get();
        
@@ -175,46 +167,45 @@ class CompanyTimeController extends Controller
 
         if ($data) {
             $filteredData = array_map(function ($item) {
-                $filteredDepartments = array_filter($item['company_time'], function ($time) {
-                    return $time['delete_status'] === 'NO';
+                $filteredDepartments = array_filter($item['company_resignation'], function ($time) {
+                    return $time['status'] === 'NO';
                 });
-                $filteredDepartments = array_intersect_key($item['company_time'], $filteredDepartments);
-                $item['company_time'] = $filteredDepartments;
+                $filteredDepartments = array_intersect_key($item['company_resignation'], $filteredDepartments);
+                $item['company_resignation'] = $filteredDepartments;
 
                 return $item;
             }, $data);
-            return response()->json(['success' => true,'data' => $filteredData], 200);
+            
+        return response()->json(['success' => true,'data' => $filteredData], 200);
         }
 
-       
         else {
             // Handle the case where no records are found
             return response()->json(['success' => false, 'message' => 'No records found'], 404);
         }
     }
-    public function paginate_time(Request $request)
+    public function paginate_resignation(Request $request)
     {
         $token = $request->bearerToken();
         $secretKey = '345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
         $token_data = list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $company_id = intval($id);
-        $record = Company_Time::where('company_time.delete_status', 'NO')
+        $record = Company_Resignation::where('company_resignation.status', 'NO')
             ->where('company_id', $company_id)
             ->paginate(10);
             $data = json_decode($record, true);
 
         return response()->json(['success' => true, 'data' => $record], 200);
     }
-    public function search_time(Request $request)
+    public function search_resignation(Request $request)
     {
-        $name = $request->shift_no;
-        $results = Company_Time::where('company_time.shift_no', 'like', '%' . $name . '%')->get();
+        $name = $request->reason;
+        $results = Company_Resignation::where('company_resignation.reason', 'like', '%' . $name . '%')->get();
         if ($results->isEmpty()) {
             return response()->json(['message' => 'No results found'], 404);
         } else {
             return response()->json(['results' => $results], 200);
         }
     }
-
 }

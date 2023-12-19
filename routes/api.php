@@ -11,6 +11,9 @@ use App\Http\Controllers\API\CompanyTimeController;
 use App\Http\Controllers\API\CompanyLeaveTypeController;
 use App\Http\Controllers\API\CompanyComposeController;
 use App\Http\Controllers\API\CompanyJoiningController;
+use App\Http\Controllers\API\CompanyBranchController;
+use App\Http\Controllers\API\CompanyWorkingdayController;
+use App\Http\Controllers\API\CompanyResignationController;
 
 
 
@@ -96,7 +99,41 @@ Route::group(['middleware' => 'tokenauth'], function () {
 
     //CompanyJoiningController
     Route::post('view_joinemployee','App\Http\Controllers\API\CompanyJoiningController@view_joinemployee');
-    Route::post('view_joindepartment','App\Http\Controllers\API\CompanyJoiningController@view_joindepartment');
+    Route::post('add_joining','App\Http\Controllers\API\CompanyJoiningController@add_joining');
+    Route::post('edit_joining','App\Http\Controllers\API\CompanyJoiningController@edit_joining');
+    Route::post('update_joining','App\Http\Controllers\API\CompanyJoiningController@update_joining');
+    Route::get('view_joining','App\Http\Controllers\API\CompanyJoiningController@view_joining');
+    Route::post('delete_joining','App\Http\Controllers\API\CompanyJoiningController@delete_joining');
+    Route::get('paginate_joining','App\Http\Controllers\API\CompanyJoiningController@paginate_joining');
+    Route::post('search_joining','App\Http\Controllers\API\CompanyJoiningController@search_joining');
+
+    //CompanyBranchController
+    Route::post('add_branch','App\Http\Controllers\API\CompanyBranchController@add_branch');
+    Route::post('edit_branch','App\Http\Controllers\API\CompanyBranchController@edit_branch');
+    Route::post('update_branch','App\Http\Controllers\API\CompanyBranchController@update_branch');
+    Route::get('view_branch','App\Http\Controllers\API\CompanyBranchController@view_branch');
+    Route::post('delete_branch','App\Http\Controllers\API\CompanyBranchController@delete_branch');
+    Route::get('paginate_branch','App\Http\Controllers\API\CompanyBranchController@paginate_branch');
+    Route::post('search_branch','App\Http\Controllers\API\CompanyBranchController@search_branch');
+
+    //CompanyWorkingdayController
+    Route::post('add_workingdays','App\Http\Controllers\API\CompanyWorkingdayController@add_workingdays');
+    Route::post('edit_workingdays','App\Http\Controllers\API\CompanyWorkingdayController@edit_workingdays');
+    Route::post('update_workingdays','App\Http\Controllers\API\CompanyWorkingdayController@update_workingdays');
+    Route::get('view_workingdays','App\Http\Controllers\API\CompanyWorkingdayController@view_workingdays');
+    Route::post('delete_workingdays','App\Http\Controllers\API\CompanyWorkingdayController@delete_workingdays');
+    Route::get('paginate_workingdays','App\Http\Controllers\API\CompanyWorkingdayController@paginate_workingdays');
+    Route::post('search_workingdays','App\Http\Controllers\API\CompanyWorkingdayController@search_workingdays');
+
+    //CompanyResignationController
+
+    Route::post('add_resignation','App\Http\Controllers\API\CompanyResignationController@add_resignation');
+    Route::post('edit_resignation','App\Http\Controllers\API\CompanyResignationController@edit_resignation');
+    Route::post('update_resignation','App\Http\Controllers\API\CompanyResignationController@update_resignation');
+    Route::get('view_resignation','App\Http\Controllers\API\CompanyResignationController@view_resignation');
+    Route::post('delete_resignation','App\Http\Controllers\API\CompanyResignationController@delete_resignation');
+    Route::get('paginate_resignation','App\Http\Controllers\API\CompanyResignationController@paginate_resignation');
+    Route::post('search_resignation','App\Http\Controllers\API\CompanyResignationController@search_resignation');
 
     // AddUserController
     Route::post('add_user','App\Http\Controllers\API\CompanyUserController@add_user');

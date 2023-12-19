@@ -5,13 +5,13 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\API\Company_Admins;
-use App\Models\API\Company_Time;
+use App\Models\API\Company_Branch;
 use App\Helpers\AppHelper;
 use Illuminate\Http\Request;
 
-class CompanyTimeController extends Controller
+class CompanyBranchController extends Controller
 {
-    public function add_time(Request $request)
+    public function add_branch(Request $request)
     {
         $maxLength = 7000;
         $token = $request->bearerToken();
@@ -19,20 +19,16 @@ class CompanyTimeController extends Controller
         $decryptedInput = decrypt($token, $secretKey);
         list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $companyId = intval($id);
-        $docAvailable = AppHelper::instance()->checkDoc(Company_Time::raw(), $companyId, $maxLength);
+        $docAvailable = AppHelper::instance()->checkDoc(Company_Branch::raw(), $companyId, $maxLength);
         $password = hash('sha1', $request->password);
         $cons = array(
             '_id' => 1,
             'company_id' => $companyId,
             'counter' => 0,
-            'shift_no' => $request->shift_no,
-            'company_start_time' => $request->company_start_time,
-            'company_end_time' => $request->company_end_time,
-            'company_break_time' => $request->company_break_time,
-            'company_break_fine' => $request->company_break_fine,
-            'company_late_fine' => $request->company_late_fine,
-            'timezone' => $request->timezone,
-            'delete_status' => "NO",
+            'branch_name' => $request->branch_name,
+            'address' => $request->address,
+            'phone' => $request->phone,
+            'status' => "NO",
             'created_at' => '',
             'updated_at' => '',
         );
@@ -40,26 +36,26 @@ class CompanyTimeController extends Controller
             $info = (explode("^", $docAvailable));
             $docId = $info[1];
             $counter = $info[0];
-            $cons['_id'] = AppHelper::instance()->getAdminDocumentSequence($companyId, Company_Time::raw(), 'company_time', $docId);
-            Company_Time::raw()->updateOne(['company_id' => $companyId, '_id' => (int)$docId], ['$push' => ['company_time' => $cons]]);
+            $cons['_id'] = AppHelper::instance()->getAdminDocumentSequence($companyId, Company_Branch::raw(), 'company_branch', $docId);
+            Company_Branch::raw()->updateOne(['company_id' => $companyId, '_id' => (int)$docId], ['$push' => ['company_branch' => $cons]]);
             $cons['masterID'] = $docId;
             echo json_encode($cons);
 
-            return response()->json(['message' => 'Time Added successfully'], 201);
+            return response()->json(['message' => 'Branch Added successfully'], 201);
         } else {
-            $parentId = AppHelper::instance()->getNextSequenceForNewDoc(\App\Models\API\Company_Time::raw());
-            $cons['_id'] = AppHelper::instance()->getNextSequenceForNewId(\App\Models\API\Company_Time::raw(), 'company_time', '$company_time._id', $companyId);
+            $parentId = AppHelper::instance()->getNextSequenceForNewDoc(\App\Models\API\Company_Branch::raw());
+            $cons['_id'] = AppHelper::instance()->getNextSequenceForNewId(\App\Models\API\Company_Branch::raw(), 'company_branch', '$company_branch._id', $companyId);
             $arra = array(
                 "_id" => $parentId,
                 "counter" => (int)1,
                 "company_id" => (int)$companyId,
-                "company_time" => array($cons),
+                "company_branch" => array($cons),
             );
-            \App\Models\API\Company_Time::raw()->insertOne($arra);
-            return response()->json(['message' => 'Time Added successfully'], 201);
+            \App\Models\API\Company_Branch::raw()->insertOne($arra);
+            return response()->json(['message' => 'Branch Added successfully'], 201);
         }
     }
-    public function edit_time(Request $request)
+    public function edit_branch(Request $request)
     {
 
         $token = $request->bearerToken();
@@ -69,16 +65,16 @@ class CompanyTimeController extends Controller
         $companyID = intval($id);
         $sid = intval($request->id);
         $masterId = (int)$request->masterId;
-        $cursor = Company_Time::raw()
-        ->findOne(['company_id' => $companyID,'_id'=>$masterId,'company_time._id' => $sid]);
-        if ($cursor !== null && property_exists($cursor, 'company_time')) {
-        $consigneeArray=$cursor->company_time;
+        $cursor = Company_Branch::raw()
+        ->findOne(['company_id' => $companyID,'_id'=>$masterId,'company_branch._id' => $sid]);
+        if ($cursor !== null && property_exists($cursor, 'company_branch')) {
+        $consigneeArray=$cursor->company_branch;
         $consigneeLength=count($consigneeArray);
         $i=0;
         $v=0;
         for($i=0; $i<$consigneeLength; $i++)
         {
-            $ids=$cursor->company_time[$i]['_id'];
+            $ids=$cursor->company_branch[$i]['_id'];
             $ids=(array)$ids;
             foreach($ids as $value)
             {
@@ -91,7 +87,7 @@ class CompanyTimeController extends Controller
         $companyID=array(
             "companyID"=>$masterId
         );
-        $consignee=(array)$cursor->company_time[$v];
+        $consignee=(array)$cursor->company_branch[$v];
             return response()->json([
                 'success' => $consignee,
             ]);
@@ -101,9 +97,9 @@ class CompanyTimeController extends Controller
             ]);
         }
     }
-    public function update_time(Request $request)
+    public function update_branch(Request $request)
     {
-        $collection = \App\Models\API\Company_Time::raw();
+        $collection = \App\Models\API\Company_Branch::raw();
         $token = $request->bearerToken();
         $secretKey = '345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
@@ -111,35 +107,30 @@ class CompanyTimeController extends Controller
         $companyId = intval($id); //21
         $id = $request->id; //1
         $masterId = (int)$request->masterId;
-        // dd($masterId);
         $maxLength = 6500;
-        $docAvailable = AppHelper::instance()->checkDoc(\App\Models\API\Company_Time::raw(),
+        $docAvailable = AppHelper::instance()->checkDoc(\App\Models\API\Company_Branch::raw(),
          $companyId, $maxLength);
         $info = (explode("^", $docAvailable));
         $docId = $info[1];
         $userData = $collection->updateOne(
-            ['company_id' => (int)$companyId, '_id' => (int)$masterId, 'company_time._id' =>
+            ['company_id' => (int)$companyId, '_id' => (int)$masterId, 'company_branch._id' =>
              (int)$id],
             ['$set' => [
-                'company_time.$.shift_no' => $request->shift_no,
-                'company_time.$.company_start_time' => $request->company_start_time,
-                'company_time.$.company_end_time' => $request->company_end_time,
-                'company_time.$.company_break_time' => $request->company_break_time,
-                'company_time.$.company_break_fine' => $request->company_break_fine,
-                'company_time.$.company_late_fine' => $request->company_late_fine,
-                'company_time.$.timezone' => $request->timezone,
-                'company_time.$.edit_time' => time()
+                'company_branch.$.branch_name' => $request->branch_name,
+                'company_branch.$.address' => $request->address,
+                'company_branch.$.phone' => $request->phone,
+                'company_branch.$.edit_time' => time()
             ]]
         );
         if ($userData == true) {
-            $arr = array('status' => 'success', 'message' => 'Time Updated successfully.', 'statusCode' => 200);
+            $arr = array('status' => 'success', 'message' => 'Branch Updated successfully.', 'statusCode' => 200);
             return json_encode($arr);
         } else {
-            $arr = array('status' => 'success', 'message' => 'NO Time Updated.', 'statusCode' => 500);
+            $arr = array('status' => 'success', 'message' => 'NO Branch Updated.', 'statusCode' => 500);
             return json_encode($arr);
         }
     }
-    public function delete_time(Request $request)
+    public function delete_branch(Request $request)
     {
         $token = $request->bearerToken();
         $secretKey = '345fgvvc4';
@@ -149,25 +140,25 @@ class CompanyTimeController extends Controller
         $masterId = (int)$request->masterId;
         // $masterId=(int)$request->parentId;
         $companyID = intval($id);
-        $departData = Company_Time::raw()->updateOne(
-            ['company_id' => $companyID, '_id' => $masterId, 'company_time._id' => $ids],
-            ['$set' => ['company_time.$.delete_status' => 'YES', 'company_time.$.deleteUser'
-             => $companyID, 'company_time.$.deleteTime' => time()]]
+        $departData = Company_Branch::raw()->updateOne(
+            ['company_id' => $companyID, '_id' => $masterId, 'company_branch._id' => $ids],
+            ['$set' => ['company_branch.$.status' => 'YES', 'company_branch.$.deleteUser'
+             => $companyID, 'company_branch.$.deleteTime' => time()]]
         );
         if ($departData == true) {
-            $arr = array('status' => 'success', 'message' => 'Time deleted successfully.',
+            $arr = array('status' => 'success', 'message' => 'Branch deleted successfully.',
              'statusCode' => 200);
             return json_encode($arr);
         }
     }
-     public function view_time(Request $request)
+     public function view_branch(Request $request)
     {
         $token = $request->bearerToken();
         $secretKey = '345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
         $token_data = list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $company_id = intval($id);
-        $records = Company_Time::where('company_time.delete_status', 'NO')
+        $records = Company_Branch::where('company_branch.status', 'NO')
             ->where('company_id', $company_id)
             ->get();
        
@@ -175,46 +166,45 @@ class CompanyTimeController extends Controller
 
         if ($data) {
             $filteredData = array_map(function ($item) {
-                $filteredDepartments = array_filter($item['company_time'], function ($time) {
-                    return $time['delete_status'] === 'NO';
+                $filteredDepartments = array_filter($item['company_branch'], function ($time) {
+                    return $time['status'] === 'NO';
                 });
-                $filteredDepartments = array_intersect_key($item['company_time'], $filteredDepartments);
-                $item['company_time'] = $filteredDepartments;
+                $filteredDepartments = array_intersect_key($item['company_branch'], $filteredDepartments);
+                $item['company_branch'] = $filteredDepartments;
 
                 return $item;
             }, $data);
-            return response()->json(['success' => true,'data' => $filteredData], 200);
+            
+        return response()->json(['success' => true,'data' => $filteredData], 200);
         }
 
-       
         else {
             // Handle the case where no records are found
             return response()->json(['success' => false, 'message' => 'No records found'], 404);
         }
     }
-    public function paginate_time(Request $request)
+    public function paginate_branch(Request $request)
     {
         $token = $request->bearerToken();
         $secretKey = '345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
         $token_data = list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $company_id = intval($id);
-        $record = Company_Time::where('company_time.delete_status', 'NO')
+        $record = Company_Branch::where('company_branch.status', 'NO')
             ->where('company_id', $company_id)
             ->paginate(10);
             $data = json_decode($record, true);
 
         return response()->json(['success' => true, 'data' => $record], 200);
     }
-    public function search_time(Request $request)
+    public function search_branch(Request $request)
     {
-        $name = $request->shift_no;
-        $results = Company_Time::where('company_time.shift_no', 'like', '%' . $name . '%')->get();
+        $name = $request->branch_name;
+        $results = Company_Branch::where('company_branch.branch_name', 'like', '%' . $name . '%')->get();
         if ($results->isEmpty()) {
             return response()->json(['message' => 'No results found'], 404);
         } else {
             return response()->json(['results' => $results], 200);
         }
     }
-
 }

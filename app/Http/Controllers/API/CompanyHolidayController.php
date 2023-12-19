@@ -172,8 +172,13 @@ class CompanyHolidayController extends Controller
         
                 return $item;
             }, $data);
+            return response()->json(['success' => true,'data' => $filteredData], 200);
         }
-        return response()->json(['success' => true,'data' => $filteredData], 200);
+       
+        else {
+            // Handle the case where no records are found
+            return response()->json(['success' => false, 'message' => 'No records found'], 404);
+        }
     }
     public function paginate_holiday(Request $request)
     {
