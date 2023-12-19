@@ -7,6 +7,7 @@ use App\Models\API\Company_Admins;
 use App\Models\API\Company_Resignation;
 use App\Helpers\AppHelper;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class CompanyResignationController extends Controller
 {
@@ -164,7 +165,6 @@ class CompanyResignationController extends Controller
             ->get();
        
             $data = json_decode($records, true);
-
         if ($data) {
             $filteredData = array_map(function ($item) {
                 $filteredDepartments = array_filter($item['company_resignation'], function ($time) {
@@ -184,7 +184,7 @@ class CompanyResignationController extends Controller
             return response()->json(['success' => false, 'message' => 'No records found'], 404);
         }
     }
-    public function paginate_resignation(Request $request)
+     public function paginate_resignation(Request $request)
     {
         $token = $request->bearerToken();
         $secretKey = '345fgvvc4';
@@ -194,9 +194,23 @@ class CompanyResignationController extends Controller
         $record = Company_Resignation::where('company_resignation.status', 'NO')
             ->where('company_id', $company_id)
             ->paginate(10);
-            $data = json_decode($record, true);
-
+            // dd($record);
+            // $data = json_decode($record, true);
+        //     $data = $record->items();
+        //     if ($data) {
+        //         $filteredData = array_map(function ($item) {
+        //             $filteredDepartments = array_filter($item['company_resignation'], function ($time) {
+        //                 return $time['status'] === 'NO';
+        //             });
+        //             $filteredDepartments = array_intersect_key($item['company_resignation'], $filteredDepartments);
+        //             $item['company_resignation'] = $filteredDepartments;
+    
+        //             return $item;
+        //         }, $data);
+        // return response()->json(['success' => true, 'data' => $filteredData], 200);
+        //     }
         return response()->json(['success' => true, 'data' => $record], 200);
+
     }
     public function search_resignation(Request $request)
     {
