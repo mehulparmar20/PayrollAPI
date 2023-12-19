@@ -19,8 +19,16 @@ class Company_Joining extends Model
         '_token', 
         'manager_name',
         'manager_designation',
+        'employee',
+        'employee_id',
+        'department',
+        'joining_date',
         'delete_status',
     ];
+    public function department()
+    {
+        return $this->belongsTo(Company_Department::class, 'department_id');
+    }
     public function up()
     {
         Schema::create('company_joining_letter', function (Blueprint $collection) {
@@ -28,6 +36,10 @@ class Company_Joining extends Model
             $collection->string('counter');
             $collection->string('manager_name');
             $collection->string('manager_designation');
+            $collection->string('employee');
+            $collection->string('employee_id');
+            $collection->string('department');
+            $collection->string('joining_date');
             $collection->integer('delete_status');
             $collection->timestamps();
         });
