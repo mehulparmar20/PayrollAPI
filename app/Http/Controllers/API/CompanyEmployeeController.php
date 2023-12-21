@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\API\Company_admin;
 use App\Models\API\Company_Admins;
 use App\Models\API\Company_Employee;
+use App\Models\API\Company_user;
 use App\Helpers\AppHelper;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -90,6 +91,7 @@ class CompanyEmployeeController extends Controller
        $companyId=intval($id);
        $id=intval($request->id);
        $existingemployeeData =Company_Employee::where('_id',$id)->where('delete_status','NO')->get();
+    //    dd($existingemployeeData);
        if($existingemployeeData != ''){
            return response()->json([
                'success' => $existingemployeeData,
@@ -159,6 +161,20 @@ class CompanyEmployeeController extends Controller
                 'Originalname' => $original_name,
                 'filesize' => $size,
                 'filepath' => $photo_path
+            )
+            ),
+            'emergency_contact'=> array(array(
+               'name'=>"",
+               'relationship'=>"",
+               'phone'=>""
+            )
+            ),
+            'bank_information'=>array(array(
+             'bank_name'=>'',
+             'account_no'=>'',
+             'IFSC_code'=>'',
+             'branch_name'=>'',
+             'PAN_no'=>''
             )
             ),
             'insertedTime' => time(),

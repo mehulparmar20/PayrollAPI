@@ -192,6 +192,7 @@ class CompanyTimeController extends Controller
             return response()->json(['success' => false, 'message' => 'No records found'], 404);
         }
     }
+  
     public function paginate_time(Request $request)
     {
         $token = $request->bearerToken();
@@ -199,13 +200,38 @@ class CompanyTimeController extends Controller
         $decryptedInput = decrypt($token, $secretKey);
         $token_data = list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $company_id = intval($id);
-        $record = Company_Time::where('company_time.delete_status', 'NO')
+    
+        $paginator = Company_Time::where('company_time.status', 'NO')
             ->where('company_id', $company_id)
-            ->paginate(10);
-            $data = json_decode($record, true);
-
-        return response()->json(['success' => true, 'data' => $record], 200);
+            ->paginate(1);
+    
+        // Access the array of items within the paginator
+        $data = $paginator->items();
+    
+        $filteredData = [];
+    
+        foreach ($data as $item) {
+            $filteredResignations = array_filter($item['company_time'], function ($resignation) {
+                return $resignation['status'] === 'NO';
+            });
+    
+            $filteredData[] = [
+                'company_time' => array_values($filteredResignations), // Resetting keys for the array
+            ];
+        }
+    
+        return response()->json([
+            'success' => true,
+            'data' => $filteredData,
+            'pagination' => [
+                'current_page' => $paginator->currentPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+                'next_page_url' => $paginator->nextPageUrl(),
+            ],
+        ], 200);
     }
+    
     public function search_time(Request $request)
     {
         $name = $request->shift_no;

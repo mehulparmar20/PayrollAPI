@@ -193,25 +193,66 @@ class CompanyResignationController extends Controller
         $company_id = intval($id);
         $record = Company_Resignation::where('company_resignation.status', 'NO')
             ->where('company_id', $company_id)
-            ->paginate(10);
+            ->paginate(1);
             // dd($record);
-            // $data = json_decode($record, true);
-        //     $data = $record->items();
-        //     if ($data) {
-        //         $filteredData = array_map(function ($item) {
-        //             $filteredDepartments = array_filter($item['company_resignation'], function ($time) {
-        //                 return $time['status'] === 'NO';
-        //             });
-        //             $filteredDepartments = array_intersect_key($item['company_resignation'], $filteredDepartments);
-        //             $item['company_resignation'] = $filteredDepartments;
+            $data = json_decode($record, true);
+            $data = $record->items();
+            if ($data) {
+                $filteredData = array_map(function ($item) {
+                    $filteredDepartments = array_filter($item['company_resignation'], function ($time) {
+                        return $time['status'] === 'NO';
+                    });
+                    $filteredDepartments = array_intersect_key($item['company_resignation'], $filteredDepartments);
+                    $item['company_resignation'] = $filteredDepartments;
     
-        //             return $item;
-        //         }, $data);
-        // return response()->json(['success' => true, 'data' => $filteredData], 200);
-        //     }
-        return response()->json(['success' => true, 'data' => $record], 200);
+                    return $item;
+                }, $data);
+        return response()->json(['success' => true, 'data' => $filteredData], 200);
+            }
+        //return response()->json(['success' => true, 'data' => $record], 200);
 
     }
+    // public function paginate_resignation(Request $request)
+    // {
+    //     $token = $request->bearerToken();
+    //     $secretKey = '345fgvvc4';
+    //     $decryptedInput = decrypt($token, $secretKey);
+    //     $token_data = list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+    //     $company_id = intval($id);
+    
+    //     $paginator = Company_Resignation::where('company_resignation.status', 'NO')
+    //         ->where('company_id', $company_id)
+    //         ->paginate(1);
+    
+    //     // Access the array of items within the paginator
+    //     $data = $paginator->items();
+    
+    //     $filteredData = [];
+    
+    //     foreach ($data as $item) {
+    //         $filteredResignations = array_filter($item['company_resignation'], function ($resignation) {
+    //             return $resignation['status'] === 'NO';
+    //         });
+    
+    //         $filteredData[] = [
+    //             'company_resignation' => array_values($filteredResignations), // Resetting keys for the array
+    //         ];
+    //     }
+    
+    //     return response()->json([
+    //         'success' => true,
+    //         'data' => $filteredData,
+    //         'pagination' => [
+    //             'current_page' => $paginator->currentPage(),
+    //             'per_page' => $paginator->perPage(),
+    //             'total' => $paginator->total(),
+    //             'next_page_url' => $paginator->nextPageUrl(),
+    //         ],
+    //     ], 200);
+    // }
+    
+    
+
     public function search_resignation(Request $request)
     {
         $name = $request->reason;
