@@ -105,7 +105,7 @@ class CompanyEmployeeController extends Controller
     }
     
    
-    public function update_employee(Request $request) //done
+    public function update_employee(Request $request) 
     {
         $token = $request->bearerToken();
         $secretKey ='345fgvvc4';
@@ -114,6 +114,7 @@ class CompanyEmployeeController extends Controller
         $companyId=intval($id);
         $reqid=intval($request->id);
         $companyArrayUp =Company_Employee::where('_id',$reqid)->first();
+        
         if (!$companyArrayUp) {
             return response()->json(['message' => 'User not found'], 404);
         }
@@ -146,6 +147,7 @@ class CompanyEmployeeController extends Controller
             }
 
         $password = hash('sha1', $request->user_password);
+       
         $data = [
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
@@ -164,17 +166,17 @@ class CompanyEmployeeController extends Controller
             )
             ),
             'emergency_contact'=> array(array(
-               'name'=>"",
-               'relationship'=>"",
-               'phone'=>""
+               'emergency_name'=>$request->emergency_name,
+               'emergency_relation'=>$request->emergency_relation,
+               'emergency_phone'=>$request->emergency_phone
             )
             ),
             'bank_information'=>array(array(
-             'bank_name'=>'',
-             'account_no'=>'',
-             'IFSC_code'=>'',
-             'branch_name'=>'',
-             'PAN_no'=>''
+             'bank_name'=>$request->bank_name,
+             'account_no'=>$request->account_no,
+             'IFSC_code'=>$request->IFSC_code,
+             'branch_name'=>$request->branch_name,
+             'PAN_no'=>$request->PAN_no,
             )
             ),
             'insertedTime' => time(),

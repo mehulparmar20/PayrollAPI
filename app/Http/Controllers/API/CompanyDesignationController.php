@@ -119,8 +119,10 @@ class CompanyDesignationController extends Controller
             'company_designation.$.designation_name' => $request->designation_name,
             'company_designation.$.department_id' => $request->department_id,
             'company_designation.$.edit_time' => time()
+
             ]]
         );
+        // dd($desgData);
        if ($desgData==true)
         {
             $arr = array('status' => 'success', 'message' => 'Designation Updated successfully.','statusCode' => 200);
