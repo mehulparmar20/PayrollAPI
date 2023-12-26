@@ -28,6 +28,8 @@ class Company_Employee extends Model
         'designation',
         'salary',
         'shift',
+        'fileupload',
+        'password',
         'emergency_contact',
         'bank_information',
         'delete_status',
