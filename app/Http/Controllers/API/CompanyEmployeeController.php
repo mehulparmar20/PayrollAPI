@@ -328,5 +328,41 @@ class CompanyEmployeeController extends Controller
         if ($companyArrayUp->fileupload) {
             return response()->json(['message' => 'File already uploaded for this employee'], 400);
         }
-            
+        $request->validate([
+            'fileupload' => 'required', // Image and max size 5MB
+        ]);
+
+        $file = $request->file('fileupload');
+        $fileName = time() . '.' . $file->getClientOriginalExtension();
+        $file->move(public_path('uploads'), $fileName);
+        $data = [
+            'fileupload' => $fileName,
+        ];
+        $result = $companyArrayUp->update($data);
+        if ($result) {
+            return response()->json(['message' => 'File Upload successfully'], 200);
+        } else {
+            return response()->json(['message' => 'Failed to  File Upload'], 500);
+        }
+    }
+    public function employee_history(Request $request)
+    {
+        $token = $request->bearerToken();
+        $secretKey = '345fgvvc4';
+        $decryptedInput = decrypt($token, $secretKey);
+        list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $companyId = intval($id);
+        $existingemployeeData = Company_Employee::where('company_id',$companyId)->select('first_name', 'last_name','email','joining_date','delete_status')->get();
+        //dd($existingemployeeData);
+        if ($existingemployeeData != '') {
+            return response()->json([
+                'success' => $existingemployeeData,
+            ]);
+        } else {
+            return response()->json([
+                'success' => 'No record'
+            ]);
+        }
+    }
+
 }

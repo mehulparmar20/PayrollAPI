@@ -19,21 +19,42 @@ class EmployeeAttendanceController extends Controller
         list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $companyId = intval($id);
         $docAvailable = AppHelper::instance()->checkDoc(Employee_Attendance::raw(), $companyId, $maxLength);
-        $cons = array(
-            '_id' => 1,
-            'company_id' => $companyId,
-            'counter' => 0,
-            'employee_id'=>$request->employee_id,
-            'attendance_time' =>time(),
-            'status' => 1 ,
-            'delete_status' => "NO",
-            'created_at' => '',
-            'updated_at' => '',
-        );
+        // $epoch = 1483228800;
+        // $dt = new DateTime("@$epoch");  // convert UNIX timestamp to PHP DateTime
+        // echo $dt->format('Y-m-d H:i:s');
+        if($request->attendance_status == 'IN'){
+            $cons = array(
+                '_id' => 1,
+                'company_id' => $companyId,
+                'counter' => 0,
+                'employee_id'=>$request->employee_id,
+                'attendance_time' =>time(),
+                'attendance_status' =>'IN',
+                'status' => 1 ,
+                'delete_status' => "NO",
+                'created_at' => '',
+                'updated_at' => '',
+            );
+        }
+        else
+        {
+           $cons = array(
+                '_id' => 1,
+                'company_id' => $companyId,
+                'counter' => 0,
+                'employee_id'=>$request->employee_id,
+                'attendance_time' =>time(),
+                'attendance_status' =>'OUT',
+                'status' => 1 ,
+                'delete_status' => "NO",
+                'created_at' => '',
+                'updated_at' => '',
+            );
+        }
+        
         if ($docAvailable != "No") {
             $info = (explode("^", $docAvailable));
             $docId = $info[1];
-            // dd($docId);
             $counter = $info[0];
             $cons['_id'] = AppHelper::instance()->getAdminDocumentSequence($companyId, Employee_Attendance::raw(), 'employee_attendance', $docId);
             Employee_Attendance::raw()->updateOne(['company_id' => $companyId, '_id' => (int)$docId], ['$push' => ['employee_attendance' => $cons]]);
@@ -62,20 +83,20 @@ class EmployeeAttendanceController extends Controller
         $decryptedInput = decrypt($token, $secretKey);
         $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $company_id=intval($id);
-       $records=Company_Designation::where('company_designation.delete_status','NO')
+       $records=Employee_Attendance::where('employee_attendance.delete_status','NO')
        ->where('company_id',$company_id)->get();
       //relation
-      // $records = Company_Designation::with('department')->get();
+      // $records = employee_attendance::with('department')->get();
       // dd($records);
        $data = json_decode($records, true);
        if ($data) {
         $filteredData = array_map(function ($item)
         {
-            $filteredDepartments = array_filter($item['company_designation'], function ($design) {
+            $filteredDepartments = array_filter($item['employee_attendance'], function ($design) {
                 return $design['delete_status'] === 'NO';
             });
-            $filteredDepartments = array_intersect_key($item['company_designation'], $filteredDepartments);
-            $item['company_designation'] = $filteredDepartments;
+            $filteredDepartments = array_intersect_key($item['employee_attendance'], $filteredDepartments);
+            $item['employee_attendance'] = $filteredDepartments;
     
             return $item;
         }, $data);
