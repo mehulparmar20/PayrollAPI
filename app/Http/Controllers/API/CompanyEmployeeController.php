@@ -293,26 +293,34 @@ class CompanyEmployeeController extends Controller
     public function changepassword_employee(Request $request)
     {
         $token = $request->bearerToken();
-        //$token= $token_data->token;
         $secretKey = '345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
         $token_data = list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $company_id = intval($id);
         $id = (int)$request->id;
-        $records = Company_Employee::where('_id', $id)->first();
+
         $request->validate([
             'current_password' => 'required|string',
-            'new_password' => 'required|string|min:8|different:current_password',
+            'new_password' => 'required|string|different:current_password',
             'confirm_password' => 'required|string|same:new_password',
         ]);
-        $re=($request->current_password);
-        $oldpass=($records->password);
-        if ($re!=$oldpass) {
+
+        $new_passwords = hash('sha1', $request->new_password);
+        $current_pwd = sha1($request->current_password);
+
+        $company_employee = Company_Employee::where('_id', $id)->where('password', $current_pwd)->first();
+
+        if (!$company_employee) {
             return response()->json(['error' => 'Current password is incorrect'], 401);
         }
-        $records->update(['password' => $request->new_password]);
 
-        return response()->json(['message' => 'Password changed successfully'], 200);
+        // Update the password
+        $company_employee->password = $new_passwords;
+        $company_employee->save();
+
+        // Return success response or any other necessary action
+        return response()->json(['success' => 'Password updated successfully']);
+
     }
     
 
