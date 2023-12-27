@@ -290,7 +290,7 @@ class CompanyEmployeeController extends Controller
             return response()->json(['results' => $results], 200);
         }
     }
-    public function change_employee(Request $request)
+    public function changepassword_employee(Request $request)
     {
         $token = $request->bearerToken();
         //$token= $token_data->token;
@@ -300,19 +300,16 @@ class CompanyEmployeeController extends Controller
         $company_id = intval($id);
         $id = (int)$request->id;
         $records = Company_Employee::where('_id', $id)->first();
-        // dd($records);
         $request->validate([
             'current_password' => 'required|string',
             'new_password' => 'required|string|min:8|different:current_password',
             'confirm_password' => 'required|string|same:new_password',
         ]);
-
-        $re=$request->current_password; 
-        $oldpass=$records->password;
+        $re=($request->current_password);
+        $oldpass=($records->password);
         if ($re!=$oldpass) {
             return response()->json(['error' => 'Current password is incorrect'], 401);
         }
-
         $records->update(['password' => $request->new_password]);
 
         return response()->json(['message' => 'Password changed successfully'], 200);
@@ -328,6 +325,9 @@ class CompanyEmployeeController extends Controller
         $companyId = intval($id);
         $reqid = intval($request->id);
         $companyArrayUp = Company_Employee::where('_id', $reqid)->first();
+        if ($companyArrayUp->fileupload) {
+            return response()->json(['message' => 'File already uploaded for this employee'], 400);
+        }
         $request->validate([
             'fileupload' => 'required', // Image and max size 5MB
         ]);

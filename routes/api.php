@@ -186,7 +186,7 @@ Route::group(['middleware' => 'tokenauth'], function () {
      Route::get('view_employee','App\Http\Controllers\API\CompanyEmployeeController@view_employee');
      Route::get('paginate_employee','App\Http\Controllers\API\CompanyEmployeeController@paginate_employee');
      Route::post('search_employee','App\Http\Controllers\API\CompanyEmployeeController@search_employee');
-     Route::post('change_employee','App\Http\Controllers\API\CompanyEmployeeController@change_employee');
+     Route::post('changepassword_employee','App\Http\Controllers\API\CompanyEmployeeController@changepassword_employee');
      Route::post('file_employee','App\Http\Controllers\API\CompanyEmployeeController@file_employee');
 
      //Employee Leave 
