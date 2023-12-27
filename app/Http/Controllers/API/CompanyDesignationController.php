@@ -119,8 +119,10 @@ class CompanyDesignationController extends Controller
             'company_designation.$.designation_name' => $request->designation_name,
             'company_designation.$.department_id' => $request->department_id,
             'company_designation.$.edit_time' => time()
+
             ]]
         );
+        // dd($desgData);
        if ($desgData==true)
         {
             $arr = array('status' => 'success', 'message' => 'Designation Updated successfully.','statusCode' => 200);
@@ -154,7 +156,7 @@ class CompanyDesignationController extends Controller
         $company_id=intval($id);
        $records=Company_Designation::where('company_designation.delete_status','NO')
        ->where('company_id',$company_id)->get();
-      //relation
+//relation
       // $records = Company_Designation::with('department')->get();
       // dd($records);
        $data = json_decode($records, true);

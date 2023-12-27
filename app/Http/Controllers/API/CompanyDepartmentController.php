@@ -53,7 +53,7 @@ class CompanyDepartmentController extends Controller
         }
     }
 
-    
+
     public function edit_department(Request $request)
     {
 
@@ -65,28 +65,25 @@ class CompanyDepartmentController extends Controller
         $sid = intval($request->id);
         $masterId = (int)$request->masterId;
         $cursor = Company_Department::raw()
-        ->findOne(['company_id' => $companyID,'_id'=>$masterId,'company_department._id' => $sid]);
+            ->findOne(['company_id' => $companyID, '_id' => $masterId, 'company_department._id' => $sid]);
         if ($cursor !== null && property_exists($cursor, 'company_department')) {
-        $consigneeArray=$cursor->company_department;
-        $consigneeLength=count($consigneeArray);
-        $i=0;
-        $v=0;
-        for($i=0; $i<$consigneeLength; $i++)
-        {
-            $ids=$cursor->company_department[$i]['_id'];
-            $ids=(array)$ids;
-            foreach($ids as $value)
-            {
-                if($value==$sid)
-                {
-                    $v=$i;
+            $consigneeArray = $cursor->company_department;
+            $consigneeLength = count($consigneeArray);
+            $i = 0;
+            $v = 0;
+            for ($i = 0; $i < $consigneeLength; $i++) {
+                $ids = $cursor->company_department[$i]['_id'];
+                $ids = (array)$ids;
+                foreach ($ids as $value) {
+                    if ($value == $sid) {
+                        $v = $i;
+                    }
                 }
             }
-        }
-        $companyID=array(
-            "companyID"=>$masterId
-        );
-        $consignee=(array)$cursor->company_department[$v];
+            $companyID = array(
+                "companyID" => $masterId
+            );
+            $consignee = (array)$cursor->company_department[$v];
             return response()->json([
                 'success' => $consignee,
             ]);
@@ -108,13 +105,16 @@ class CompanyDepartmentController extends Controller
         $masterId = (int)$request->masterId;
         // dd($masterId);
         $maxLength = 6500;
-        $docAvailable = AppHelper::instance()->checkDoc(\App\Models\API\Company_Department::raw(),
-         $companyId, $maxLength);
+        $docAvailable = AppHelper::instance()->checkDoc(
+            \App\Models\API\Company_Department::raw(),
+            $companyId,
+            $maxLength
+        );
         $info = (explode("^", $docAvailable));
         $docId = $info[1];
         $userData = $collection->updateOne(
             ['company_id' => (int)$companyId, '_id' => (int)$masterId, 'company_department._id' =>
-             (int)$id],
+            (int)$id],
             ['$set' => [
                 'company_department.$.department_name' => $request->department_name,
                 'company_department.$.edit_time' => time()
@@ -141,17 +141,20 @@ class CompanyDepartmentController extends Controller
         $departData = Company_Department::raw()->updateOne(
             ['company_id' => $companyID, '_id' => $masterId, 'company_department._id' => $ids],
             ['$set' => ['company_department.$.delete_status' => 'YES', 'company_department.$.deleteUser'
-             => $companyID, 'company_department.$.deleteTime' => time()]]
+            => $companyID, 'company_department.$.deleteTime' => time()]]
         );
         if ($departData == true) {
-            $arr = array('status' => 'success', 'message' => 'Department deleted successfully.',
-             'statusCode' => 200);
+            $arr = array(
+                'status' => 'success', 'message' => 'Department deleted successfully.',
+                'statusCode' => 200
+            );
             return json_encode($arr);
         }
     }
 
     public function view_department(Request $request)
     {
+
         $token = $request->bearerToken();
         $secretKey = '345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
@@ -160,26 +163,23 @@ class CompanyDepartmentController extends Controller
         $records = Company_Department::where('company_department.delete_status', 'NO')
             ->where('company_id', $company_id)
             ->get();
-        // $data = json_decode($records, true);
 
-        // if ($data) {
-        //     $filteredData = array_map(function ($item) {
-        //         $filteredDepartments = array_filter($item['company_department'], function ($department) {
-        //             return $department['delete_status'] === 'NO';
-        //         });
-        //         $filteredDepartments = array_intersect_key($item['company_department'], $filteredDepartments);
-        //         $item['company_department'] = $filteredDepartments;
+        $data = json_decode($records, true);
 
-        //         return $item;
-        //     }, $data);
-        // }
+        if ($data) {
+            $filteredData = array_map(function ($item) {
+                $filteredDepartments = array_filter($item['company_department'], function ($time) {
+                    return $time['delete_status'] === 'NO';
+                });
+                $filteredDepartments = array_intersect_key($item['company_department'], $filteredDepartments);
+                $item['company_department'] = $filteredDepartments;
 
-        // return response()->json(['success' => true, 'data' => $filteredData], 200);
-        // return response()->json(['success' => true, 'data' => $records], 200);
-        if ($records->isEmpty()) {
-            return response()->json(['message' => 'No results found'], 404);
+                return $item;
+            }, $data);
+            return response()->json(['success' => true, 'data' => $filteredData], 200);
         } else {
-            return response()->json(['success' => true, 'data' => $records], 200);
+            // Handle the case where no records are found
+            return response()->json(['success' => false, 'message' => 'No records found'], 404);
         }
     }
     public function paginate_department(Request $request)
