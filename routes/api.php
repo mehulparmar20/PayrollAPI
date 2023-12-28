@@ -14,7 +14,7 @@ use App\Http\Controllers\API\CompanyJoiningController;
 use App\Http\Controllers\API\CompanyBranchController;
 use App\Http\Controllers\API\CompanyWorkingdayController;
 use App\Http\Controllers\API\CompanyResignationController;
-
+use App\Http\Controllers\API\CompanyFileuploadController;
 
 
 /*
@@ -135,6 +135,14 @@ Route::group(['middleware' => 'tokenauth'], function () {
     Route::get('paginate_resignation','App\Http\Controllers\API\CompanyResignationController@paginate_resignation');
     Route::post('search_resignation','App\Http\Controllers\API\CompanyResignationController@search_resignation');
 
+    //CompanyFileuploadController
+    Route::post('add_fileupload','App\Http\Controllers\API\CompanyFileuploadController@add_fileupload');
+    Route::get('view_fileupload','App\Http\Controllers\API\CompanyFileuploadController@view_fileupload');
+    Route::post('delete_fileupload','App\Http\Controllers\API\CompanyFileuploadController@delete_fileupload');
+    // Route::post('edit_fileupload','App\Http\Controllers\API\CompanyFileuploadController@edit_fileupload');
+   // Route::post('update_fileupload','App\Http\Controllers\API\CompanyFileuploadController@update_fileupload');
+   
+
     // AddUserController
     Route::post('add_user','App\Http\Controllers\API\CompanyUserController@add_user');
     Route::post('edit_user','App\Http\Controllers\API\CompanyUserController@edit_user');
@@ -170,7 +178,7 @@ Route::group(['middleware' => 'tokenauth'], function () {
      Route::get('paginate_employee','App\Http\Controllers\API\CompanyEmployeeController@paginate_employee');
      Route::post('search_employee','App\Http\Controllers\API\CompanyEmployeeController@search_employee');
      Route::post('changepassword_employee','App\Http\Controllers\API\CompanyEmployeeController@changepassword_employee');
-     Route::post('file_employee','App\Http\Controllers\API\CompanyEmployeeController@file_employee');
+    //  Route::post('file_employee','App\Http\Controllers\API\CompanyEmployeeController@file_employee');
 
      //Employee History
      Route::get('employee_history','App\Http\Controllers\API\CompanyEmployeeController@employee_history');
