@@ -9,8 +9,9 @@ use App\Helpers\AppHelper;
 use App\Models\API\Company_leave;
 use Illuminate\Http\Request;
 
-class EmployeeLeaveController extends Controller
+class CompanyEmployeeLeaveController extends Controller
 {
+    
     public function add_employee_leave(Request $request)
     {
         $maxLength = 7000;
@@ -86,10 +87,9 @@ class EmployeeLeaveController extends Controller
         $decryptedInput = decrypt($token, $secretKey);
         $token_data = list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $company_id = intval($id);
-        $records = Company_leave::where('employee_leave.delete_status', 'NO')
-            ->where('company_id', $company_id)
+        $records = Employee_leave::where('employee_leave.delete_status', 'NO')
+            ->where('company_id',$company_id)
             ->get();
-       
             $data = json_decode($records, true);
 
         if ($data) {

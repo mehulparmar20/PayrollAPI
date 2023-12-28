@@ -15,6 +15,8 @@ use App\Http\Controllers\API\CompanyBranchController;
 use App\Http\Controllers\API\CompanyWorkingdayController;
 use App\Http\Controllers\API\CompanyResignationController;
 use App\Http\Controllers\API\CompanyFileuploadController;
+use App\Http\Controllers\API\CompanyCreditLeaveController;
+use App\Http\Controllers\API\CompanyEmployeeLeaveController;
 
 
 /*
@@ -140,7 +142,13 @@ Route::group(['middleware' => 'tokenauth'], function () {
     Route::get('view_fileupload','App\Http\Controllers\API\CompanyFileuploadController@view_fileupload');
     Route::post('delete_fileupload','App\Http\Controllers\API\CompanyFileuploadController@delete_fileupload');
     
-   
+   //CompanyCreditLeaveController
+   Route::post('edit_creditleave','App\Http\Controllers\API\CompanyCreditLeaveController@edit_creditleave');
+    Route::post('update_creditleave','App\Http\Controllers\API\CompanyCreditLeaveController@update_creditleave');
+    Route::get('view_creditleave','App\Http\Controllers\API\CompanyCreditLeaveController@view_creditleave');
+    Route::post('delete_creditleave','App\Http\Controllers\API\CompanyCreditLeaveController@delete_creditleave');
+    Route::get('paginate_creditleave','App\Http\Controllers\API\CompanyCreditLeaveController@paginate_creditleave');
+    Route::post('search_creditleave','App\Http\Controllers\API\CompanyCreditLeaveController@search_creditleave');
 
     // AddUserController
     Route::post('add_user','App\Http\Controllers\API\CompanyUserController@add_user');
@@ -183,8 +191,9 @@ Route::group(['middleware' => 'tokenauth'], function () {
      Route::get('employee_history','App\Http\Controllers\API\CompanyEmployeeController@employee_history');
      
      //Employee Leave 
-     Route::post('add_employee_leave','App\Http\Controllers\API\EmployeeLeaveController@add_employee_leave');
-     Route::post('delete_employee_leave','App\Http\Controllers\API\EmployeeLeaveController@delete_employee_leave');
+     Route::post('add_employee_leave','App\Http\Controllers\API\CompanyEmployeeLeaveController@add_employee_leave');
+     Route::post('delete_employee_leave','App\Http\Controllers\API\CompanyEmployeeLeaveController@delete_employee_leave');
+     Route::get('view_employee_leave','App\Http\Controllers\API\CompanyEmployeeLeaveController@view_employee_leave');
 
      //Employee Attendance
      Route::post('add_employee_attendance','App\Http\Controllers\API\EmployeeAttendanceController@add_employee_attendance');
