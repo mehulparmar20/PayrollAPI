@@ -20,13 +20,19 @@ class CompanyCreditLeaveController extends Controller
         $decryptedInput = decrypt($token, $secretKey);
         $token_data = list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $company_id = intval($id);
-        $records = $employee = Company_Employee::find($id)
-        ->where('delete_status', 'NO')
+        $ids=$request->id;
+        $records =Company_Employee::where('delete_status', 'NO')
             ->where('company_id', $company_id)
-            ->get();
-       dd($records);
+            ->where('_id',$ids)
+            ->get(['first_name', 'last_name']);
+    dd($records);
             // $data = json_decode($records, true);
+            $fullNames = [];
 
+            foreach ($records as $record) {
+                $fullNames[] = $record->first_name . ' ' . $record->last_name;
+            }
+// dd($fullNames);
         if ($records) {
         //     $filteredData = array_map(function ($item) {
         //         $filteredDepartments = array_filter($item['company_time'], function ($time) {
