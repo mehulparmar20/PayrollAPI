@@ -139,8 +139,7 @@ Route::group(['middleware' => 'tokenauth'], function () {
     Route::post('add_fileupload','App\Http\Controllers\API\CompanyFileuploadController@add_fileupload');
     Route::get('view_fileupload','App\Http\Controllers\API\CompanyFileuploadController@view_fileupload');
     Route::post('delete_fileupload','App\Http\Controllers\API\CompanyFileuploadController@delete_fileupload');
-    // Route::post('edit_fileupload','App\Http\Controllers\API\CompanyFileuploadController@edit_fileupload');
-   // Route::post('update_fileupload','App\Http\Controllers\API\CompanyFileuploadController@update_fileupload');
+    
    
 
     // AddUserController
