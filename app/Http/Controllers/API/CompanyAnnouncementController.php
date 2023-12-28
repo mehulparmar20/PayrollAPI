@@ -17,55 +17,83 @@ class CompanyAnnouncementController extends Controller
 {
     public function view_announcement(Request $request)
     {
-        $maxLength = 7000;
         $token = $request->bearerToken();
         $secretKey ='345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
-        list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-        $companyID=intval($id);
-        $parent=$request->masterId;
-        $ids=$request->id;
-        $collection=\App\Models\API\Company_Announcement::raw();
+        $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $company_id=intval($id);
+        $records=Company_Announcement::where('announcement.delete_status',"NO")->where('company_id',$company_id)->get();
+        $data = json_decode($records, true);
 
-        $show1 = $collection->aggregate([
-            ['$match' => ['company_id' => (int)$companyID]],
-            //['$match' => ['announcement._id' => (int)$ids,'announcement.delete_status' => 'NO']]
-        ]);
+        if ($data) {
+            $filteredData = array_map(function ($item)
+            {
+                $filteredDepartments = array_filter($item['announcement'], function ($holiday) {
+                    return $holiday['delete_status'] === 'NO';
+                });
+                $filteredDepartments = array_intersect_key($item['announcement'], $filteredDepartments);
+                $item['announcement'] = $filteredDepartments;
+        
+                return $item;
+            }, $data);
+            return response()->json(['success' => true,'data' => $filteredData], 200);
+        }
        
-        foreach ($show1 as $row) {
-            $ann=array();
+        else {
+            // Handle the case where no records are found
+            return response()->json(['success' => false, 'message' => 'No records found'], 404);
+        }
+        // $maxLength = 7000;
+        // $token = $request->bearerToken();
+        // $secretKey ='345fgvvc4';
+        // $decryptedInput = decrypt($token, $secretKey);
+        // list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        // $companyID=intval($id);
+        // $parent=$request->masterId;
+        // $ids=$request->id;
+        // $collection=\App\Models\API\Company_Announcement::raw();
 
-            if(isset($row)){
-                $companyNameID=$row;
-                $announcementName =\App\Models\API\Company_Announcement::raw()->aggregate([
-                    ['$match' => ['company_id' => (int)$companyID]],
-                    //['$match' => ['announcement._id' => (int)$ids,'announcement.delete_status' => 'NO']]
-                ]);
-                foreach($announcementName as $name){
-                    $l=0;
-                    $ann[$l] = $name;
-                    $l++;
-                }
-            }
-            // dd($row);
-            $mainIdac = $row['_id'];
-            $activeCustomer = array();
-            $k = 0;
-            $activeCustomer[$k] = $row['announcement'];
-            $k++;
-        }
+        // $show1 = $collection->aggregate([
+        //     ['$match' => ['company_id' => (int)$companyID]],
+        //     //['$match' => ['announcement._id' => (int)$ids,'announcement.delete_status' => 'NO']]
+        // ]);
+        
+       
+        // foreach ($show1 as $row) {
+        //     $ann=array();
 
-        $annData[]=array("announcement" => $activeCustomer);
-        if($activeCustomer != ''){
-            return response()->json([
-                'success' => $annData,
-            ]);
-        }
-        else{
-            return response()->json([
-                'success' => 'No record'
-            ]);
-        }
+        //     if(isset($row)){
+        //         $companyNameID=$row;
+        //         $announcementName =\App\Models\API\Company_Announcement::raw()->aggregate([
+        //             ['$match' => ['company_id' => (int)$companyID]],
+        //             //['$match' => ['announcement._id' => (int)$ids,'announcement.delete_status' => 'NO']]
+        //         ]);
+        //         foreach($announcementName as $name){
+        //             $l=0;
+        //             $ann[$l] = $name;
+        //             $l++;
+        //         }
+        //     }
+            
+        //     $mainIdac = $row['_id'];
+        //     $activeCustomer = array();
+        //     $k = 0;
+        //     $activeCustomer[$k] = $row['announcement'];
+        //     $k++;
+        // }
+       
+
+        // $annData[]=array("announcement" => $activeCustomer);
+        // if($activeCustomer != ''){
+        //     return response()->json([
+        //         'success' => $annData,
+        //     ]);
+        // }
+        // else{
+        //     return response()->json([
+        //         'success' => 'No record'
+        //     ]);
+        // }
     }
 
     public function add_announcement(Request $request) //done
