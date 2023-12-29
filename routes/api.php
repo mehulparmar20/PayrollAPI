@@ -153,6 +153,7 @@ Route::group(['middleware' => 'tokenauth'], function () {
     //CompanyLogoController
     Route::post('add_logo','App\Http\Controllers\API\CompanyLogoController@add_logo');
     Route::get('view_logo','App\Http\Controllers\API\CompanyLogoController@view_logo');
+    
     // AddUserController
     Route::post('add_user','App\Http\Controllers\API\CompanyUserController@add_user');
     Route::post('edit_user','App\Http\Controllers\API\CompanyUserController@edit_user');
