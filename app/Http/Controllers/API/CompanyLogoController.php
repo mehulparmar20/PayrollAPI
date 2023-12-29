@@ -5,10 +5,10 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\API\Company_Admins;
 use App\Helpers\AppHelper;
-use App\Models\API\Company_Document;
+use App\Models\API\Company_Logo;
 use Illuminate\Http\Request;
 
-class CompanyDocumentController extends Controller
+class CompanyLogoController extends Controller
 {
     public function add_document(Request $request)
     {
@@ -88,25 +88,4 @@ class CompanyDocumentController extends Controller
             return response()->json(['success' => false, 'message' => 'No records found'], 404);
         }
     }
-    public function delete_document(Request $request)
-    {
-        $token = $request->bearerToken();
-        $secretKey = '345fgvvc4';
-        $decryptedInput = decrypt($token, $secretKey);
-        list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-        $ids = (int)$request->id;
-        $masterId = (int)$request->masterId;
-        // $masterId=(int)$request->parentId;
-        $companyID = intval($id);
-        $departData = Company_Document::raw()->updateOne(
-            ['company_id' => $companyID, '_id' => $masterId, 'company_document._id' => $ids],
-            ['$set' => ['company_document.$.delete_status' => 'YES', 'company_document.$.deleteUser'
-             => $companyID, 'company_document.$.deleteTime' => time()]]
-        );
-        if ($departData == true) {
-            $arr = array('status' => 'success', 'message' => 'File deleted successfully.',
-             'statusCode' => 200);
-            return json_encode($arr);
-        }
-}
 }

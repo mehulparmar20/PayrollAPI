@@ -18,6 +18,7 @@ use App\Http\Controllers\API\CompanyFileuploadController;
 use App\Http\Controllers\API\CompanyCreditLeaveController;
 use App\Http\Controllers\API\CompanyEmployeeLeaveController;
 use App\Http\Controllers\API\CompanyDocumentController;
+use App\Http\Controllers\API\CompanyLogoController;
 
 
 /*
@@ -149,6 +150,9 @@ Route::group(['middleware' => 'tokenauth'], function () {
     Route::post('delete_document','App\Http\Controllers\API\CompanyDocumentController@delete_document');
    
 
+    //CompanyLogoController
+    Route::post('add_logo','App\Http\Controllers\API\CompanyLogoController@add_logo');
+    Route::get('view_logo','App\Http\Controllers\API\CompanyLogoController@view_logo');
     // AddUserController
     Route::post('add_user','App\Http\Controllers\API\CompanyUserController@add_user');
     Route::post('edit_user','App\Http\Controllers\API\CompanyUserController@edit_user');

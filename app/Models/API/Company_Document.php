@@ -7,10 +7,11 @@ use Laravel\Sanctum\HasApiTokens;
 // use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+
 class Company_Document extends Model
 {
-  //  use HasFactory;
-  use HasApiTokens;
+    //use HasFactory;
+    use HasApiTokens;
   protected $connection = 'mongodb';
   protected $collection = 'company_admindocument';
   public $timestamps = true;
@@ -36,3 +37,4 @@ class Company_Document extends Model
       Schema::dropIfExists('company_admindocument');
   }
 }
+
