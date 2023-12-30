@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\API\Company_Admins;
+use App\Models\API\Company_Employee;
 use App\Models\API\Employee_Attendance;
 use App\Helpers\AppHelper;
 use Illuminate\Http\Request;
@@ -82,25 +83,33 @@ class EmployeeAttendanceController extends Controller
         $secretKey ='345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
         $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-        $company_id=intval($id);
-       $records=Employee_Attendance::where('employee_attendance.delete_status','NO')
-       ->where('company_id',$company_id)->get();
-      //relation
-      // $records = employee_attendance::with('department')->get();
-      // dd($records);
-       $data = json_decode($records, true);
-       if ($data) {
-        $filteredData = array_map(function ($item)
-        {
-            $filteredDepartments = array_filter($item['employee_attendance'], function ($design) {
-                return $design['delete_status'] === 'NO';
-            });
-            $filteredDepartments = array_intersect_key($item['employee_attendance'], $filteredDepartments);
-            $item['employee_attendance'] = $filteredDepartments;
-    
-            return $item;
-        }, $data);
-    }
-      return response()->json(['success' => true,'data' => $filteredData], 200);
-    }
+        $companyID=intval($id);
+        // Company_Employee
+        // $cursor = Company_Employee::raw()->find(['company_id' => $companyID]);
+        $company_employee = Company_Employee::where('company_id', $companyID)->get();
+        // dd($company_employee);
+        foreach ($company_employee as $company_employee_val) {
+            $company_employee_name = $company_employee_val->first_name . ' ' . $company_employee_val->last_name;
+            //dd($company_employee_name);
+        }
+        $records=Employee_Attendance::where('employee_attendance.delete_status','NO')
+         ->where('company_id',$company_id)->get();
+        //relation
+        // $records = employee_attendance::with('department')->get();
+        // dd($records);
+        $data = json_decode($records, true);
+        if ($data) {
+            $filteredData = array_map(function ($item)
+            {
+                $filteredDepartments = array_filter($item['employee_attendance'], function ($design) {
+                    return $design['delete_status'] === 'NO';
+                });
+                $filteredDepartments = array_intersect_key($item['employee_attendance'], $filteredDepartments);
+                $item['employee_attendance'] = $filteredDepartments;
+        
+                return $item;
+            }, $data);
+        }
+        return response()->json(['success' => true,'data' => $filteredData], 200);
+        }
 }

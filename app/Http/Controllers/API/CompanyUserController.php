@@ -42,6 +42,7 @@ class CompanyUserController extends Controller
         // $password = Hash::make($validatedData['user_password']);
         $password = hash('sha1',$request->password);
         $new_id = Company_user::max('_id') + 1;
+      
         $data = [
             '_id' => $new_id,
             'company_id'=>$company_id,
@@ -59,14 +60,16 @@ class CompanyUserController extends Controller
             'leave' => $request->leave,
             'letters' => $request->letters,
             'administration' => $request->administration,
+            'branch_id' =>  $request->branch_id,
             'insertedTime' => time(),
             // 'insertedUserId' => Auth::user()->userFirstName.' '.Auth::user()->userLastName,
             'delete_status' => "NO",
             'deleteUser' => "",
             'deleteTime' => "",
         ];
-        
-            $result = Company_user::insert($data);
+           
+
+           $result = Company_user::insert($data);
             
             if ($result) {
             return response()->json(['message' => 'User added successfully'], 201);
@@ -137,6 +140,7 @@ class CompanyUserController extends Controller
                 'leave' => $request->leave,
                 'letters' => $request->letters,
                 'administration' => $request->administration,
+                'branch_id' =>  $request->branch_id,
                 'insertedTime' => time(),
                 // 'insertedUserId' => Auth::user()->userFirstName.' '.Auth::user()->userLastName,
                 'delete_status' => "NO",

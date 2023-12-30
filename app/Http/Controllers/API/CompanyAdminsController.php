@@ -166,9 +166,10 @@ class CompanyAdminsController extends Controller
    
     public function sendVerificationEmail(Request $request)
     {
-        $email=$request->email;
-        // $email= Crypt::decrypt($request->encrypted_email);
-        // dd($email);
+        //dd($request->email);
+        // $email=$request->email;
+        $email= Crypt::decrypt($request->email);
+        
         $comapny_admin=Company_Admins::where('company_email',$email)->first();
         $comapny_admin->emailVerificationStatus="1";
         $comapny_admin->email_verified_at=now();
@@ -177,7 +178,9 @@ class CompanyAdminsController extends Controller
         $token=TokenHandler::where('company_id',$comapny_admin->_id)->first();
         $token->status="verified";
         $token->save();
-        return response()->json(["result" => "ok"], 201);
+        // return response()->json(["result" => "ok"], 201);
+        // return view('view.email.mail_page');
+        return view('emails.mail_page');
     }
 
     public function company_login(Request $request)
@@ -331,6 +334,7 @@ class CompanyAdminsController extends Controller
                         $userModel->id = $u->_id;
                         $userModel->companyID = $u->company_id;
                         $userModel->userEmail = $u->email;
+                        $userModel->branch = $u->branch;
                         $userModel->userPass = $u->password;
                         $token_data = TokenHandler::where(['company_id'=>$u->company_id])->first();
                         $token= $token_data->token;

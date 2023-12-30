@@ -60,6 +60,7 @@ class CompanyEmployeeController extends Controller
             'password' => $password,
             'salary' => $request->salary,
             'shift' => $request->shift,
+            'branch' => $request->branch_id,
             'file' => array(
                 array(
                     'filename' => $photo_name,
@@ -158,6 +159,7 @@ class CompanyEmployeeController extends Controller
             'password' => $password,
             'salary' => $request->salary,
             'shift' => $request->shift,
+            'branch' => $request->branch_id,
             'file' => array(
                 array(
                     'filename' => $photo_name,

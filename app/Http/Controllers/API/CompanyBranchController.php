@@ -27,7 +27,8 @@ class CompanyBranchController extends Controller
             'counter' => 0,
             'branch_name' => $request->branch_name,
             'address' => $request->address,
-            'phone' => $request->phone,
+            'date' => $request->date,
+            'shift_time' => $request->shift_time,
             'status' => "NO",
             'created_at' => '',
             'updated_at' => '',
@@ -118,7 +119,8 @@ class CompanyBranchController extends Controller
             ['$set' => [
                 'company_branch.$.branch_name' => $request->branch_name,
                 'company_branch.$.address' => $request->address,
-                'company_branch.$.phone' => $request->phone,
+                'company_branch.$.date' => $request->date,
+                'company_branch.$.shift_time' => $request->shift_time,
                 'company_branch.$.edit_time' => time()
             ]]
         );
