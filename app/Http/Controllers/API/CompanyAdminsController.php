@@ -12,6 +12,7 @@ use App\Models\API\Login_History;
 use App\Models\User;
 use App\Models\API\TokenHandler;
 use App\Helpers\AppHelper;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 use Auth;
 use Mail;
@@ -166,6 +167,8 @@ class CompanyAdminsController extends Controller
     public function sendVerificationEmail(Request $request)
     {
         $email=$request->email;
+        // $email= Crypt::decrypt($request->encrypted_email);
+        // dd($email);
         $comapny_admin=Company_Admins::where('company_email',$email)->first();
         $comapny_admin->emailVerificationStatus="1";
         $comapny_admin->email_verified_at=now();

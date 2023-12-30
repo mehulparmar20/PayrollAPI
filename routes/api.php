@@ -14,7 +14,11 @@ use App\Http\Controllers\API\CompanyJoiningController;
 use App\Http\Controllers\API\CompanyBranchController;
 use App\Http\Controllers\API\CompanyWorkingdayController;
 use App\Http\Controllers\API\CompanyResignationController;
-
+use App\Http\Controllers\API\CompanyFileuploadController;
+use App\Http\Controllers\API\CompanyCreditLeaveController;
+use App\Http\Controllers\API\CompanyEmployeeLeaveController;
+use App\Http\Controllers\API\CompanyDocumentController;
+use App\Http\Controllers\API\CompanyLogoController;
 
 
 /*
@@ -135,6 +139,21 @@ Route::group(['middleware' => 'tokenauth'], function () {
     Route::get('paginate_resignation','App\Http\Controllers\API\CompanyResignationController@paginate_resignation');
     Route::post('search_resignation','App\Http\Controllers\API\CompanyResignationController@search_resignation');
 
+    //CompanyFileuploadController
+    Route::post('add_fileupload','App\Http\Controllers\API\CompanyFileuploadController@add_fileupload');
+    Route::get('view_fileupload','App\Http\Controllers\API\CompanyFileuploadController@view_fileupload');
+    Route::post('delete_fileupload','App\Http\Controllers\API\CompanyFileuploadController@delete_fileupload');
+    
+   //CompanyDocumentController
+    Route::post('add_document','App\Http\Controllers\API\CompanyDocumentController@add_document');
+    Route::get('view_document','App\Http\Controllers\API\CompanyDocumentController@view_document');
+    Route::post('delete_document','App\Http\Controllers\API\CompanyDocumentController@delete_document');
+   
+
+    //CompanyLogoController
+    Route::post('add_logo','App\Http\Controllers\API\CompanyLogoController@add_logo');
+    Route::get('view_logo','App\Http\Controllers\API\CompanyLogoController@view_logo');
+    
     // AddUserController
     Route::post('add_user','App\Http\Controllers\API\CompanyUserController@add_user');
     Route::post('edit_user','App\Http\Controllers\API\CompanyUserController@edit_user');
@@ -170,14 +189,15 @@ Route::group(['middleware' => 'tokenauth'], function () {
      Route::get('paginate_employee','App\Http\Controllers\API\CompanyEmployeeController@paginate_employee');
      Route::post('search_employee','App\Http\Controllers\API\CompanyEmployeeController@search_employee');
      Route::post('changepassword_employee','App\Http\Controllers\API\CompanyEmployeeController@changepassword_employee');
-     Route::post('file_employee','App\Http\Controllers\API\CompanyEmployeeController@file_employee');
+    
 
      //Employee History
      Route::get('employee_history','App\Http\Controllers\API\CompanyEmployeeController@employee_history');
      
      //Employee Leave 
-     Route::post('add_employee_leave','App\Http\Controllers\API\EmployeeLeaveController@add_employee_leave');
-     Route::post('delete_employee_leave','App\Http\Controllers\API\EmployeeLeaveController@delete_employee_leave');
+     Route::post('add_employee_leave','App\Http\Controllers\API\CompanyEmployeeLeaveController@add_employee_leave');
+     Route::post('delete_employee_leave','App\Http\Controllers\API\CompanyEmployeeLeaveController@delete_employee_leave');
+     Route::get('view_employee_leave','App\Http\Controllers\API\CompanyEmployeeLeaveController@view_employee_leave');
 
      //Employee Attendance
      Route::post('add_employee_attendance','App\Http\Controllers\API\EmployeeAttendanceController@add_employee_attendance');
