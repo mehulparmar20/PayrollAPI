@@ -27,6 +27,7 @@ class Company_user extends Model
         'leave',
         'letters',
         'administration',
+        'branch_id',
         'employee',
         'payroll',
         'delete_status',
