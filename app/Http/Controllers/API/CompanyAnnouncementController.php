@@ -69,10 +69,7 @@ class CompanyAnnouncementController extends Controller
     // }
     public function view_announcement(Request $request)
     {
-<<<<<<< HEAD
-=======
         
->>>>>>> dfb71c9934a421699e2f41dd0e3baff2f2808366
         $token = $request->bearerToken();
         $secretKey ='345fgvvc4';
         $decryptedInput = decrypt($token, $secretKey);
@@ -96,7 +93,6 @@ class CompanyAnnouncementController extends Controller
         }
        
         else {
-<<<<<<< HEAD
             // Handle the case where no records are found
             return response()->json(['success' => false, 'message' => 'No records found'], 404);
         }
@@ -151,11 +147,6 @@ class CompanyAnnouncementController extends Controller
         //         'success' => 'No record'
         //     ]);
         // }
-=======
-            return response()->json(['success' => false, 'message' => 'No records found'], 404);
-        }
-
->>>>>>> dfb71c9934a421699e2f41dd0e3baff2f2808366
     }
 
     public function add_announcement(Request $request) //done

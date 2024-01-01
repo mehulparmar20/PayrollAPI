@@ -5,14 +5,14 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\API\Company_Admins;
 use App\Models\API\Company_Employee;
-use App\Models\API\Employee_Attendance;
+use App\Models\API\Employee_Break;
 use App\Helpers\AppHelper;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
-class EmployeeAttendanceController extends Controller
+class EmployeeBreakController extends Controller
 {
-    public function add_employee_attendance(Request $request)
+    public function add_employee_break(Request $request)
     {
         $maxLength = 7000;
         $token = $request->bearerToken();
@@ -20,18 +20,18 @@ class EmployeeAttendanceController extends Controller
         $decryptedInput = decrypt($token, $secretKey);
         list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $companyId = intval($id);
-        $docAvailable = AppHelper::instance()->checkDoc(Employee_Attendance::raw(), $companyId, $maxLength);
+        $docAvailable = AppHelper::instance()->checkDoc(Employee_Break::raw(), $companyId, $maxLength);
         // $epoch = 1483228800;
         // $dt = new DateTime("@$epoch");  // convert UNIX timestamp to PHP DateTime
         // echo $dt->format('Y-m-d H:i:s');
-        if($request->attendance_status == 'IN'){
+        if($request->break_status == 'IN'){
             $cons = array(
                 '_id' => 1,
                 'company_id' => $companyId,
                 'counter' => 0,
                 'employee_id'=>$request->employee_id,
-                'attendance_time' =>time(),
-                'attendance_status' =>'IN',
+                'break_time' =>time(),
+                'break_status' =>'IN',
                 'status' => 1 ,
                 'delete_status' => "NO",
                 'created_at' => '',
@@ -45,8 +45,8 @@ class EmployeeAttendanceController extends Controller
                 'company_id' => $companyId,
                 'counter' => 0,
                 'employee_id'=>$request->employee_id,
-                'attendance_time' =>time(),
-                'attendance_status' =>'OUT',
+                'break_time' =>time(),
+                'break_status' =>'OUT',
                 'status' => 1 ,
                 'delete_status' => "NO",
                 'created_at' => '',
@@ -58,28 +58,28 @@ class EmployeeAttendanceController extends Controller
             $info = (explode("^", $docAvailable));
             $docId = $info[1];
             $counter = $info[0];
-            $cons['_id'] = AppHelper::instance()->getAdminDocumentSequence($companyId, Employee_Attendance::raw(), 'employee_attendance', $docId);
-            Employee_Attendance::raw()->updateOne(['company_id' => $companyId, '_id' => (int)$docId], ['$push' => ['employee_attendance' => $cons]]);
+            $cons['_id'] = AppHelper::instance()->getAdminDocumentSequence($companyId, Employee_Break::raw(), 'employee_break', $docId);
+            Employee_Break::raw()->updateOne(['company_id' => $companyId, '_id' => (int)$docId], ['$push' => ['employee_break' => $cons]]);
             $cons['masterID'] = $docId;
             echo json_encode($cons);
 
             return response()->json(['message' => 'Attendance Added successfully'], 201);
         } else {
-            $parentId = AppHelper::instance()->getNextSequenceForNewDoc(\App\Models\API\Employee_Attendance::raw());
-            $cons['_id'] = AppHelper::instance()->getNextSequenceForNewId(\App\Models\API\Employee_Attendance::raw(), 'employee_attendance', '$employee_attendance._id', $companyId);
+            $parentId = AppHelper::instance()->getNextSequenceForNewDoc(\App\Models\API\Employee_Break::raw());
+            $cons['_id'] = AppHelper::instance()->getNextSequenceForNewId(\App\Models\API\Employee_Break::raw(), 'employee_break', '$employee_break._id', $companyId);
             $arra = array(
                 "_id" => $parentId,
                 "counter" => (int)1,
                 "company_id" => (int)$companyId,
-                "employee_attendance" => array($cons),
+                "employee_break" => array($cons),
             );
-            \App\Models\API\Employee_Attendance::raw()->insertOne($arra);
-            return response()->json(['message' => 'Attendance Added successfully'], 201);
+            \App\Models\API\Employee_Break::raw()->insertOne($arra);
+            return response()->json(['message' => 'Break Added successfully'], 201);
         }
     }
 
     //view employee attendance in current year and current month wise
-    public function view_employee_attendance(Request $request)// done
+    public function view_employee_break(Request $request)// done
     {
         $token = $request->bearerToken();
         $secretKey ='345fgvvc4';
@@ -98,13 +98,13 @@ class EmployeeAttendanceController extends Controller
         foreach ($company_data as $companyArr) {
             $company_employee_id = $companyArr['_id'];
         
-            $employee_data = Employee_Attendance::raw()->find([
+            $employee_data = Employee_Break::raw()->find([
                 'company_id' => $companyID,
-                'employee_attendance.employee_id' => $company_employee_id
+                'employee_break.employee_id' => $company_employee_id
             ]);
            
             foreach ($employee_data as $cust) {
-                $attendance = $cust['employee_attendance'];
+                $attendance = $cust['employee_break'];
        
                 if (isset($attendance)) {
                 $employee_name = $companyArr['first_name'] . ' ' . $companyArr['last_name'];
@@ -151,7 +151,7 @@ class EmployeeAttendanceController extends Controller
         }
 
         //search employee attendance in year and month wise
-        public function search_employee_attendance(Request $request)// done
+        public function search_employee_break(Request $request)// done
         {
             $token = $request->bearerToken();
             $secretKey ='345fgvvc4';
@@ -169,13 +169,13 @@ class EmployeeAttendanceController extends Controller
             foreach ($company_data as $companyArr) {
                 $company_employee_id = $companyArr['_id'];
             
-                $employee_data = Employee_Attendance::raw()->find([
+                $employee_data = Employee_Break::raw()->find([
                     'company_id' => $companyID,
-                    'employee_attendance.employee_id' => $company_employee_id
+                    'employee_break.employee_id' => $company_employee_id
                 ]);
                
                 foreach ($employee_data as $cust) {
-                    $attendance = $cust['employee_attendance'];
+                    $attendance = $cust['employee_break'];
            
                     if (isset($attendance)) {
                     $employee_name = $companyArr['first_name'] . ' ' . $companyArr['last_name'];
