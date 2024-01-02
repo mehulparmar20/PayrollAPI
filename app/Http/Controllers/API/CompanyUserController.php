@@ -40,7 +40,8 @@ class CompanyUserController extends Controller
             'user_add_date'=>'required',
         ]);
         // $password = Hash::make($validatedData['user_password']);
-        $password = hash('sha1',$request->password);
+        //$password = hash('sha1',$request->password);
+        $password = hash('sha1',$request->user_password);
         $new_id = Company_user::max('_id') + 1;
       
         $data = [

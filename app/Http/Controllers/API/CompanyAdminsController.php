@@ -51,7 +51,7 @@ class CompanyAdminsController extends Controller
         $getCompany = Company_Admins::max('_id');
         $new_id=$getCompany+1;
 
- $companyname= $request->company_name;
+        $companyname= $request->company_name;
         $user= $request->admin_username;
         $admin_name= $request->admin_name;
         $id=$new_id;
@@ -208,7 +208,7 @@ class CompanyAdminsController extends Controller
             
             $collection=Company_user::raw();
             $company_user = $collection->aggregate([['$match' => ['user_email' => $email, 'user_password' => sha1($password)]]]);
-            
+            // dd(sha1($password));
             if ($company_admin) {
                 foreach($company_admin as $u){
                     if($u != ''){

@@ -94,48 +94,73 @@ class EmployeeBreakController extends Controller
         $currentDate = Carbon::now();
         $currentYear = $currentDate->year;
         $currentMonth = $currentDate->month;
-
+  
         foreach ($company_data as $companyArr) {
             $company_employee_id = $companyArr['_id'];
         
             $employee_data = Employee_Break::raw()->find([
-                'company_id' => $companyID,
-                'employee_break.employee_id' => $company_employee_id
+                'company_id' => $companyID
             ]);
-           
+        
             foreach ($employee_data as $cust) {
                 $attendance = $cust['employee_break'];
-       
+            
                 if (isset($attendance)) {
-                $employee_name = $companyArr['first_name'] . ' ' . $companyArr['last_name'];
-
                     foreach ($attendance as $ct) {
-                        $timestamp = $ct['attendance_time'];
+                        $employeeId = $ct['employee_id'];
+                        $data_day = $ct['break_status'];
+                        $timestamp = $ct['break_time'];
                         $carbonDate = Carbon::createFromTimestamp($timestamp);
                         $year = $carbonDate->year;
                         $month = $carbonDate->month;
                         $day = $carbonDate->day;
-        
+            
                         // Check if the date is within the current month and year
                         if ($year === $currentYear && $month === $currentMonth) {
-                            $employeeId = $ct['employee_id'];
-                           
-                            // Store attendance information by employee ID
-                            if (!isset($attendance_data[$employeeId])) {
-                                $attendance_data[$employeeId] = [
-                                    'id' => $employeeId,
-                                    'name' => $employee_name,
-                                    'attendance' => []
-                                ];
+                            // Fetch employee name based on the employee ID from $company_data
+                            // $employee_name = $companyArr['first_name'] . ' ' . $companyArr['last_name'];
+            // dd($company_data);
+                            $employee = $company_data->firstWhere('_id', (int)$employeeId);
+                            if ($employee) {
+                                $employee_name = $employee['first_name'] . ' ' . $employee['last_name'];
+                            } 
+                            else {
+                                $employee_name = '-'; // Set a default name or handle the case where the employee is not found
                             }
-        
-                            // Check if the date doesn't exist for the employee
                             $existingDate = $carbonDate->format('Y-m-d');
-                            if (!in_array($existingDate, array_column($attendance_data[$employeeId]['attendance'], 'date'))) {
-                                $attendance_data[$employeeId]['attendance'][] = [
-                                    'date' => $existingDate,
-                                    'time' => $carbonDate->format('H:i:s')
-                                ];
+            
+                            // Check 'IN' and 'OUT' statuses for breaks
+                            if ($data_day === 'IN' || $data_day === 'OUT') {
+                                // Store the 'IN' and 'OUT' times for breaks
+                                $break_type = ($data_day === 'IN') ? 'IN' : 'OUT';
+                                $break_time = $carbonDate->format('H:i:s');
+            
+                                if (!isset($attendance_data[$employeeId]['attendance'][$existingDate])) {
+                                    $attendance_data[$employeeId]['attendance'][$existingDate] = [
+                                        'date' => $existingDate,
+                                        'name' => $employee_name,
+                                        'breaks' => []
+                                    ];
+                                }
+            
+                                $breaks_array = &$attendance_data[$employeeId]['attendance'][$existingDate]['breaks'];
+            
+                                if (count($breaks_array) < 2) {
+                                    $breaks_array[] = [
+                                        'type' => $break_type,
+                                        'time' => $break_time
+                                    ];
+                                }
+            
+                                if (count($breaks_array) === 2) {
+                                    $break_in_time = Carbon::createFromFormat('H:i:s', $breaks_array[0]['time']);
+                                    $break_out_time = Carbon::createFromFormat('H:i:s', $breaks_array[1]['time']);
+            
+                                    $break_duration_minutes = $break_out_time->diffInMinutes($break_in_time);
+            
+                                    // Store break duration in minutes within 'breaks' array
+                                    $breaks_array[1]['duration_minutes'] = $break_duration_minutes;
+                                }
                             }
                         }
                     }
@@ -145,79 +170,104 @@ class EmployeeBreakController extends Controller
 
         $array = [];
         $array[] = [
-            "attendance_list" => array_values($attendance_data), 
+            "break_list" => array_values($attendance_data), 
         ];
         return response()->json(['success' => true,'data' => $array], 200);
         }
 
         //search employee attendance in year and month wise
-        public function search_employee_break(Request $request)// done
-        {
-            $token = $request->bearerToken();
-            $secretKey ='345fgvvc4';
-            $decryptedInput = decrypt($token, $secretKey);
-            $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
-            $companyID=intval($id);
-    
-            //company emplyee data dispalay
-            $company_data = Company_Employee::where('company_id', $companyID)->get();
-            $attendance_data = [];
-    
-            $currentDate = Carbon::now();
-            $currentYear =(int)$request->year;
-            $currentMonth =(int)$request->month;
-            foreach ($company_data as $companyArr) {
-                $company_employee_id = $companyArr['_id'];
+    public function search_employee_break(Request $request)// done
+    {
+        $token = $request->bearerToken();
+        $secretKey ='345fgvvc4';
+        $decryptedInput = decrypt($token, $secretKey);
+        $token_data=list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
+        $companyID=intval($id);
+
+        //company emplyee data dispalay
+        $company_data = Company_Employee::where('company_id', $companyID)->get();
+        $attendance_data = [];
+
+        $currentDate = Carbon::now();
+        $currentYear = (int)$request->year;
+        $currentMonth = (int)$request->month;
+//   dd($currentYear);
+        foreach ($company_data as $companyArr) {
+            $company_employee_id = $companyArr['_id'];
+        
+            $employee_data = Employee_Break::raw()->find([
+                'company_id' => $companyID
+            ]);
+        
+            foreach ($employee_data as $cust) {
+                $attendance = $cust['employee_break'];
             
-                $employee_data = Employee_Break::raw()->find([
-                    'company_id' => $companyID,
-                    'employee_break.employee_id' => $company_employee_id
-                ]);
-               
-                foreach ($employee_data as $cust) {
-                    $attendance = $cust['employee_break'];
+                if (isset($attendance)) {
+                    foreach ($attendance as $ct) {
+                        $employeeId = $ct['employee_id'];
+                        $data_day = $ct['break_status'];
+                        $timestamp = $ct['break_time'];
+                        $carbonDate = Carbon::createFromTimestamp($timestamp);
+                        $year = $carbonDate->year;
+                        $month = $carbonDate->month;
+                        $day = $carbonDate->day;
+            
+                        // Check if the date is within the current month and year
+                        if ($year === $currentYear && $month === $currentMonth) {
+                            // Fetch employee name based on the employee ID from $company_data
+                            $employee = $company_data->firstWhere('_id', (int)$employeeId);
+                            if ($employee) {
+                                $employee_name = $employee['first_name'] . ' ' . $employee['last_name'];
+                            } else {
+                                $employee_name = 'Unknown'; // Set a default name or handle the case where the employee is not found
+                            }
+                            //$employee_name = $companyArr['first_name'] . ' ' . $companyArr['last_name'];
+            
+                            $existingDate = $carbonDate->format('Y-m-d');
            
-                    if (isset($attendance)) {
-                    $employee_name = $companyArr['first_name'] . ' ' . $companyArr['last_name'];
-    
-                        foreach ($attendance as $ct) {
-                            $timestamp = $ct['attendance_time'];
-                            $carbonDate = Carbon::createFromTimestamp($timestamp);
-                            $year = $carbonDate->year;
-                            $month = $carbonDate->month;
-                            $day = $carbonDate->day;
-            
-                            // Check if the date is within the current month and year
-                            if ($year === $currentYear && $month === $currentMonth) {
-                                $employeeId = $ct['employee_id'];
-                               
-                                // Store attendance information by employee ID
-                                if (!isset($attendance_data[$employeeId])) {
-                                    $attendance_data[$employeeId] = [
-                                        'id' => $employeeId,
+                            // Check 'IN' and 'OUT' statuses for breaks
+                            if ($data_day === 'IN' || $data_day === 'OUT') {
+                                // Store the 'IN' and 'OUT' times for breaks
+                                $break_type = ($data_day === 'IN') ? 'IN' : 'OUT';
+                                $break_time = $carbonDate->format('H:i:s');
+           
+                                if (!isset($attendance_data[$employeeId]['attendance'][$existingDate])) {
+                                    $attendance_data[$employeeId]['attendance'][$existingDate] = [
+                                        'date' => $existingDate,
                                         'name' => $employee_name,
-                                        'attendance' => []
+                                        'breaks' => []
                                     ];
                                 }
             
-                                // Check if the date doesn't exist for the employee
-                                $existingDate = $carbonDate->format('Y-m-d');
-                                if (!in_array($existingDate, array_column($attendance_data[$employeeId]['attendance'], 'date'))) {
-                                    $attendance_data[$employeeId]['attendance'][] = [
-                                        'date' => $existingDate,
-                                        'time' => $carbonDate->format('H:i:s')
+                                $breaks_array = &$attendance_data[$employeeId]['attendance'][$existingDate]['breaks'];
+            
+                                if (count($breaks_array) < 2) {
+                                    $breaks_array[] = [
+                                        'type' => $break_type,
+                                        'time' => $break_time
                                     ];
+                                }
+            
+                                if (count($breaks_array) === 2) {
+                                    $break_in_time = Carbon::createFromFormat('H:i:s', $breaks_array[0]['time']);
+                                    $break_out_time = Carbon::createFromFormat('H:i:s', $breaks_array[1]['time']);
+            
+                                    $break_duration_minutes = $break_out_time->diffInMinutes($break_in_time);
+            
+                                    // Store break duration in minutes within 'breaks' array
+                                    $breaks_array[1]['duration_minutes'] = $break_duration_minutes;
                                 }
                             }
                         }
                     }
                 }
             }
-    
-            $array = [];
-            $array[] = [
-                "attendance_list" => array_values($attendance_data), // Resetting keys to start from 0
-            ];
-            return response()->json(['success' => true,'data' => $array], 200);
-            }
+        }
+
+        $array = [];
+        $array[] = [
+            "break_list" => array_values($attendance_data), 
+        ];
+        return response()->json(['success' => true,'data' => $array], 200);
+        }
 }
