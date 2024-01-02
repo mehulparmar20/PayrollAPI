@@ -117,7 +117,7 @@ class CompanyEmployeeController extends Controller
         $companyArrayUp = Company_Employee::where('_id', $reqid)->first();
 
         if (!$companyArrayUp) {
-            return response()->json(['message' => 'User not found'], 404);
+            return response()->json(['status' => false, 'message' => 'No records found'], 200);
         }
         $photo_name = '';
         $original_name = '';
@@ -226,7 +226,7 @@ class CompanyEmployeeController extends Controller
         $records = Company_Employee::where('delete_status', 'NO')->where('company_id', $company_id)->get();
         // return response()->json(['success' => true,'data' => $records], 200);
         if ($records->isEmpty()) {
-            return response()->json(['message' => 'No results found'], 404);
+            return response()->json(['status' => false , 'message' => 'No results found'], 200);
         } else {
             return response()->json(['success' => true, 'data' => $records], 200);
         }
@@ -286,7 +286,7 @@ class CompanyEmployeeController extends Controller
         $results = Company_user::where('user_name', 'like', '%' . $name . '%')->get();
         // dd($results);
         if ($results->isEmpty()) {
-            return response()->json(['message' => 'No results found'], 404);
+            return response()->json(['status' => false, 'message' => 'No records found'], 200);
         } else {
 
             return response()->json(['results' => $results], 200);

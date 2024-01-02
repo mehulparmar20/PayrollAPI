@@ -181,7 +181,7 @@ class CompanyResignationController extends Controller
 
         else {
             // Handle the case where no records are found
-            return response()->json(['success' => false, 'message' => 'No records found'], 404);
+            return response()->json(['status' => false, 'message' => 'No records found'], 200);
         }
     }
      public function paginate_resignation(Request $request)
@@ -258,7 +258,7 @@ class CompanyResignationController extends Controller
         $name = $request->reason;
         $results = Company_Resignation::where('company_resignation.reason', 'like', '%' . $name . '%')->get();
         if ($results->isEmpty()) {
-            return response()->json(['message' => 'No results found'], 404);
+            return response()->json(['status' => false,'message' => 'No results found'], 200);
         } else {
             return response()->json(['results' => $results], 200);
         }

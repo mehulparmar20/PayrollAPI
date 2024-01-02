@@ -177,7 +177,7 @@ class CompanyHolidayController extends Controller
        
         else {
             // Handle the case where no records are found
-            return response()->json(['success' => false, 'message' => 'No records found'], 404);
+            return response()->json(['status' => false, 'message' => 'No records found'], 200);
         }
     }
     public function paginate_holiday(Request $request)
@@ -195,7 +195,7 @@ class CompanyHolidayController extends Controller
         $name=$request->holiday_name;
         $results=Company_Holiday::where('company_holiday.holiday_name','like','%'.$name.'%')->get();
         if($results->isEmpty()) {
-            return response()->json(['message' => 'No results found'], 404);
+            return response()->json(['status' => false , 'message' => 'No results found'], 200);
         } else {
             
             return response()->json(['results' => $results], 200);

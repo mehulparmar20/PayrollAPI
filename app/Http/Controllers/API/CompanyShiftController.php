@@ -121,7 +121,7 @@ class CompanyShiftController extends Controller
         $name = $request->shift_no;
         $results = company_shift::where('company_shift.shift_no', 'like', '%' . $name . '%')->get();
         if ($results->isEmpty()) {
-            return response()->json(['message' => 'No results found'], 404);
+            return response()->json(['status'=>false ,'message' => 'No results found'], 200);
         } else {
             return response()->json(['results' => $results], 200);
         }

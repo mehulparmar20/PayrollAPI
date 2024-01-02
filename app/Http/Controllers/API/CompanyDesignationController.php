@@ -42,7 +42,7 @@ class CompanyDesignationController extends Controller
              $cons['masterID'] = $docId;
              echo json_encode($cons);
  
-             return response()->json(['message' => 'Designation Added successfully'], 201);
+             return response()->json(['message' => 'Designation Added successfully'], 200);
          }
          else
          {
@@ -55,7 +55,7 @@ class CompanyDesignationController extends Controller
                  "company_designation" => array($cons),
              );
              \App\Models\API\Company_Designation::raw()->insertOne($arra);
-             return response()->json(['message' => 'Designation Added successfully'], 201);
+             return response()->json(['message' => 'Designation Added successfully'], 200);
          }
             
     }
@@ -115,18 +115,22 @@ class CompanyDesignationController extends Controller
         $info = (explode("^",$docAvailable));
         $docId = $info[1];
         $desgData=$collection->updateOne(['company_id' => (int)$companyId,'_id' => (int)$masterId,'company_designation._id' => (int)$id],
-        ['$set' => [
+       ['$set' => [
             'company_designation.$.designation_name' => $request->designation_name,
             'company_designation.$.department_id' => $request->department_id,
             'company_designation.$.edit_time' => time()
-
             ]]
         );
         // dd($desgData);
-       if ($desgData==true)
-        {
-            $arr = array('status' => 'success', 'message' => 'Designation Updated successfully.','statusCode' => 200);
-            return json_encode($arr);
+    //    if ($desgData==true)
+    //     {
+    //         $arr = array('status' => 'success', 'message' => 'Designation Updated successfully.','statusCode' => 200);
+    //         return json_encode($arr);
+    //     }
+        if($desgData==true) {
+            return response()->json(['message' => 'Designation Updated successfully'], 200);
+        } else {
+            return response()->json(['status' => false,'message' => 'Designation Not Update'], 200);
         }
     }
      public function delete_designation(Request $request) 
@@ -141,11 +145,16 @@ class CompanyDesignationController extends Controller
         $designData=Company_Designation::raw()->updateOne(['company_id' => $companyID,'_id' => $masterId,'company_designation._id' => $ids],
         ['$set' => ['company_designation.$.delete_status' =>'YES','company_designation.$.deleteUser' =>$companyID,'company_designation.$.deleteTime' => time()]]
         );
-       if ($designData==true)
-       {
-           $arr = array('status' => 'success', 'message' => 'Designation deleted successfully.','statusCode' => 200);
-            return json_encode($arr);
-       }
+    //    if ($designData==true)
+    //    {
+    //        $arr = array('status' => 'success', 'message' => 'Designation deleted successfully.','statusCode' => 200);
+    //         return json_encode($arr);
+    //    }
+        if($designData==true) {
+            return response()->json(['message' => 'Designation deleted successfully'], 200);
+        } else {
+            return response()->json(['status' => false,'message' => 'Designation Not Deleted'], 200);
+        }
     }
     public function view_designation(Request $request)// done
     {
@@ -176,7 +185,7 @@ class CompanyDesignationController extends Controller
      
       else {
         // Handle the case where no records are found
-        return response()->json(['success' => false, 'message' => 'No records found'], 404);
+        return response()->json(['success' => false, 'message' => 'No records found'], 200);
     }
     }
     public function paginate_designation(Request $request)
@@ -189,20 +198,22 @@ class CompanyDesignationController extends Controller
         $company_id=intval($id);
         $records=Company_Designation::where('company_designation.delete_status','NO')
         ->where('company_id',$company_id)->paginate(10);
-        return response()->json(['success' => true,'data' => $records], 200);
+        if($records->isEmpty()) {
+            return response()->json(['message' => 'No results found'], 200);
+        } else {
+            return response()->json(['success' => true,'data' => $records], 200);
+        }
+       
     }
     public function search_designation(Request $request) //search
     {
         $name=$request->designation_name;
         $results=Company_Designation::where('company_designation.designation_name','like','%'.$name.'%')->get();
         if($results->isEmpty()) {
-            return response()->json(['message' => 'No results found'], 404);
+            return response()->json(['message' => 'No results found'], 200);
         } else {
             
             return response()->json(['results' => $results], 200);
         }
     }
-
-
-
 }

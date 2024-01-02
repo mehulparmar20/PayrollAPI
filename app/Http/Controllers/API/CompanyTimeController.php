@@ -189,7 +189,7 @@ class CompanyTimeController extends Controller
        
         else {
             // Handle the case where no records are found
-            return response()->json(['success' => false, 'message' => 'No records found'], 404);
+            return response()->json(['status' => false, 'message' => 'No records found'], 200);
         }
     }
   
@@ -237,7 +237,7 @@ class CompanyTimeController extends Controller
         $name = $request->shift_no;
         $results = Company_Time::where('company_time.shift_no', 'like', '%' . $name . '%')->get();
         if ($results->isEmpty()) {
-            return response()->json(['message' => 'No results found'], 404);
+            return response()->json(['status' => false, 'message' => 'No records found'], 200);
         } else {
             return response()->json(['results' => $results], 200);
         }

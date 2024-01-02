@@ -213,5 +213,6 @@ Route::group(['middleware' => 'tokenauth'], function () {
       Route::post('add_company_shift','App\Http\Controllers\API\CompanyShiftController@add_company_shift');
       Route::get('view_company_shift','App\Http\Controllers\API\CompanyShiftController@view_company_shift');
       
+     
 });
 

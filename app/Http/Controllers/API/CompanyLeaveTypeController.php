@@ -176,7 +176,7 @@ class CompanyLeaveTypeController extends Controller
        
         else {
             // Handle the case where no records are found
-            return response()->json(['success' => false, 'message' => 'No records found'], 404);
+            return response()->json(['status' => false, 'message' => 'No records found'], 200);
         }
     }
     public function paginate_leave(Request $request)
@@ -197,7 +197,7 @@ class CompanyLeaveTypeController extends Controller
         $name = $request->leave_type;
         $results = Company_leave::where('company_leave.leave_type', 'like', '%' . $name . '%')->get();
         if ($results->isEmpty()) {
-            return response()->json(['message' => 'No results found'], 404);
+            return response()->json(['status'=>false ,'message' => 'No results found'], 200);
         } else {
             return response()->json(['results' => $results], 200);
         }

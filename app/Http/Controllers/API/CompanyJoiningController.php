@@ -29,7 +29,7 @@ class CompanyJoiningController extends Controller
             ->get();
             // dd($records);
         if ($records->isEmpty()) {
-            return response()->json(['message' => 'No results found'], 404);
+            return response()->json(['status'=>false ,'message' => 'No results found'], 200);
         } else {
             return response()->json([
                 'success' => true,
@@ -213,7 +213,7 @@ class CompanyJoiningController extends Controller
        
         else {
             // Handle the case where no records are found
-            return response()->json(['success' => false, 'message' => 'No records found'], 404);
+            return response()->json(['status' => false, 'message' => 'No records found'], 200);
         }
     }
     public function paginate_joining(Request $request)
@@ -235,7 +235,7 @@ class CompanyJoiningController extends Controller
         $name = $request->manager_name;
         $results = Company_Joining::where('company_joining.manager_name', 'like', '%' . $name . '%')->get();
         if ($results->isEmpty()) {
-            return response()->json(['message' => 'No results found'], 404);
+            return response()->json(['status'=> false , 'message' => 'No results found'], 200);
         } else {
             return response()->json(['results' => $results], 200);
         }

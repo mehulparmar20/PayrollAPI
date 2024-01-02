@@ -42,7 +42,7 @@ class CompanyBranchController extends Controller
             $cons['masterID'] = $docId;
             echo json_encode($cons);
 
-            return response()->json(['message' => 'Branch Added successfully'], 201);
+            return response()->json(['message' => 'Branch Added successfully'], 200);
         } else {
             $parentId = AppHelper::instance()->getNextSequenceForNewDoc(\App\Models\API\Company_Branch::raw());
             $cons['_id'] = AppHelper::instance()->getNextSequenceForNewId(\App\Models\API\Company_Branch::raw(), 'company_branch', '$company_branch._id', $companyId);
@@ -53,7 +53,7 @@ class CompanyBranchController extends Controller
                 "company_branch" => array($cons),
             );
             \App\Models\API\Company_Branch::raw()->insertOne($arra);
-            return response()->json(['message' => 'Branch Added successfully'], 201);
+            return response()->json(['message' => 'Branch Added successfully'], 200);
         }
     }
     public function edit_branch(Request $request)
@@ -89,14 +89,17 @@ class CompanyBranchController extends Controller
             "companyID"=>$masterId
         );
         $consignee=(array)$cursor->company_branch[$v];
-            return response()->json([
-                'success' => $consignee,
-            ]);
+            // return response()->json([
+            //     'success' => $consignee,
+            // ]); 
+            return response()->json(['success' => true,'data' => $consignee], 200);
         } else {
-            return response()->json([
-                'success' => 'No record'
-            ]);
+            // return response()->json([
+            //     'success' => 'No record'
+            // ]);
+            return response()->json(['success' => false, 'message' => 'No records found'], 200);
         }
+        
     }
     public function update_branch(Request $request)
     {
@@ -125,11 +128,13 @@ class CompanyBranchController extends Controller
             ]]
         );
         if ($userData == true) {
-            $arr = array('status' => 'success', 'message' => 'Branch Updated successfully.', 'statusCode' => 200);
-            return json_encode($arr);
+            return response()->json(['status' => true,'data' => $userData], 200);
+            // $arr = array('status' => 'success', 'message' => 'Branch Updated successfully.', 'statusCode' => 200);
+            // return json_encode($arr);
         } else {
-            $arr = array('status' => 'success', 'message' => 'NO Branch Updated.', 'statusCode' => 500);
-            return json_encode($arr);
+            return response()->json(['status' => false, 'message' => 'No records found'], 200);
+            // $arr = array('status' => 'success', 'message' => 'NO Branch Updated.', 'statusCode' => 500);
+            // return json_encode($arr);
         }
     }
     public function delete_branch(Request $request)
@@ -148,9 +153,13 @@ class CompanyBranchController extends Controller
              => $companyID, 'company_branch.$.deleteTime' => time()]]
         );
         if ($departData == true) {
-            $arr = array('status' => 'success', 'message' => 'Branch deleted successfully.',
-             'statusCode' => 200);
-            return json_encode($arr);
+            // $arr = array('status' => 'success', 'message' => 'Branch deleted successfully.',
+            //  'statusCode' => 200);
+            // return json_encode($arr);
+            return response()->json(['status' => true,'data' => $departData], 200);
+        }
+        else{
+            return response()->json(['status' => false, 'message' => 'No records found'], 200);
         }
     }
      public function view_branch(Request $request)
@@ -182,7 +191,7 @@ class CompanyBranchController extends Controller
 
         else {
             // Handle the case where no records are found
-            return response()->json(['success' => false, 'message' => 'No records found'], 404);
+            return response()->json(['status' => false, 'message' => 'No records found'], 200);
         }
     }
     public function paginate_branch(Request $request)
@@ -204,7 +213,7 @@ class CompanyBranchController extends Controller
         $name = $request->branch_name;
         $results = Company_Branch::where('company_branch.branch_name', 'like', '%' . $name . '%')->get();
         if ($results->isEmpty()) {
-            return response()->json(['message' => 'No results found'], 404);
+            return response()->json(['message' => 'No results found'], 200);
         } else {
             return response()->json(['results' => $results], 200);
         }

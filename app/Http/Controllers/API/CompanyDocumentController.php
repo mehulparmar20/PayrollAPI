@@ -85,7 +85,7 @@ class CompanyDocumentController extends Controller
        
         else {
             // Handle the case where no records are found
-            return response()->json(['success' => false, 'message' => 'No records found'], 404);
+            return response()->json(['status' => false, 'message' => 'No records found'], 200);
         }
     }
     public function delete_document(Request $request)

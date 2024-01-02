@@ -161,7 +161,8 @@ class CompanyAdminsController extends Controller
             'data'=>$result,
         ]);
     
-        return response()->json(["result" => "ok"], 201);
+        
+        return response()->json(["result" => "ok"], 200);
     }
    
     public function sendVerificationEmail(Request $request)
@@ -423,7 +424,7 @@ class CompanyAdminsController extends Controller
         $reqid=intval($request->id);
         $companyArrayUp =Company_Admins::where('_id',$reqid)->first();
         if (!$companyArrayUp) {
-            return response()->json(['message' => 'User not found'], 404);
+            return response()->json(['message' => 'User not found'], 200);
         }
             // $photo_name='';
             // $original_name='';

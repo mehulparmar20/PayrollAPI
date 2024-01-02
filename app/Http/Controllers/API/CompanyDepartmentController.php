@@ -38,7 +38,7 @@ class CompanyDepartmentController extends Controller
             $cons['masterID'] = $docId;
             echo json_encode($cons);
 
-            return response()->json(['message' => 'Department Added successfully'], 201);
+            return response()->json(['message' => 'Department Added successfully'], 200);
         } else {
             $parentId = AppHelper::instance()->getNextSequenceForNewDoc(\App\Models\API\Company_Department::raw());
             $cons['_id'] = AppHelper::instance()->getNextSequenceForNewId(\App\Models\API\Company_Department::raw(), 'company_department', '$company_department._id', $companyId);
@@ -49,7 +49,7 @@ class CompanyDepartmentController extends Controller
                 "company_department" => array($cons),
             );
             \App\Models\API\Company_Department::raw()->insertOne($arra);
-            return response()->json(['message' => 'Department Added successfully'], 201);
+            return response()->json(['message' => 'Department Added successfully'], 200);
         }
     }
 
@@ -120,13 +120,19 @@ class CompanyDepartmentController extends Controller
                 'company_department.$.edit_time' => time()
             ]]
         );
-        if ($userData == true) {
-            $arr = array('status' => 'success', 'message' => 'Department Updated successfully.', 'statusCode' => 200);
-            return json_encode($arr);
+        if($userData == true) {
+            return response()->json(['message' => 'No results found'], 200);
         } else {
-            $arr = array('status' => 'success', 'message' => 'NO Department Updated.', 'statusCode' => 500);
-            return json_encode($arr);
+            
+            return response()->json(['results' => $userData], 200);
         }
+        // if ($userData == true) {
+        //     $arr = array('status' => 'success', 'message' => 'Department Updated successfully.', 'statusCode' => 200);
+        //     return json_encode($arr);
+        // } else {
+        //     $arr = array('status' => 'success', 'message' => 'NO Department Updated.', 'statusCode' => 500);
+        //     return json_encode($arr);
+        // }
     }
     public function delete_department(Request $request)
     {
@@ -143,12 +149,18 @@ class CompanyDepartmentController extends Controller
             ['$set' => ['company_department.$.delete_status' => 'YES', 'company_department.$.deleteUser'
             => $companyID, 'company_department.$.deleteTime' => time()]]
         );
-        if ($departData == true) {
-            $arr = array(
-                'status' => 'success', 'message' => 'Department deleted successfully.',
-                'statusCode' => 200
-            );
-            return json_encode($arr);
+        // if ($departData == true) {
+        //     $arr = array(
+        //         'status' => 'success', 'message' => 'Department deleted successfully.',
+        //         'statusCode' => 200
+        //     );
+        //     return json_encode($arr);
+        // }
+        if($departData == true) {
+            return response()->json(['message' => 'No results found'], 200);
+        } else {
+            
+            return response()->json(['results' => $departData], 200);
         }
     }
 
@@ -179,7 +191,7 @@ class CompanyDepartmentController extends Controller
             return response()->json(['success' => true, 'data' => $filteredData], 200);
         } else {
             // Handle the case where no records are found
-            return response()->json(['success' => false, 'message' => 'No records found'], 404);
+            return response()->json(['success' => false, 'message' => 'No records found'], 200);
         }
     }
     public function paginate_department(Request $request)
@@ -199,7 +211,7 @@ class CompanyDepartmentController extends Controller
         $name = $request->department_name;
         $results = Company_Department::where('company_department.department_name', 'like', '%' . $name . '%')->get();
         if ($results->isEmpty()) {
-            return response()->json(['message' => 'No results found'], 404);
+            return response()->json(['message' => 'No results found'], 200);
         } else {
             return response()->json(['results' => $results], 200);
         }

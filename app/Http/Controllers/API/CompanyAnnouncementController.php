@@ -94,7 +94,7 @@ class CompanyAnnouncementController extends Controller
        
         else {
             // Handle the case where no records are found
-            return response()->json(['success' => false, 'message' => 'No records found'], 404);
+            return response()->json(['success' => false, 'message' => 'No records found'], 200);
         }
         // $maxLength = 7000;
         // $token = $request->bearerToken();
@@ -233,15 +233,11 @@ public function edit_announcement(Request $request)
         "companyID"=>$masterId
     );
     $consignee=(array)$cursor->announcement[$v];
-        return response()->json([
-            'success' => $consignee,
-        ]);
+        return response()->json(['results' => $consignee], 200);
     } else {
-        return response()->json([
-            'success' => 'No record'
-        ]);
+        return response()->json(['message' => 'No results found'], 200);
     }
-
+   
 }
     // public function edit_announcement(Request $request)
     // {
@@ -343,11 +339,16 @@ public function edit_announcement(Request $request)
             $announcementData=Company_Announcement::raw()->updateOne(['company_id' => $companyID,'_id' => $masterId,'announcement._id' => $id],
             ['$set' => ['announcement.$.delete_status' => 'YES','announcement.$.deleteUser' =>intval($id),'announcement.$.deleteTime' => time()]]
             );
-           if ($announcementData==true)
-           {
-               $arr = array('status' => 'success', 'message' => 'Announcement deleted successfully.','statusCode' => 200);
-                return json_encode($arr);
-           }
+        //    if ($announcementData==true)
+        //    {
+        //        $arr = array('status' => 'success', 'message' => 'Announcement deleted successfully.','statusCode' => 200);
+        //         return json_encode($arr);
+        //    }
+           if ($announcementData==true) {
+                return response()->json(['results' => $announcementData], 200);
+            } else {
+                return response()->json(['message' => 'No results found'], 200);
+            }
         }
         public function index_announcement(Request $request)
         {
@@ -425,7 +426,12 @@ public function edit_announcement(Request $request)
             $completedata[] = $partialdata;
             $completedata[] = $paginate;
             $completedata[] = $total_records;
-            echo json_encode($completedata);
+           echo json_encode($completedata);
+            // if (!empty($completedata)) {
+            //     return response()->json(['results' => $announcementData], 200);
+            // } else {
+            //     return response()->json(['message' => 'No results found'], 200);
+            // }
         }
         
         public function search_announcement(Request $request)

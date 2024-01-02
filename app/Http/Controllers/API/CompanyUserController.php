@@ -81,7 +81,7 @@ class CompanyUserController extends Controller
             return response()->json(['message' => 'Maximum number of employees reached for this company'], 400);
             }
             } else {
-            return response()->json(['message' => 'Company not found'], 404);
+                return response()->json(['status' => false, 'message' => 'No records found'], 200);
             }
         }
 
@@ -116,7 +116,7 @@ class CompanyUserController extends Controller
             $reqid=intval($request->id);
             $existingUserData =Company_user::where('_id',$reqid)->first();
             if (!$existingUserData) {
-                return response()->json(['message' => 'User not found'], 404);
+                return response()->json(['status' => false, 'message' => 'No records found'], 200);
             }
             $validatedData = $request->validate([
                 'user_email' => 'required',
@@ -185,7 +185,7 @@ class CompanyUserController extends Controller
             $records=Company_user::where('delete_status', 'NO')->where('company_id',$company_id)->get();
             //return response()->json(['success' => true,'data' => $records], 200);
             if ($records->isEmpty()) {
-            return response()->json(['message' => 'No results found'], 404);
+                return response()->json(['status' => false, 'message' => 'No records found'], 200);
             } else {
                 return response()->json(['success' => true, 'data' => $records], 200);
             }
@@ -202,7 +202,7 @@ class CompanyUserController extends Controller
             $records=Company_user::where('delete_status', 'NO')->paginate(10);
             //return response()->json(['success' => true,'data' => $records], 200);
             if ($records->isEmpty()) {
-            return response()->json(['message' => 'No results found'], 404);
+                return response()->json(['status' => false, 'message' => 'No records found'], 200);
             } else {
                 return response()->json(['success' => true, 'data' => $records], 200);
             }
@@ -213,7 +213,7 @@ class CompanyUserController extends Controller
             $results=Company_user::where('user_name','like','%'.$name.'%')->get();
             // dd($results);
             if($results->isEmpty()) {
-                return response()->json(['message' => 'No results found'], 404);
+                return response()->json(['status' => false, 'message' => 'No records found'], 200);
             } else {
                 
                 return response()->json(['results' => $results], 200);

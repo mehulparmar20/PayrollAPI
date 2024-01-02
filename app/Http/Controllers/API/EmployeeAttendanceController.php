@@ -100,7 +100,7 @@ class EmployeeAttendanceController extends Controller
         
             $employee_data = Employee_Attendance::raw()->find([
                 'company_id' => $companyID,
-                'employee_attendance.employee_id' => $company_employee_id
+                //'employee_attendance.employee_id' => $company_employee_id
             ]);
            
             foreach ($employee_data as $cust) {
@@ -171,7 +171,7 @@ class EmployeeAttendanceController extends Controller
             
                 $employee_data = Employee_Attendance::raw()->find([
                     'company_id' => $companyID,
-                    'employee_attendance.employee_id' => $company_employee_id
+                    // 'employee_attendance.employee_id' => $company_employee_id
                 ]);
                
                 foreach ($employee_data as $cust) {
