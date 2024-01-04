@@ -29,7 +29,7 @@ class CompanyUserController extends Controller
         $latest_total_employee = Company_Admins::latest('_id')->value('total_employee');
         // Check if the current number of employees is less than the allowed total employees
         
-        if ($total < $allowed_total_employee) {
+        // if ($total < $allowed_total_employee) {
         // Continue with user creation
         
         $validatedData = $request->validate([
@@ -53,7 +53,7 @@ class CompanyUserController extends Controller
             'user_password' =>$password,
             'user_type' => $request->user_type,
             'user_add_date' => $request->user_add_date,
-            'role' => $request->role,
+            'designation' => $request->designation,
             'employee' => $request->employee,
             'payroll' => $request->payroll,
             'attendance' => $request->attendance,
@@ -77,10 +77,12 @@ class CompanyUserController extends Controller
             } else {
             return response()->json(['message' => 'Failed to Add User'], 500);
             }
-            } else {
-            return response()->json(['message' => 'Maximum number of employees reached for this company'], 400);
-            }
-            } else {
+            } 
+            // else {
+            // return response()->json(['message' => 'Maximum number of employees reached for this company'], 400);
+            // }
+            // }
+            else {
                 return response()->json(['status' => false, 'message' => 'No records found'], 200);
             }
         }
@@ -133,7 +135,7 @@ class CompanyUserController extends Controller
                 'user_password' =>$password,
                 'user_type' => $request->user_type,
                 'user_add_date' => $request->user_add_date,
-                'role' => $request->role,
+                'designation' => $request->designation,
                 'employee' => $request->employee,
                 'payroll' => $request->payroll,
                 'attendance' => $request->attendance,

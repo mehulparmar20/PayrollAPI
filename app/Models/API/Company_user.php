@@ -30,6 +30,7 @@ class Company_user extends Model
         'branch_id',
         'employee',
         'payroll',
+        'designation',
         'delete_status',
     ];
     public function companyAdmin()

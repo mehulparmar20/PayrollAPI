@@ -213,6 +213,14 @@ Route::group(['middleware' => 'tokenauth'], function () {
       Route::post('add_company_shift','App\Http\Controllers\API\CompanyShiftController@add_company_shift');
       Route::get('view_company_shift','App\Http\Controllers\API\CompanyShiftController@view_company_shift');
       
-     
+      //company salary setup master
+       Route::post('add_salary_setup','App\Http\Controllers\API\CompanySalaryMasterController@add_salary_setup');
+       Route::post('edit_salary_setup','App\Http\Controllers\API\CompanySalaryMasterController@edit_salary_setup');
+       Route::post('update_salary_setup','App\Http\Controllers\API\CompanySalaryMasterController@update_salary_setup');
+       Route::get('view_salary_setup','App\Http\Controllers\API\CompanySalaryMasterController@view_salary_setup');
+       Route::post('set_salary_setup','App\Http\Controllers\API\CompanySalaryMasterController@set_salary_setup');
+        
+       Route::post('credit_leave','App\Http\Controllers\API\CreditLeaveController@credit_leave');
+       
 });
 

@@ -21,6 +21,19 @@ class CompanyEmployeeLeaveController extends Controller
         list($id, $user, $admin_name, $companyname) = explode('|', $decryptedInput);
         $companyId = intval($id);
         $docAvailable = AppHelper::instance()->checkDoc(Employee_leave::raw(), $companyId, $maxLength);
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
+
+        // Create DateTime objects for the from and to dates
+        $startDate = new \DateTime($fromDate);
+        $endDate = new \DateTime($toDate);
+
+        // Calculate the difference between the dates
+        $difference = $startDate->diff($endDate);
+
+        // Access the difference in days
+        $daysDifference = $difference->days;
+        // dd($daysDifference);
         $cons = array(
             '_id' => 1,
             'company_id' => $companyId,
@@ -29,7 +42,7 @@ class CompanyEmployeeLeaveController extends Controller
             'leave_type' => $request->leave_type,
             'from_date' => $request->from_date,
             'to_date' => $request->to_date,
-            'total_days' => $request->total_days,
+            'total_days' => $daysDifference,
             'remaining_leaves' => $request->remaining_leaves,
             'leave_reason' => $request->leave_reason,
             'status' =>'1',
