@@ -172,7 +172,7 @@ class CompanyUserController extends Controller
             // dd($data);
             $data->delete_status ='YES';
             $data->save();
-            return response()->json(['status' => 'Deleted Successfully']);
+            return response()->json(['status' => 'success', 'message' => 'Record deleted successfully.', 'statusCode' => 200]);
             
         }
         public function view_user(Request $request)

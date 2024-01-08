@@ -30,7 +30,7 @@ class Company_Employee extends Model
         'shift',
         'fileupload',
         'password',
-        'branch_id',
+        'branch',
         'emergency_contact',
         'bank_information',
         'delete_status',
